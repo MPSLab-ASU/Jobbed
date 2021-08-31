@@ -48,3 +48,4 @@ run-debug: build/kernel-g.elf
 
 debug: build/kernel-g.elf build/kernel.list
 	${GDB} $< -command=gdbinit
+
