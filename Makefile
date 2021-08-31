@@ -10,6 +10,7 @@ CROSS = arm-none-eabi
 CC = ${CROSS}-gcc
 AS = ${CROSS}-as
 OBJCOPY = ${CROSS}-objcopy
+OBJDUMP = ${CROSS}-objdump
 QEMU = qemu-system-arm
 GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O2 -Wall -Wextra -nostdlib -g
@@ -23,7 +24,7 @@ default: clean build/kernel7.img
 build/kernel7.img: build/kernel.elf
 	${OBJCOPY} $< -O binary $@
 
-build/kernel.list: build/kernel.elf
+build/kernel.list: build/kernel-g.elf
 	${OBJDUMP} -D $< > $@
 
 build/kernel-g.elf: ${A_OBJECTD} ${C_OBJECTD}
