@@ -14,6 +14,7 @@ QEMU = qemu-system-arm
 GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O2 -Wall -Wextra -nostdlib -g
 AFLAGS = -mcpu=cortex-a7
+QFLAGS = -M raspi2 -cpu arm1176 -m 1G -serial mon:stdio -nographic
 
 .PHONY: clean run run-debug debug export
 
@@ -37,15 +38,14 @@ export: build/kernel.list
 obj/%.o: src/%.S
 	${AS} ${AFLAGS} -g -c $< -o $@
 
-clean:
-	rm -f obj/*.o build/*.elf build/*.list build/*.img
-
 run: build/kernel.elf
-	${QEMU} -M raspi2 -kernel $< -m 1G -serial mon:stdio
+	${QEMU} -kernel $< ${QFLAGS}
 
 run-debug: build/kernel-g.elf
-	${QEMU} -M raspi2 -cpu arm1176 -kernel $< -m 1G -s -S -serial mon:stdio -nographic
+	${QEMU} -kernel $< -s -S ${QFLAGS}
 
 debug: build/kernel-g.elf build/kernel.list
 	${GDB} $< -command=gdbinit
 
+clean:
+	rm -f obj/*.o build/*.elf build/*.list build/*.img
