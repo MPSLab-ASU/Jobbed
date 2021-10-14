@@ -10,10 +10,13 @@ kernel_main:
 	mov r0, #0x00
 kernel_main.a:
 	cmp r0, #0x100
-	beq kernel_main.loop
+	beq kernel_main.b
 	bl uart_char
 	add r0, #1
 	b kernel_main.a
+kernel_main.b:
+	mov r0, #0x0A
+	bl uart_char
 kernel_main.loop:
 	bl io_halt
 	b kernel_main.loop

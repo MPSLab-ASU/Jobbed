@@ -14,7 +14,7 @@ reset:
 
     // set vector address.
     ldr r0, =vector
-    mcR P15, 0, r0, c12, c0, 0
+    mcr p15, 0, r0, c12, c0, 0
 
     // save cpsr.
     mrs r0, cpsr
@@ -74,6 +74,16 @@ disable_irq:
     cpsid i
     bx lr
 
+.globl enable_fiq
+enable_fiq:
+    cpsie i
+    bx lr
+
+.globl disable_fiq
+disable_fiq:
+    cpsid f
+    bx lr
+
 .align 5
 vector:
     ldr pc, reset_handler
@@ -93,6 +103,8 @@ data_handler:       .word io_halt
 unused_handler:     .word io_halt
 irq_handler:        .word irq
 fiq_handler:        .word io_halt
+//irq_handler:        .word io_halt
+//fiq_handler:        .word irq
 
 .global a_irq_handler
 a_irq_handler:
