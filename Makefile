@@ -34,7 +34,7 @@ build/kernel.elf: ${A_OBJECTD} ${C_OBJECTD}
 	${CC} -T linker.ld -o $@ -ffreestanding -O2 -nostdlib $^ -lgcc
 
 export: build/kernel.list
-	cp build/kernel.elf /mnt/c/Local/
+	cp build/kernel-g.elf /mnt/c/Local/
 
 obj/%.o: src/%.S
 	${AS} ${AFLAGS} -g -c $< -o $@
