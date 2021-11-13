@@ -40,7 +40,6 @@ a_fiq_handler:
     bl disable_fiq
     ldr r0, =fmsg
     bl uart_string
-    pop {pc}
 a_fiq_handler.exit:
     bl enable_fiq
     pop {pc}
