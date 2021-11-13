@@ -16,11 +16,11 @@ kernel_main.loop:
 
 check_fiq_status:
 	push {lr}
-	mov r2, #0xB208
+	mov r2, #0xB20C
 	movt r2, #0x3F00
-	//mov r3, #57
-	//movt r3, #0
-	//str r3, [r2]
+	mov r3, #0xC1
+	movt r3, #0
+	str r3, [r2]
 	ldr r3, [r2]
 	push {r3}
 	mov r0, r3
