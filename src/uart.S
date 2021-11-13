@@ -44,3 +44,30 @@ uart_string.loop:
     cmp     r0, #0
     bne     uart_string.loop
     pop     {r4, pc}
+
+.globl uart_hex
+uart_hex:
+    push {r4, lr}
+    mov r2, #0x1000
+    movt r2, #0x3f20
+uart_hex.loop:
+    ldr r3, [r2, #24]
+    tst r3, #0b100000
+    bne uart_hex.loop
+    mov r3, #7
+uart_hex.hloop:
+    mov r1, r0
+    asr r1, r3
+    asr r1, r3
+    asr r1, r3
+    asr r1, r3
+    and r1, #0xf
+    add r1, #0x30
+    cmp r1, #0x3A
+    blt uart_hex.print
+    add r1, #7
+uart_hex.print:
+    str r1, [r2]
+    subs r3, #1
+    bge uart_hex.hloop
+    pop {r4, pc}
