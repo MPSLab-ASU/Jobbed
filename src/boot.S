@@ -61,6 +61,7 @@ irq:
 
 fiq:
     push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    bl a_fiq_handler
     pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
     subs pc, lr, #4
 
@@ -108,43 +109,3 @@ data_handler:       .word io_halt
 unused_handler:     .word io_halt
 irq_handler:        .word irq
 fiq_handler:        .word fiq
-
-.global a_irq_handler
-a_irq_handler:
-    push {lr}
-    bl disable_irq
-    // r2 = CORE0_INTERRUPT_SOURCE
-    // if r2 & 0b100000000
-    mov r2, #0x40000000
-    ldr r3, [r2, #0x60]
-    tst r3, #256
-    beq a_irq_handler.exit
-    // r2 = IRQ_PEND2
-    // r2 & 1 << 25
-    mov r2, #0xB208
-    movt r2, #0x3F00
-    ldr r3, [r2]
-    tst r3, #0x2000000
-    beq a_irq_handler.exit
-    mov r2, #0x1040
-    movt r2, #0x3F20
-    ldr r3, [r2]
-    tst r3, #16
-    beq a_irq_handler.exit
-    mov r2, #0x1000
-    movt r2, #0x3F20
-    ldrb r0, [r2]
-    push {r0}
-    bl enable_irq
-    pop {r0}
-    bl uart_char
-    ldr r0, =amsg
-    bl uart_string
-    pop {pc}
-a_irq_handler.exit:
-    bl enable_irq
-    pop {pc}
-
-.section ".data"
-amsg:
-    .asciz " a_irq_handler\n"
