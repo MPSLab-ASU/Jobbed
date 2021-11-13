@@ -59,6 +59,11 @@ irq:
     pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
     subs pc, lr, #4
 
+fiq:
+    push {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
+    subs pc, lr, #4
+
 .globl io_halt
 io_halt:
     wfi
@@ -76,7 +81,7 @@ disable_irq:
 
 .globl enable_fiq
 enable_fiq:
-    cpsie i
+    cpsie f
     bx lr
 
 .globl disable_fiq
@@ -102,9 +107,7 @@ prefetch_handler:   .word io_halt
 data_handler:       .word io_halt
 unused_handler:     .word io_halt
 irq_handler:        .word irq
-fiq_handler:        .word io_halt
-//irq_handler:        .word io_halt
-//fiq_handler:        .word irq
+fiq_handler:        .word fiq
 
 .global a_irq_handler
 a_irq_handler:
