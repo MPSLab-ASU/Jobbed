@@ -10,6 +10,8 @@ extern void write_cntv_tval(unsigned long); // Clear cntv interrupt and set next
 extern void routing_core0cntv_to_core0irq();
 extern void enable_cntv();
 
+void uart_10(unsigned long);
+
 extern unsigned long cntfrq;
 
 static char* irq_on  = " \033[92mEnabled\033[0m\n";
@@ -69,7 +71,7 @@ void c_timer() {
 	uart_hexn(read_cntv_tval());
 }
 
-// Checks IRQ statuses
+// Checks IRQ status
 void chk_irq_stat() {
 	uart_string((char*)"Checking Enabled Services...\n");
 
@@ -103,7 +105,9 @@ void chk_irq_stat() {
 		// Output the frequency
 		uart_string((char*)"  w/ CNTFRQ : ");
 		cntfrq = read_cntfrq();
-		uart_hexn(cntfrq);
+		//uart_hexn(cntfrq);
+		uart_10(cntfrq);
+		uart_char(0x0a);
 	} else {
 		uart_string(irq_off);
 	}
@@ -128,4 +132,20 @@ void chk_irq_stat() {
 	uart_char(0x0a);
 
 	uart_char(0x0a);
+}
+
+void uart_10(unsigned long val) {
+	unsigned long t = val;
+	unsigned long c;
+	char buffer[11] = "0000000000\0";
+	char* dptr = buffer + 9;
+	for(int i = 0; i <= 10; i++) {
+		c = t%10;
+		*dptr = 0x30 + (c&0xF);
+		t /= 10;
+		if (t==0)
+			break;
+		dptr -= 1;
+	}
+	uart_string(dptr);
 }
