@@ -100,7 +100,7 @@ void chk_irq_stat() {
 	if (ib_val & (1<<0)) {
 		uart_string(irq_on);
 		// Output the frequency
-		uart_string((char*)" w/ CNTFRQ : ");
+		uart_string((char*)"  w/ CNTFRQ : ");
 		cntfrq = read_cntfrq();
 		uart_hexn(cntfrq);
 	} else {
