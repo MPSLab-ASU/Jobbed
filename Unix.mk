@@ -56,10 +56,10 @@ obj/%.ao: src/%.S
 	${AS} ${AFLAGS} -c $< -o $@
 
 run: build/kernel.elf
-	${QEMU} -kernel $< ${QFLAGS}
+	@${QEMU} -kernel $< ${QFLAGS}
 
 run-debug: build/kernel-g.elf
-	${QEMU} -kernel $< -s -S ${QFLAGS}
+	@${QEMU} -kernel $< -s -S ${QFLAGS}
 
 debug: build/kernel-g.elf build/kernel.list
 	${GDB} $< -command=gdbinit

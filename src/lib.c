@@ -24,7 +24,7 @@ static inline void store32(unsigned long value, unsigned long addr) {
 }
 
 static inline void delay(unsigned long cycles) {
-	asm volatile("__delay_%=: subs%[cycles], %[cycles], #1;bne __delay_%=\n"
+	asm volatile("__delay_%=: subs %[cycles], %[cycles], #1;bne __delay_%=\n"
 			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
 }
 
