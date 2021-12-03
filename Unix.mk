@@ -1,8 +1,8 @@
-C_SOURCES = $(wildcard src/*.c)
-C_HEADERS = $(wildcard src/*.h)
+C_SOURCES = $(wildcard src/*.c src/**/*.c)
+C_HEADERS = $(wildcard src/*.h src/**/*.h)
 C_OBJECTS = ${C_SOURCES:.c=.co}
 C_OBJECTD = ${subst src,obj,${C_OBJECTS}}
-A_SOURCES = $(wildcard src/*.S)
+A_SOURCES = $(wildcard src/*.S src/**/*.S)
 A_OBJECTS = ${A_SOURCES:.S=.ao}
 A_OBJECTD = ${subst src,obj,${A_OBJECTS}}
 
@@ -24,7 +24,7 @@ ifeq ($(BSP),2)
 	CFLAGS += -DBSP23
 endif
 
-.PHONY: clean run run-debug debug export
+.PHONY: clean run run-debug debug export tree
 
 default: clean build/kernel7.img
 
@@ -66,3 +66,6 @@ debug: build/kernel-g.elf build/kernel.list
 
 clean:
 	rm -f obj/*.o build/*.elf build/*.list build/*.img obj/*.ao obj/*.co
+
+tree:
+	@tree -a -I obj\|build\|.git\|.gitignore
