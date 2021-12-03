@@ -33,6 +33,7 @@ void uart_hexn(unsigned long c_val) {
 	uart_char(0x0a);
 }
 
+// Initialize IRQs
 void sysinit() {
 	// Mask Overrun of UART0
 	store32(1<<4, UART0_IMSC);
@@ -116,6 +117,15 @@ void chk_irq_stat() {
 	} else {
 		uart_string(irq_off);
 	}
+
+	// Check GPU Interrupt Routing
+	unsigned long g_val = load32(GPU_INTERRUPTS_ROUTING);
+	uart_string((char*)"GPU IRQ Routed to Core ");
+	uart_char(0x30 + (g_val & 0x3));
+	uart_char(0x0a);
+	uart_string((char*)"GPU FIQ Routed to Core ");
+	uart_char(0x30 + ((g_val>>2) & 0x3));
+	uart_char(0x0a);
 
 	uart_char(0x0a);
 }
