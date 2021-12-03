@@ -44,7 +44,7 @@ build/kernel-g.elf: ${A_OBJECTD} ${C_OBJECTD}
 
 build/kernel.elf: ${A_OBJECTD} ${C_OBJECTD}
 	@mkdir -p $(@D)
-	${CC} -T linker.ld -o $@ -ffreestanding -O2 -nostdlib $^ -lgcc
+	${CC} -T linker.ld -o $@ -ffreestanding -O3 -nostdlib $^ -lgcc
 
 export: build/kernel.list
 	cp build/kernel-g.elf /mnt/c/Local/
