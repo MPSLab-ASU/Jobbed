@@ -29,24 +29,30 @@ endif
 default: clean build/kernel7.img
 
 build/kernel7.img: build/kernel.elf
+	@mkdir -p $(@D)
 	${OBJCOPY} $< -O binary $@
 
 build/kernel.list: build/kernel-g.elf
+	@mkdir -p $(@D)
 	${OBJDUMP} -D $< > $@
 
 build/kernel-g.elf: ${A_OBJECTD} ${C_OBJECTD}
+	@mkdir -p $(@D)
 	${CC} -T linker.ld -o $@ ${CFLAGS} $^ -lgcc
 
 build/kernel.elf: ${A_OBJECTD} ${C_OBJECTD}
+	@mkdir -p $(@D)
 	${CC} -T linker.ld -o $@ -ffreestanding -O2 -nostdlib $^ -lgcc
 
 export: build/kernel.list
 	cp build/kernel-g.elf /mnt/c/Local/
 
 obj/%.co: src/%.c
+	@mkdir -p $(@D)
 	${CC} ${CFLAGS} -c $< -o $@
 
 obj/%.ao: src/%.S
+	@mkdir -p $(@D)
 	${AS} ${AFLAGS} -c $< -o $@
 
 run: build/kernel.elf
