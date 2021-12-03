@@ -1,27 +1,5 @@
 .section ".text"
 
-.globl uart_init
-uart_init:
-	//*UART0_IMSC = 1 << 4;
-	// IGNORE OVERRUN
-	mov r2, #0x1038
-	movt r2, #0x3F20
-	mov r3, #0b10000
-	str r3, [r2]
-	//*IRQ_ENABLE2 = 1 << 25;
-	mov r2, #0xB214
-	movt r2, #0x3F00
-	mov r3, #0
-	movt r3, #0b1000000000
-	str r3, [r2]
-	//*GPU_INTERRUPTS_ROUTING = 0x00;
-	// Route GPU interrupts to Core0
-	mov r2, #0x000C
-	movt r2, #0x4000
-	eor r3, r3
-	str r3, [r2]
-	bx lr
-
 .globl uart_char
 uart_char:
 	mov r2, #0x1000

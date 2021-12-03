@@ -3,7 +3,6 @@
 .globl kernel_main
 kernel_main:
 	push {lr}
-	//bl uart_init
 	bl sysinit
 	bl enable_irq
 	bl enable_fiq
