@@ -14,6 +14,14 @@ void uart_10(unsigned long);
 
 extern unsigned long cntfrq;
 
+static char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mTarvaOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
+static char* os_info_t = "\033[0m\n\nQEMU\n====\n Exit        : Ctrl-A x\n Monitor     : Ctrl-A c\n\n";
+#ifndef VERSION
+static char* os_info_v = "?";
+#else
+static char* os_info_v = VERSION;
+#endif
+
 static char* irq_on  = " \033[92mEnabled\033[0m\n";
 static char* irq_off = " \033[91mDisabled\033[0m\n";
 
@@ -132,6 +140,12 @@ void chk_irq_stat() {
 	uart_char(0x0a);
 
 	uart_char(0x0a);
+}
+
+void postinit() {
+	uart_string(os_info_h);
+	uart_string(os_info_v);
+	uart_string(os_info_t);
 }
 
 void uart_10(unsigned long val) {

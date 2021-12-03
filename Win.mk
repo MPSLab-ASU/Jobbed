@@ -24,6 +24,8 @@ ifeq ($(BSP),2)
 	CFLAGS += -DBSP23
 endif
 
+CFLAGS += -DVERSION="\"0.0b\""
+
 .PHONY: clean run run-debug debug export tree
 
 default: clean build/kernel7.img
