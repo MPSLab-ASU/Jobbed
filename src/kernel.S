@@ -3,10 +3,11 @@
 .globl kernel_main
 kernel_main:
 	push {lr}
-	bl uart_init
+	//bl uart_init
+	bl sysinit
 	bl enable_irq
 	bl enable_fiq
-	bl check_fiq_status
+	bl chk_irq_stat
 	ldr r0, =os_info
 	bl uart_string
 kernel_main.loop:
@@ -14,33 +15,10 @@ kernel_main.loop:
 	b kernel_main.loop
 	pop {lr}
 
-check_fiq_status:
-	push {lr}
-	mov r2, #0xB20C
-	movt r2, #0x3F00
-	mov r3, #0xC1
-	movt r3, #0
-	str r3, [r2]
-	ldr r3, [r2]
-	push {r3}
-	mov r0, r3
-	bl uart_hex
-	pop {r3}
-	tst r3, #0x80
-	beq check_fiq_status.off
-	ldr r0, =fiq_on
-	bl uart_string
-	b check_fiq_status.exit
-check_fiq_status.off:
-	ldr r0, =fiq_off
-	bl uart_string
-check_fiq_status.exit:
-	pop {pc}
-
 .section ".data"
+.globl os_info
 os_info:
-    .asciz "Sergey Bilovytskyy's Real Time Operating System\n Version 0.0a\n Interrupt 01: uart rx interrupt\n Exit        : Ctrl-A x\n Monitor     : Ctrl-A c\n\n"
-fiq_on:
-    .asciz "\nFIQ - Enabled\n"
-fiq_off:
-    .asciz "\nFIQ - Disabled\n"
+	.asciz "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mTarvaOS\033[0m\n\033[96mVersion\033[0m: \033[95m0.0a\033[0m\n\nQEMU\n====\n Exit        : Ctrl-A x\n Monitor     : Ctrl-A c\n\n"
+.globl cntfrq
+cntfrq:
+	.word 0,0,0,0
