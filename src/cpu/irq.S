@@ -24,13 +24,32 @@ a_irq_handler:
 	movt r2, #0x3F20
 	ldrb r0, [r2]
 	push {r0}
-	bl enable_irq
+
+	// If 't' was pressed
+	//  disable timer
+	cmp r0, #0x74
+	bne a_irq_handler.ttimer
+	mrc p15, #0, r0, c14, c3, #1
+	cmp r0, #0
+	beq a_irq_handler.etimer
+	// Disable
+	bl disable_cntv
+	b a_irq_handler.ttimer
+a_irq_handler.etimer:
+	// Enable
+	ldr r0, =cntfrq
+	bl write_cntv_tval
+	bl enable_cntv
+	// Otherwise continue
+a_irq_handler.ttimer:
 	pop {r0}
 	bl uart_char
 	ldr r0, =imsg
 	bl uart_string
+	bl enable_irq
 	pop {pc}
 a_irq_handler.timer:
+
 	// r2 = CORE0_INTERRUPT_SOURCE
 	// if r2 & 0b1000
 	mov r2, #0x40000000
