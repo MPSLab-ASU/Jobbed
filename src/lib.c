@@ -76,7 +76,10 @@ void c_timer() {
 
 	// Output the value
 	uart_string((char*)"Timer Value: ");
-	uart_hexn(read_cntv_tval());
+	unsigned long v = read_cntv_tval();
+	uart_10(v);
+	uart_char(0x20);
+	uart_hexn(v);
 }
 
 // Checks IRQ status
@@ -111,7 +114,7 @@ void chk_irq_stat() {
 	if (ib_val & (1<<0)) {
 		uart_string(irq_on);
 		// Output the frequency
-		uart_string((char*)"  Frequency : ");
+		uart_string((char*)"  Frequency: ");
 		cntfrq = read_cntfrq();
 		//uart_hexn(cntfrq);
 		uart_10(cntfrq);
