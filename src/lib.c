@@ -75,7 +75,7 @@ void c_timer() {
 	write_cntv_tval(cntfrq);
 
 	// Output the value
-	uart_string((char*)"CNTV_TVAL: ");
+	uart_string((char*)"Timer Value: ");
 	uart_hexn(read_cntv_tval());
 }
 
@@ -111,11 +111,11 @@ void chk_irq_stat() {
 	if (ib_val & (1<<0)) {
 		uart_string(irq_on);
 		// Output the frequency
-		uart_string((char*)"  w/ CNTFRQ : ");
+		uart_string((char*)"  Frequency : ");
 		cntfrq = read_cntfrq();
 		//uart_hexn(cntfrq);
 		uart_10(cntfrq);
-		uart_char(0x0a);
+		uart_string((char*)" Hz\n");
 	} else {
 		uart_string(irq_off);
 	}
