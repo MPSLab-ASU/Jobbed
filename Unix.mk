@@ -67,7 +67,7 @@ debug: build/kernel-g.elf build/kernel.list
 	${GDB} $< -command=gdbinit
 
 clean:
-	rm -f obj/*.o build/*.elf build/*.list build/*.img obj/*.ao obj/*.co
+	rm -rf obj/* build/*
 
 tree:
 	@tree -a -I obj\|build\|.git\|.gitignore
