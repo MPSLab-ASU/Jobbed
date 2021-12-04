@@ -14,7 +14,7 @@ void uart_10(unsigned long);
 
 extern unsigned long cntfrq;
 
-static char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mTarvaOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
+static char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mDendritOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
 static char* os_info_t = "\033[0m\n\nQEMU\n====\n Exit        : Ctrl-A x\n Monitor     : Ctrl-A c\n\n";
 #ifndef VERSION
 static char* os_info_v = "?";
