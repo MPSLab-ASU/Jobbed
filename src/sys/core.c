@@ -2,10 +2,11 @@
 #include "../drivers/uart.h"
 #include "../util/time.h"
 #include "../sys/core.h"
+#include "../sys/timer.h"
 #include "../sys/power.h"
 
 static char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mDendritOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
-static char* os_info_t = "\033[0m\n\nQEMU\n====\n Exit        : Ctrl-A x\n Monitor     : Ctrl-A c\n\n";
+static char* os_info_t = "\033[0m\n\nQEMU\n====\n Monitor : Ctrl-A c\n Timer   : Ctrl-t\n Exit    : Ctrl-A x\n\n";
 #ifndef VERSION
 static char* os_info_v = "?";
 #else
@@ -40,18 +41,6 @@ void sysinit() {
 	routing_core0cntv_to_core0irq();
 	// Enable timer
 	enable_cntv();
-}
-
-void c_timer() {
-	// Reset the counter
-	write_cntv_tval(cntfrq);
-
-	// Output the value
-	uart_string((char*)"Timer Value: ");
-	unsigned long v = read_cntv_tval();
-	uart_10(v);
-	uart_char(0x20);
-	uart_hexn(v);
 }
 
 // Checks IRQ status

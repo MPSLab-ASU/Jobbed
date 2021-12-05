@@ -114,7 +114,6 @@ enum
 };
 
 void sysinit();
-void c_timer();
 void chk_irq_stat();
 void postinit();
 
