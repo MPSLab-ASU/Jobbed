@@ -23,10 +23,10 @@ void c_irq_handler(void) {
 						cntfrq = read_cntfrq();
 						write_cntv_tval(cntfrq);
 						enable_cntv();
-						uart_string((char*)" Timer \033[92menabled\033[0m\n");
+						uart_string((char*)"Timer \033[92mEnabled\033[0m\n");
 					} else {
 						disable_cntv();
-						uart_string((char*)" Timer \033[91mdisabled\033[0m\n");
+						uart_string((char*)"Timer \033[91mDisabled\033[0m\n");
 					}
 				} else {
 					if (data == 0x0D) {
