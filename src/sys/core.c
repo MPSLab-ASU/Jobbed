@@ -6,8 +6,6 @@
 #include "../sys/timer.h"
 #include "../sys/power.h"
 
-//char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mDendritOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
-//char* os_info_t = "\033[0m\n\nQEMU\n====\n Monitor : Ctrl-A c\n Timer   : Ctrl-T\n Exit    : Ctrl-A x\n\n";
 #ifndef VERSION
 char* os_info_v = "?";
 #else
@@ -143,7 +141,6 @@ void output_irq_status(void) {
 		// Output the frequency
 		uart_string(" @ ");
 		unsigned long frq = read_cntfrq()/1000;
-		//uart_hexn(cntfrq);
 		uart_10(frq);
 		uart_string((char*)" kHz");
 	} else {

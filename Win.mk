@@ -24,7 +24,7 @@ ifeq ($(BSP),2)
 	CFLAGS += -DBSP23
 endif
 
-CFLAGS += -DVERSION="\"0.0b\""
+CFLAGS += -DVERSION="\"0.0c\""
 
 .PHONY: clean run run-debug debug export tree
 
