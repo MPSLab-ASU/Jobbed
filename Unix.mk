@@ -58,9 +58,11 @@ obj/%.ao: src/%.S
 	${AS} ${AFLAGS} -c $< -o $@
 
 run: build/kernel.elf
+	@echo Starting QEMU
 	@${QEMU} -kernel $< ${QFLAGS}
 
 run-debug: build/kernel-g.elf
+	@echo Starting QEMU in Debug Mode
 	@${QEMU} -kernel $< -s -S ${QFLAGS}
 
 debug: build/kernel-g.elf build/kernel.list

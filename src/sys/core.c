@@ -1,18 +1,8 @@
-#include "lib.h"
-
-extern void uart_char(unsigned char c);
-extern void uart_hex(unsigned long data);
-extern void uart_string(char* message);
-
-extern unsigned long read_cntv_tval();
-extern unsigned long read_cntfrq();
-extern void write_cntv_tval(unsigned long); // Clear cntv interrupt and set next 1 second timer
-extern void routing_core0cntv_to_core0irq();
-extern void enable_cntv();
-
-void uart_10(unsigned long);
-
-extern unsigned long cntfrq;
+#include "../drivers/uart.a.h"
+#include "../drivers/uart.h"
+#include "../util/time.h"
+#include "../sys/core.h"
+#include "../sys/power.h"
 
 static char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mDendritOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
 static char* os_info_t = "\033[0m\n\nQEMU\n====\n Exit        : Ctrl-A x\n Monitor     : Ctrl-A c\n\n";
@@ -24,24 +14,6 @@ static char* os_info_v = VERSION;
 
 static char* irq_on  = " \033[92mEnabled\033[0m\n";
 static char* irq_off = " \033[91mDisabled\033[0m\n";
-
-static inline unsigned long load32(unsigned long addr) {
-	return *(volatile unsigned long*)addr;
-}
-
-static inline void store32(unsigned long value, unsigned long addr) {
-	*(volatile unsigned long*)addr = value;
-}
-
-static inline void delay(unsigned long cycles) {
-	asm volatile("__delay_%=: subs %[cycles], %[cycles], #1;bne __delay_%=\n"
-			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
-}
-
-void uart_hexn(unsigned long c_val) {
-	uart_hex(c_val);
-	uart_char(0x0a);
-}
 
 // Initialize IRQs
 void sysinit() {
@@ -149,20 +121,4 @@ void postinit() {
 	uart_string(os_info_h);
 	uart_string(os_info_v);
 	uart_string(os_info_t);
-}
-
-void uart_10(unsigned long val) {
-	unsigned long t = val;
-	unsigned long c;
-	char buffer[11] = "0000000000\0";
-	char* dptr = buffer + 9;
-	for(int i = 0; i <= 10; i++) {
-		c = t%10;
-		*dptr = 0x30 + (c&0xF);
-		t /= 10;
-		if (t==0)
-			break;
-		dptr -= 1;
-	}
-	uart_string(dptr);
 }

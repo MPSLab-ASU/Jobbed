@@ -1,3 +1,21 @@
+#ifndef CORE_H
+#define CORE_H
+
+extern unsigned long cntfrq;
+
+static inline unsigned long load32(unsigned long addr) {
+	return *(volatile unsigned long*)addr;
+}
+
+static inline void store32(unsigned long value, unsigned long addr) {
+	*(volatile unsigned long*)addr = value;
+}
+
+static inline void delay(unsigned long cycles) {
+	asm volatile("__delay_%=: subs %[cycles], %[cycles], #1;bne __delay_%=\n"
+			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
+}
+
 enum
 {
 	// The offset for the MMIO area
@@ -75,5 +93,29 @@ enum
 	MBOX_STATUS  = (MBOX_BASE + 0x18),
 	MBOX_WRITE   = (MBOX_BASE + 0x20),
 
-	GPU_INTERRUPTS_ROUTING = 0x4000000C
+	GPU_INTERRUPTS_ROUTING = 0x4000000C,
+
+	CORE0_TIMER_IRQCNTL = 0x40000040,
+	CORE0_IRQ_SOURCE    = 0x40000060,
+
+	/* Power Management, Reset controller and Watchdog registers */
+	//BCM2835_PERI_BASE        = 0x3F000000,
+	BCM2835_PERI_BASE        = 0x20000000,
+	PM_BASE                  = (BCM2835_PERI_BASE + 0x100000), 
+	PM_RSTC                  = (PM_BASE+0x1c),
+	PM_WDOG                  = (PM_BASE+0x24),
+	PM_WDOG_RESET            = 0x00000000,
+	PM_PASSWORD              = 0x5a000000,
+	PM_WDOG_TIME_SET         = 0x000fffff,
+	PM_RSTC_WRCFG_CLR        = 0xffffffcf,
+	PM_RSTC_WRCFG_SET        = 0x00000030,
+	PM_RSTC_WRCFG_FULL_RESET = 0x00000020,
+	PM_RSTC_RESET            = 0x00000102
 };
+
+void sysinit();
+void c_timer();
+void chk_irq_stat();
+void postinit();
+
+#endif
