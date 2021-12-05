@@ -121,6 +121,14 @@ void output_irq_status(void) {
 	unsigned long f_val = load32(FIQ_CONTROL);
 
 	uart_string("\033[5;1H");
+	// Check GPU Interrupt Routing
+	unsigned long g_val = load32(GPU_INTERRUPTS_ROUTING);
+	uart_string((char*)"GPU IRQ: Core ");
+	uart_char(0x30 + (g_val & 0x3));
+	uart_string((char*)" | GPU FIQ: Core ");
+	uart_char(0x30 + ((g_val>>2) & 0x3));
+
+	uart_string("\033[6;1H");
 	// Check UART IRQ
 	uart_string((char*)"UART:");
 	if (i2_val & (1<<25)) {
@@ -141,14 +149,6 @@ void output_irq_status(void) {
 	} else {
 		uart_string(irq_off);
 	}
-
-	uart_string("\033[6;1H");
-	// Check GPU Interrupt Routing
-	unsigned long g_val = load32(GPU_INTERRUPTS_ROUTING);
-	uart_string((char*)"GPU IRQ: Core ");
-	uart_char(0x30 + (g_val & 0x3));
-	uart_string((char*)" | GPU FIQ: Core ");
-	uart_char(0x30 + ((g_val>>2) & 0x3));
 
 	uart_string("\033[7;1H");
 	uart_hex(ib_val);
