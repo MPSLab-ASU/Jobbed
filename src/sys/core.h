@@ -1,5 +1,5 @@
-#ifndef CORE_H
-#define CORE_H
+#ifndef SYS_CORE_H
+#define SYS_CORE_H
 
 extern unsigned long cntfrq;
 

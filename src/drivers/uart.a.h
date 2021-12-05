@@ -1,5 +1,5 @@
-#ifndef UART_AH
-#define UART_AH
+#ifndef DRIVERS_UART_A_H
+#define DRIVERS_UART_A_H
 
 extern void uart_char(unsigned char c);
 extern void uart_hex(unsigned long data);

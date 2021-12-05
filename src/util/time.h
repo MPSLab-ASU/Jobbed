@@ -1,5 +1,5 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef UTIL_TIME_H
+#define UTIL_TIME_H
 
 void routing_core0cntv_to_core0irq(void);
 unsigned long read_core0timer_pending(void);

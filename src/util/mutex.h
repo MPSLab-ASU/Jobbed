@@ -1,5 +1,5 @@
-#ifndef SYS_MUTEX_H
-#define SYS_MUTEX_H
+#ifndef UTIL_MUTEX_H
+#define UTIL_MUTEX_H
 
 #define NULL_PID 0
 #define SCHED_PID 1
