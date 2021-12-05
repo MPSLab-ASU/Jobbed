@@ -1,20 +1,21 @@
 #include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
 #include "../util/time.h"
+#include "../util/mutex.h"
 #include "../sys/core.h"
 #include "../sys/timer.h"
 #include "../sys/power.h"
 
-static char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mDendritOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
-static char* os_info_t = "\033[0m\n\nQEMU\n====\n Monitor : Ctrl-A c\n Timer   : Ctrl-T\n Exit    : Ctrl-A x\n\n";
+//char* os_info_h = "\033[93mInitialized the Real Time Operating System\033[0m\n\033[96mName\033[0m:    \033[94mDendritOS\033[0m\n\033[96mVersion\033[0m: \033[95m";
+//char* os_info_t = "\033[0m\n\nQEMU\n====\n Monitor : Ctrl-A c\n Timer   : Ctrl-T\n Exit    : Ctrl-A x\n\n";
 #ifndef VERSION
-static char* os_info_v = "?";
+char* os_info_v = "?";
 #else
-static char* os_info_v = VERSION;
+char* os_info_v = VERSION;
 #endif
 
-static char* irq_on  = " \033[92mEnabled\033[0m\n";
-static char* irq_off = " \033[91mDisabled\033[0m\n";
+static char* irq_on  = " \033[92mEnabled\033[0m";
+static char* irq_off = " \033[91mDisabled\033[0m";
 
 // Initialize IRQs
 void sysinit() {
@@ -69,6 +70,7 @@ void chk_irq_stat() {
 	} else {
 		uart_string(irq_off);
 	}
+	uart_char(0x0a);
 
 	// Check TIMER IRQ
 	uart_string((char*)" TIMER:");
@@ -83,6 +85,7 @@ void chk_irq_stat() {
 	} else {
 		uart_string(irq_off);
 	}
+	uart_char(0x0a);
 
 	// Check FIQ
 	unsigned long f_val = load32(FIQ_CONTROL);
@@ -93,6 +96,7 @@ void chk_irq_stat() {
 	} else {
 		uart_string(irq_off);
 	}
+	uart_char(0x0a);
 
 	// Check GPU Interrupt Routing
 	unsigned long g_val = load32(GPU_INTERRUPTS_ROUTING);
@@ -106,8 +110,72 @@ void chk_irq_stat() {
 	uart_char(0x0a);
 }
 
+void output_irq_status(void) {
+	// Basic IRQ
+	unsigned long ib_val = load32(IRQ_BASIC_ENABLE);
+	// IRQ 1
+	unsigned long i1_val = load32(IRQ_ENABLE1);
+	// IRQ 2
+	unsigned long i2_val = load32(IRQ_ENABLE2);
+	// FIQ
+	unsigned long f_val = load32(FIQ_CONTROL);
+
+	uart_string("\033[5;1H");
+	// Check UART IRQ
+	uart_string((char*)"UART:");
+	if (i2_val & (1<<25)) {
+		uart_string(irq_on);
+	} else {
+		uart_string(irq_off);
+	}
+	// Check TIMER IRQ
+	uart_string((char*)" TIMER:");
+	if (ib_val & (1<<0)) {
+		uart_string(irq_on);
+		// Output the frequency
+		uart_string(" @ ");
+		unsigned long frq = read_cntfrq()/1000;
+		//uart_hexn(cntfrq);
+		uart_10(frq);
+		uart_string((char*)" kHz");
+	} else {
+		uart_string(irq_off);
+	}
+
+	uart_string("\033[6;1H");
+	// Check GPU Interrupt Routing
+	unsigned long g_val = load32(GPU_INTERRUPTS_ROUTING);
+	uart_string((char*)"GPU IRQ: Core ");
+	uart_char(0x30 + (g_val & 0x3));
+	uart_string((char*)" | GPU FIQ: Core ");
+	uart_char(0x30 + ((g_val>>2) & 0x3));
+
+	uart_string("\033[7;1H");
+	uart_hex(ib_val);
+	uart_char(0x20);
+	uart_hex(i1_val);
+	uart_char(0x20);
+	uart_hex(i2_val);
+	uart_char(0x20);
+	uart_hex(f_val);
+}
+
 void postinit() {
-	uart_string(os_info_h);
+	// OS Info
+	uart_string("\033[2J\033[1;1H\033[91mDendritOS \033[96mv");
 	uart_string(os_info_v);
-	uart_string(os_info_t);
+	uart_string("\033[0m #");
+	if (lock_mutex(&exe_cnt_m, SYS_PID) == 0) {
+		uart_10(*(exe_cnt_m.addr));
+		release_mutex(&exe_cnt_m, SYS_PID);
+	}
+	// Commands
+	uart_string("\033[2;1HMonitor: Ctrl-A m\033[2;20HExit: Ctrl-A x");
+	uart_string("\033[3;1HTimer:   Ctrl-T\033[3;20H");
+	// Timer Status
+	uart_string("\033[4;1HTimer: \033[92mEnabled\033[0m");
+	// GPU IRQ Statuses
+	output_irq_status();
+	// Input line
+	uart_string("\033[8;1H> ");
 }

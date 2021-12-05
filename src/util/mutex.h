@@ -2,7 +2,8 @@
 #define UTIL_MUTEX_H
 
 #define NULL_PID 0
-#define SCHED_PID 1
+#define SYS_PID 1
+#define SCHED_PID 2
 
 struct Mutex {
 	unsigned long* addr;

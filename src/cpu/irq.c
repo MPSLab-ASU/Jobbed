@@ -23,23 +23,22 @@ void c_irq_handler(void) {
 						cntfrq = read_cntfrq();
 						write_cntv_tval(cntfrq);
 						enable_cntv();
-						uart_string((char*)"Timer \033[92mEnabled\033[0m\n");
+						uart_string((char*)"\033[?25l\033[s\033[4;1H\033[0KTimer: \033[92mEnabled\033[0m\033[u\033[?25h");
 					} else {
 						disable_cntv();
-						uart_string((char*)"Timer \033[91mDisabled\033[0m\n");
+						uart_string((char*)"\033[?25l\033[s\033[4;1H\033[0KTimer: \033[91mDisabled\033[0m\033[u\033[?25h");
 					}
 				} else {
 					if (data == 0x0D) {
-						uart_char(0x0a);
+						//uart_char(0x0a);
+						uart_char(data);
+						uart_string("\033[?25l> \033[0K\033[?25h");
 					} else if (data == 0x08) {
 						uart_char((unsigned char)data);
 						uart_char(0x20);
 						uart_char((unsigned char)data);
 					} else {
 						uart_char((unsigned char)data);
-						//uart_char(0x20);
-						//uart_hexn(data);
-						//uart_string((char*)" c_irq_handler\n");
 					}
 				}
 				enable_irq();

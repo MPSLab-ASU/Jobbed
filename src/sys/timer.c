@@ -5,10 +5,11 @@
 #include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
 
-static unsigned long exe_cnt = 0;
-static struct Mutex exe_cnt_m = {.addr = &exe_cnt, .pid = NULL_PID};
+#define TIMER_C
+extern char* os_info_v;
 
-//static unsigned long execution_count = 0;
+unsigned long exe_cnt = 0;
+struct Mutex exe_cnt_m = {.addr = &exe_cnt, .pid = NULL_PID};
 
 void c_timer() {
 	// Reset the counter
@@ -24,9 +25,11 @@ void c_timer() {
 	// Lock the execution counter
 	if (lock_mutex(&exe_cnt_m, SCHED_PID) == 0) {
 		*(exe_cnt_m.addr) += 1;
-		uart_string((char*)"Executed #");
+		uart_string("\033[?25l\033[s\033[1;1H\033[91mDendritOS \033[96mv");
+		uart_string(os_info_v);
+		uart_string("\033[0m #");
 		uart_10(*(exe_cnt_m.addr));
-		uart_string((char*)" Times\n");
+		uart_string("\033[u\033[?25h");
 		release_mutex(&exe_cnt_m, SCHED_PID);
 	}
 }
