@@ -1,2 +1,2 @@
-QEMU = qemu-system-arm
 include Common.mk
+QEMU = qemu-system-arm

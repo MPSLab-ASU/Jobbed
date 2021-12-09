@@ -11,11 +11,12 @@ CC = ${CROSS}-gcc
 AS = ${CROSS}-as
 OBJCOPY = ${CROSS}-objcopy
 OBJDUMP = ${CROSS}-objdump
-QEMU = /mnt/c/qemu/qemu-system-arm.exe
+QEMU = qemu-system-arm
 GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O3 -Wall -Wextra -nostdlib -g
 AFLAGS = -mcpu=cortex-a7 -g
-QFLAGS = -M raspi2 -cpu arm1176 -m 1G -serial mon:stdio -nographic
+QFLAGS = -M raspi2 -cpu arm1176 -m 1G -serial mon:stdio
+QFLAGS += -nographic
 
 BSP ?= 2
 
