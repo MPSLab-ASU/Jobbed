@@ -15,7 +15,7 @@ void c_irq_handler(void) {
 		if(load32(IRQ_PENDING2) & (1 << 25)) {
 			if(load32(UART0_MIS) & (1<<4)) {
 				unsigned long data = load32(UART0_DR);
-				// Tab to toggle timer
+				// Ctrl+Tab to toggle timer
 				if(data == 0x14) {
 					unsigned long timer_status;
 					asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));

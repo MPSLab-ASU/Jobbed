@@ -1,5 +1,6 @@
 #include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
+#include "../graphics/draw.h"
 #include "../util/time.h"
 #include "../util/mutex.h"
 #include "../sys/core.h"
@@ -11,6 +12,8 @@ char* os_info_v = "?";
 #else
 char* os_info_v = VERSION;
 #endif
+
+extern void init_graphics(void);
 
 static char* irq_on  = " \033[92mEnabled\033[0m";
 static char* irq_off = " \033[91mDisabled\033[0m";
@@ -40,6 +43,11 @@ void sysinit() {
 	routing_core0cntv_to_core0irq();
 	// Enable timer
 	enable_cntv();
+
+	// Graphics Initialize
+	//init_graphics();
+	//draw_box(0x01FE, 0, 0, 640, 480);
+	//draw_box(0xFFFF, 2, 2, 10, 10);
 }
 
 // Checks IRQ status
