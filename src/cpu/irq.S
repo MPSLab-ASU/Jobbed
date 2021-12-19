@@ -1,4 +1,3 @@
-.globl a_irq_handler
 a_irq_handler:
 	push {lr}
 	bl disable_irq
