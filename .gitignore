@@ -2,3 +2,5 @@ build/
 obj/
 mk.old
 Makefile
+serial.log
+*.swp
