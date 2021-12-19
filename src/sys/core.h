@@ -16,6 +16,19 @@ static inline void delay(unsigned long cycles) {
 			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
 }
 
+static inline void enableirq() {
+	asm volatile("cpsie i");
+}
+static inline void disableirq() {
+	asm volatile("cpsid i");
+}
+static inline void enablefiq() {
+	asm volatile("cpsie f");
+}
+static inline void disablefiq() {
+	asm volatile("cpsid f");
+}
+
 enum
 {
 	// The offset for the MMIO area
