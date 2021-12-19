@@ -35,7 +35,7 @@ init_graphics:
 
 .globl draw_pix
 draw_pix:
-	push {lr, r0, r1, r2, r3, r4}
+	push {r0, r1, r2, r3, r4, lr}
 	ldr r4, =vram_base
 	ldr r4, [r4]
 	mov r3, #2
@@ -48,7 +48,7 @@ draw_pix:
 	add r4, r3
 	pop {r1}
 	str r1, [r4]
-	pop {pc, r0, r1, r2,  r3, r4}
+	pop {r0, r1, r2, r3, r4, pc}
 
 @@@@@@@@@@@@@@@ VC @@@@@@@@@@@@@@
 
