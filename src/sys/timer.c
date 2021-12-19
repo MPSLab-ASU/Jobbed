@@ -25,11 +25,19 @@ void c_timer() {
 	// Lock the execution counter
 	if (lock_mutex(&exe_cnt_m, SCHED_PID) == 0) {
 		*(exe_cnt_m.addr) += 1;
+#ifndef NOANSI
 		uart_string("\033[?25l\033[s\033[1;1H\033[91mDendritOS \033[96mv");
+#else
+		uart_string("\033[?25l\033[1;1H\033[91mDendritOS \033[96mv");
+#endif
 		uart_string(os_info_v);
 		uart_string("\033[0m #");
 		uart_10(*(exe_cnt_m.addr));
+#ifndef NOANSI
 		uart_string("\033[u\033[?25h");
+#else
+		uart_string("\033[8;1H\033[?25h> ");
+#endif
 		release_mutex(&exe_cnt_m, SCHED_PID);
 	}
 }
