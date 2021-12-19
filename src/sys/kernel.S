@@ -17,3 +17,9 @@ kernel_main.loop:
 .globl cntfrq
 cntfrq:
 	.word 0,0,0,0
+.globl cmdidx
+cmdidx:
+	.word 0
+.globl cmd
+cmd:
+	.space 2049
