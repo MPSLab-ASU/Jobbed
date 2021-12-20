@@ -1,7 +1,12 @@
+#include "../../util/mutex.h"
+
 #ifndef CPU_ATOMIC_SWAP_A_H
 #define CPU_ATOMIC_SWAP_A_H
 
 /// https://stackoverflow.com/questions/16329123/use-of-strexeq-instead-of-strex-for-spinlock-implementation-in-arm
+/// https://elixir.bootlin.com/linux/v4.9/source/arch/arm/include/asm/spinlock.h
+/// https://elixir.bootlin.com/linux/v4.9/source/arch/arm/include/asm/spinlock_types.h#L23
+/// https://www.cs.uic.edu/~jbell/CourseNotes/OperatingSystems/3_Processes.html
 
 static inline void atm_lock(unsigned long pid, unsigned long* addr) {
 	unsigned long tmp, current_lock_value;
@@ -18,8 +23,8 @@ static inline void atm_lock(unsigned long pid, unsigned long* addr) {
 	: "cc");
 }
 
-static inline void atm_unlock(unsigned long* addr) {
-	unsigned long cleared = 0;
+static inline void atm_release(unsigned long* addr) {
+	unsigned long cleared = NULL_PID;
 	asm volatile(
 "	dmb\n"
 "	str %0, [%1]\n"

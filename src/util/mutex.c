@@ -1,8 +1,10 @@
 #include "../util/mutex.h"
+#include "../cpu/atomic/swap.a.h"
 
 unsigned char lock_mutex(struct Mutex* m, unsigned long pid) {
 	if (m->pid == NULL_PID) {
-		m->pid = pid;
+		//m->pid = pid;
+		atm_lock(pid, &m->pid);
 		return 0;
 	}
 	return 1;
@@ -13,7 +15,8 @@ unsigned char lock_mutex(struct Mutex* m, unsigned long pid) {
 //  mutex's pid lock
 unsigned char release_mutex(struct Mutex* m, unsigned long pid) {
 	if (m->pid == pid) {
-		m->pid = NULL_PID;
+		//m->pid = NULL_PID;
+		atm_release(&m->pid);
 		return 0;
 	}
 	return 1;

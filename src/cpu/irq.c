@@ -3,6 +3,7 @@
 #include "../sys/timer.h"
 #include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
+#include "../util/mutex.h"
 #include "../util/time.h"
 
 extern unsigned long cmdidx;
@@ -42,12 +43,14 @@ void c_irq_handler(void) {
 				} else {
 					unsigned long off = cmdidx;
 					if (off < 2048) {
+						// Newline Case
 						if (data == 0x0D) {
 							off = 0;
 							cmd[0] = 0x0;
 							//uart_char(0x0a);
 							uart_char(data);
 							uart_string("\033[?25l> \033[0K\033[?25h");
+						// Backspace Case
 						} else if (data == 0x08 || data == 0x7F) {
 							if (off > 0) {
 								off -= 1;
@@ -56,6 +59,19 @@ void c_irq_handler(void) {
 							uart_char((unsigned char)data);
 							uart_char(0x20);
 							uart_char((unsigned char)data);
+						// Lock Case
+						} else if (data == 0x6C) {
+							uart_char((unsigned char)data);
+							cmd[off] = (char) data;
+							off += 1;
+							lock_mutex(&exe_cnt_m, SCHED_PID);
+						// Release Case
+						} else if (data == 0x72) {
+							uart_char((unsigned char)data);
+							cmd[off] = (char) data;
+							off += 1;
+							release_mutex(&exe_cnt_m, SCHED_PID);
+						// Else output
 						} else {
 							uart_char((unsigned char)data);
 							cmd[off] = (char) data;
@@ -95,6 +111,7 @@ void c_irq_handler(void) {
 		c_timer();
 		//enable_irq();
 		enableirq();
+		return;
 	}
 	return;
 }

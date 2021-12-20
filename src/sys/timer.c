@@ -5,7 +5,7 @@
 #include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
 
-#define TIMER_C
+#define SYS_TIMER_C
 extern char* os_info_v;
 
 unsigned long exe_cnt = 0;
