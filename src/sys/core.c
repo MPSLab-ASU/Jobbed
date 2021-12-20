@@ -1,6 +1,7 @@
 #include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
 #include "../graphics/draw.h"
+#include "../lib/strings.h"
 #include "../util/time.h"
 #include "../util/mutex.h"
 #include "../sys/core.h"
