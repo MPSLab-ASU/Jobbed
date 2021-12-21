@@ -1,6 +1,7 @@
 #include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
 #include "../graphics/draw.h"
+#include "../lib/mem.h"
 #include "../lib/strings.h"
 #include "../util/time.h"
 #include "../util/mutex.h"
@@ -8,13 +9,13 @@
 #include "../sys/timer.h"
 #include "../sys/power.h"
 
+extern void init_graphics(void);
+
 #ifndef VERSION
 char* os_info_v = "?";
 #else
 char* os_info_v = VERSION;
 #endif
-
-extern void init_graphics(void);
 
 static char* irq_on  = " \033[92mEnabled\033[0m";
 static char* irq_off = " \033[91mDisabled\033[0m";
