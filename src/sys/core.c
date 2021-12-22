@@ -1,3 +1,4 @@
+#include "../cpu/irq.h"
 #include "../drivers/uart.h"
 #include "../graphics/draw.h"
 #include "../lib/mem.h"
@@ -49,6 +50,10 @@ void sysinit() {
 	//init_graphics();
 	//draw_box(0x01FE, 0, 0, 640, 480);
 	//draw_box(0xFFFF, 2, 2, 10, 10);
+
+	// Enable IRQ & FIQ
+	enableirq();
+	enablefiq();
 }
 
 // Checks IRQ status
