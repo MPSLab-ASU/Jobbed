@@ -1,5 +1,5 @@
 #include "../util/mutex.h"
-#include "../cpu/atomic/swap.a.h"
+#include "../cpu/atomic/swap.h"
 
 unsigned char lock_mutex(struct Mutex* m, unsigned long pid) {
 	if (m->pid == NULL_PID) {
