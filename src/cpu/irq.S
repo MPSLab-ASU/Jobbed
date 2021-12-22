@@ -1,6 +1,6 @@
 a_irq_handler:
 	push {lr}
-	bl disable_irq
+	cpsid i // Disable IRQ
 	// r2 = CORE0_INTERRUPT_SOURCE
 	// if r2 & 0b100000000
 	mov r2, #0x40000000
@@ -45,7 +45,7 @@ a_irq_handler.ttimer:
 	bl uart_char
 	ldr r0, =imsg
 	bl uart_string
-	bl enable_irq
+	cpsie i // Enable IRQ
 	pop {pc}
 a_irq_handler.timer:
 
@@ -59,18 +59,18 @@ a_irq_handler.timer:
 	//ldr r0, =imsg
 	//bl uart_string
 a_irq_handler.exit:
-	bl enable_irq
+	cpsie i // Enable IRQ
 	pop {pc}
 
 .globl a_fiq_handler
 a_fiq_handler:
 	push {lr}
-	bl disable_fiq
+	cpsie f // Disable FIQ
 	bl c_timer
 	ldr r0, =fmsg
 	bl uart_string
 a_fiq_handler.exit:
-	bl enable_fiq
+	cpsie f // Enable FIQ
 	pop {pc}
 
 .section ".data"

@@ -4,9 +4,8 @@
 kernel_main:
 	push {lr}
 	bl sysinit
-	bl enable_irq
-	bl enable_fiq
-	bl chk_irq_stat
+	cpsie i // Enable IRQ
+	cpsie f // Enable FIQ
 	bl postinit
 kernel_main.loop:
 	bl io_halt

@@ -70,26 +70,6 @@ io_halt:
 	wfi
 	b io_halt
 
-.globl enable_irq
-enable_irq:
-	cpsie i
-	bx lr
-
-.globl disable_irq
-disable_irq:
-	cpsid i
-	bx lr
-
-.globl enable_fiq
-enable_fiq:
-	cpsie f
-	bx lr
-
-.globl disable_fiq
-disable_fiq:
-	cpsid f
-	bx lr
-
 .align 5
 vector:
 	ldr pc, reset_handler
