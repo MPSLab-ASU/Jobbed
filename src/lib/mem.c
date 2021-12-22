@@ -1,4 +1,4 @@
-#include "../drivers/uart.a.h"
+#include "../drivers/uart.h"
 
 void memshow32(unsigned long* addr, unsigned int n) {
 	for(unsigned int i = 0; i < n; i++) {

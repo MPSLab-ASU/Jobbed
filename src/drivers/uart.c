@@ -1,4 +1,4 @@
-#include "uart.a.h"
+#include "uart.h"
 
 void uart_hexn(unsigned long c_val) {
 	uart_hex(c_val);

@@ -1,7 +1,6 @@
 #include "../cpu/irq.h"
 #include "../sys/core.h"
 #include "../sys/timer.h"
-#include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
 #include "../util/mutex.h"
 #include "../util/time.h"

@@ -2,7 +2,6 @@
 #include "../sys/timer.h"
 #include "../util/time.h"
 #include "../util/mutex.h"
-#include "../drivers/uart.a.h"
 #include "../drivers/uart.h"
 
 #define SYS_TIMER_C
