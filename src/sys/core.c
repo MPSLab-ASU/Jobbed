@@ -1,6 +1,6 @@
 #include "../cpu/irq.h"
 #include "../drivers/uart.h"
-#include "../graphics/draw.h"
+#include "../graphics/lfb.h"
 #include "../lib/mem.h"
 #include "../lib/strings.h"
 #include "../util/time.h"
@@ -9,7 +9,7 @@
 #include "../sys/timer.h"
 #include "../sys/power.h"
 
-extern void init_graphics(void);
+//extern void init_graphics(void);
 
 #ifndef VERSION
 char* os_info_v = "?";
@@ -50,6 +50,8 @@ void sysinit() {
 	//init_graphics();
 	//draw_box(0x01FE, 0, 0, 640, 480);
 	//draw_box(0xFFFF, 2, 2, 10, 10);
+	lfb_init();
+	lfb_showpicture();
 
 	// Enable IRQ & FIQ
 	enableirq();

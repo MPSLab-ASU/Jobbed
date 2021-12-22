@@ -16,7 +16,7 @@ GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O3 -Wall -Wextra -nostdlib -g
 AFLAGS = -mcpu=cortex-a7 -g
 QFLAGS = -M raspi2 -cpu arm1176 -m 1G -chardev stdio,id=char0,mux=on,logfile=serial.log,signal=off -serial chardev:char0 -mon chardev=char0
-QFLAGS += -nographic
+#QFLAGS += -nographic
 
 BSP ?= 2
 
