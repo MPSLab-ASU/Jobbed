@@ -147,11 +147,17 @@ void output_irq_status(void) {
 	write_string(&g_Drawer, " | GPU FIQ: Core ");
 	write_hex32(&g_Drawer, (g_val >> 2) & 0b11);
 
-	uart_string("\033[6;1H");
+	write_string(&g_Drawer, "\n");
+	write_hex32(&g_Drawer, ib_val);
+	write_string(&g_Drawer, " ");
+	write_hex32(&g_Drawer, i1_val);
+	write_string(&g_Drawer, " ");
+	write_hex32(&g_Drawer, i2_val);
+	write_string(&g_Drawer, " ");
+	write_hex32(&g_Drawer,  f_val);
+
 	// Check UART IRQ
-	uart_string((char*)"UART:");
-	set_drawer(&g_Drawer, 0, 2);
-	write_string(&g_Drawer, "UART: ");
+	write_string(&g_Drawer, "\nUART: ");
 	if (i2_val & (1<<25)) {
 		uart_string(irq_on);
 		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
@@ -160,7 +166,6 @@ void output_irq_status(void) {
 		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 	}
 	// Check TIMER IRQ
-	uart_string((char*)" TIMER:");
 	write_string(&g_Drawer, "\n");
 	write_string(&g_Drawer, "TIMER: ");
 	if (ib_val & (1<<0)) {
@@ -176,18 +181,6 @@ void output_irq_status(void) {
 		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 	}
 
-	uart_string("\033[7;1H");
-	uart_hex(ib_val);
-	uart_char(0x20);
-	uart_hex(i1_val);
-	uart_char(0x20);
-	uart_hex(i2_val);
-	uart_char(0x20);
-	uart_hex(f_val);
-	draw_hex32(0+9*0, 1, ib_val);
-	draw_hex32(0+9*1, 1, i1_val);
-	draw_hex32(0+9*2, 1, i2_val);
-	draw_hex32(0+9*3, 1,  f_val);
 }
 
 void postinit() {
