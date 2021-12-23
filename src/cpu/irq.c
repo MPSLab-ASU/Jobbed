@@ -1,7 +1,8 @@
 #include "../cpu/irq.h"
+#include "../drivers/uart.h"
+#include "../graphics/drawer.h"
 #include "../sys/core.h"
 #include "../sys/timer.h"
-#include "../drivers/uart.h"
 #include "../util/mutex.h"
 #include "../util/time.h"
 
@@ -22,23 +23,22 @@ void c_irq_handler(void) {
 				if(data == 0x14) {
 					unsigned long timer_status;
 					asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));
+					unsigned int x = g_Drawer.x;
+					unsigned int y = g_Drawer.y;
+					g_Drawer.x = 0;
+					g_Drawer.y = 7;
+					write_string(&g_Drawer, "TIMER: ");
 					if(timer_status == 0) {
 						cntfrq = read_cntfrq();
 						write_cntv_tval(cntfrq);
 						enable_cntv();
-#ifndef NOANSI
-						uart_string((char*)"\033[?25l\033[s\033[4;1H\033[0KTimer: \033[92mEnabled\033[0m\033[u\033[?25h");
-#else
-						uart_string((char*)"\033[?25l\033[4;1H\033[0KTimer: \033[92mEnabled\033[0m\033[8;1H\033[?25h> ");
-#endif
+						write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
 					} else {
 						disable_cntv();
-#ifndef NOANSI
-						uart_string((char*)"\033[?25l\033[s\033[4;1H\033[0KTimer: \033[91mDisabled\033[0m\033[u\033[?25h");
-#else
-						uart_string((char*)"\033[?25l\033[4;1H\033[0KTimer: \033[91mDisabled\033[0m\033[8;1H\033[?25h> ");
-#endif
+						write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 					}
+					g_Drawer.x = x;
+					g_Drawer.y = y;
 				} else {
 					unsigned long off = cmdidx;
 					if (off < 2048) {
@@ -46,7 +46,6 @@ void c_irq_handler(void) {
 						if (data == 0x0D) {
 							off = 0;
 							cmd[0] = 0x0;
-							//uart_char(0x0a);
 							uart_char(data);
 							uart_string("\033[?25l> \033[0K\033[?25h");
 						// Backspace Case
