@@ -44,8 +44,9 @@ void c_irq_handler(void) {
 					if (off < 2048) {
 						// Newline Case
 						if (data == 0x0D) {
+							for(int i = off; i>=0;i--)
+								cmd[i] = 0x0;
 							off = 0;
-							cmd[0] = 0x0;
 						// Backspace Case
 						} else if (data == 0x08 || data == 0x7F) {
 							if (off > 0) {
@@ -69,8 +70,9 @@ void c_irq_handler(void) {
 						}
 					} else if (off == 2048) {
 						if (data == 0x0D) {
+							for(int i = off; i>=0;i--)
+								cmd[i] = 0x0;
 							off = 0;
-							cmd[0] = 0x0;
 						} else if (data == 0x08 || data == 0x7F) {
 							if (off > 0) {
 								off -= 1;

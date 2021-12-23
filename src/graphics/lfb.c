@@ -4,6 +4,7 @@
 #include "../graphics/homer.h"
 #include "../graphics/glyphs.h"
 
+#define GRAPHICS_LFB_C
 unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
 unsigned char *lfb;                         /* raw frame buffer address */
 
@@ -79,7 +80,7 @@ void lfb_showpicture()
 	unsigned char *ptr=lfb;
 	char *data=homer_data, pixel[4];
 
-	ptr += (height-homer_height)/2*pitch + (width-homer_width)*2;
+	ptr = lfb + (height-homer_height)*pitch + (width-homer_width)*4;
 	for(y=0;y<homer_height;y++) {
 		for(x=0;x<homer_width;x++) {
 			HEADER_PIXEL(data, pixel);

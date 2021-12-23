@@ -10,8 +10,6 @@
 #include "../sys/timer.h"
 #include "../sys/power.h"
 
-//extern void init_graphics(void);
-
 #ifndef VERSION
 char* os_info_v = "?";
 #else
@@ -85,6 +83,7 @@ void output_irq_status(void) {
 	} else {
 		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 	}
+
 	// Check TIMER IRQ
 	write_string(&g_Drawer, "\nTIMER: ");
 	if (ib_val & (1<<0)) {
@@ -104,8 +103,8 @@ void output_irq_status(void) {
 void postinit() {
 	// OS Info
 	write_cstring(&g_Drawer, "DendritOS", 0xFF0000);
-	write_cstring(&g_Drawer, " v", 0x00FF00);
-	write_cstring(&g_Drawer, os_info_v, 0x00FF00);
+	write_cstring(&g_Drawer, " v", 0x00FFFF);
+	write_cstring(&g_Drawer, os_info_v, 0x00FFFF);
 	write_string(&g_Drawer, " #");
 	if (lock_mutex(&exe_cnt_m, SYS_PID) == 0) {
 		write_10(&g_Drawer, *(exe_cnt_m.addr));
@@ -114,10 +113,26 @@ void postinit() {
 	// Commands
 	write_string(&g_Drawer, "\nMonitor Ctrl-A m  Exit: Ctrl-A x");
 	write_string(&g_Drawer, "\nTimer: Ctrl-T");
-	// Timer Status
-	//uart_string("Timer: \033[92mEnabled\033[0m");
+
 	// GPU IRQ Statuses
 	write_string(&g_Drawer, "\n");
 	output_irq_status();
 	write_string(&g_Drawer, "\n> ");
+
+	unsigned int x = g_Drawer.x;
+	unsigned int y = g_Drawer.y;
+	g_Drawer.x = 0;
+	g_Drawer.y = 12;
+	write_string(&g_Drawer, "VIDEO: ");
+	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
+	write_10(&g_Drawer, width);
+	write_string(&g_Drawer, "x");
+	write_10(&g_Drawer, height);
+	if(isrgb) {
+		write_string(&g_Drawer, " RGB");
+	} else {
+		write_string(&g_Drawer, " BGR");
+	}
+	g_Drawer.x = x;
+	g_Drawer.y = y;
 }
