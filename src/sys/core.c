@@ -1,6 +1,7 @@
 #include "../cpu/irq.h"
 #include "../drivers/uart.h"
 #include "../graphics/lfb.h"
+#include "../graphics/drawer.h"
 #include "../lib/mem.h"
 #include "../lib/strings.h"
 #include "../util/time.h"
@@ -141,19 +142,30 @@ void output_irq_status(void) {
 	uart_char(0x30 + (g_val & 0x3));
 	uart_string((char*)" | GPU FIQ: Core ");
 	uart_char(0x30 + ((g_val>>2) & 0x3));
+	write_string(&g_Drawer, "GPU IRQ: Core ");
+	write_hex32(&g_Drawer, g_val & 0b11);
+	write_string(&g_Drawer, " | GPU FIQ: Core ");
+	write_hex32(&g_Drawer, (g_val >> 2) & 0b11);
 
 	uart_string("\033[6;1H");
 	// Check UART IRQ
 	uart_string((char*)"UART:");
+	set_drawer(&g_Drawer, 0, 2);
+	write_string(&g_Drawer, "UART: ");
 	if (i2_val & (1<<25)) {
 		uart_string(irq_on);
+		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
 	} else {
 		uart_string(irq_off);
+		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 	}
 	// Check TIMER IRQ
 	uart_string((char*)" TIMER:");
+	write_string(&g_Drawer, "\n");
+	write_string(&g_Drawer, "TIMER: ");
 	if (ib_val & (1<<0)) {
 		uart_string(irq_on);
+		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
 		// Output the frequency
 		uart_string(" @ ");
 		unsigned long frq = read_cntfrq()/1000;
@@ -161,6 +173,7 @@ void output_irq_status(void) {
 		uart_string((char*)" kHz");
 	} else {
 		uart_string(irq_off);
+		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 	}
 
 	uart_string("\033[7;1H");
@@ -171,6 +184,10 @@ void output_irq_status(void) {
 	uart_hex(i2_val);
 	uart_char(0x20);
 	uart_hex(f_val);
+	draw_hex32(0+9*0, 1, ib_val);
+	draw_hex32(0+9*1, 1, i1_val);
+	draw_hex32(0+9*2, 1, i2_val);
+	draw_hex32(0+9*3, 1,  f_val);
 }
 
 void postinit() {
