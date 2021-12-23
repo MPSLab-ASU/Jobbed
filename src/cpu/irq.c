@@ -46,32 +46,24 @@ void c_irq_handler(void) {
 						if (data == 0x0D) {
 							off = 0;
 							cmd[0] = 0x0;
-							uart_char(data);
-							uart_string("\033[?25l> \033[0K\033[?25h");
 						// Backspace Case
 						} else if (data == 0x08 || data == 0x7F) {
 							if (off > 0) {
 								off -= 1;
 							}
 							cmd[off] = 0x0;
-							uart_char((unsigned char)data);
-							uart_char(0x20);
-							uart_char((unsigned char)data);
 						// Lock Case
 						} else if (data == 0x6C) {
-							uart_char((unsigned char)data);
 							cmd[off] = (char) data;
 							off += 1;
 							lock_mutex(&exe_cnt_m, SCHED_PID);
 						// Release Case
 						} else if (data == 0x72) {
-							uart_char((unsigned char)data);
 							cmd[off] = (char) data;
 							off += 1;
 							release_mutex(&exe_cnt_m, SCHED_PID);
 						// Else output
 						} else {
-							uart_char((unsigned char)data);
 							cmd[off] = (char) data;
 							off += 1;
 						}
@@ -79,27 +71,23 @@ void c_irq_handler(void) {
 						if (data == 0x0D) {
 							off = 0;
 							cmd[0] = 0x0;
-							//uart_char(0x0a);
-							uart_char(data);
-							uart_string("\033[?25l> \033[0K\033[?25h");
 						} else if (data == 0x08 || data == 0x7F) {
 							if (off > 0) {
 								off -= 1;
 							}
 							cmd[off] = 0x0;
-							uart_char((unsigned char)data);
-							uart_char(0x20);
-							uart_char((unsigned char)data);
 						}
 					}
 					cmdidx = off;
-					//store32(off, (unsigned long*) cmdidx);
-					uart_string("\033[?25l\033[9;1H\033[0K");
-					uart_10(off);
-					uart_string("\n\033[0K");
-					uart_string(cmd);
-					uart_string("\033[?25h\033[8;1H> ");
 				}
+				g_Drawer.x = 0;
+				g_Drawer.y = 8;
+				for(int i = 0; i < 128; i++)
+					write_char(&g_Drawer, ' ');
+				g_Drawer.x = 0;
+				g_Drawer.y = 8;
+				write_string(&g_Drawer, "> ");
+				write_string(&g_Drawer, cmd);
 				//enable_irq();
 				enableirq();
 				return;

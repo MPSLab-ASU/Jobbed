@@ -6,7 +6,9 @@ struct Drawer {
 	unsigned int y;
 };
 
-static struct Drawer g_Drawer;
+#ifndef GRAPHICS_DRAWER_C
+extern struct Drawer g_Drawer;
+#endif
 
 void write_cchar(struct Drawer* d, char s, unsigned int c);
 void write_char(struct Drawer* d, char s);
