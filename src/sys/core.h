@@ -112,7 +112,6 @@ enum
 	PM_RSTC_WRCFG_FULL_RESET = 0x00000020,
 	PM_RSTC_RESET            = 0x00000102,
 };
-#define uint32_t unsigned long
 #define USB_BASE          0x3F980000
 //CORE
 #define USB_CORE_GAHBCFG       ((volatile uint32_t *)(0x8   + USB_BASE))
@@ -133,6 +132,15 @@ enum
 #define USB_HOST_HCINTMSK1     ((volatile uint32_t *)(0x52C + USB_BASE))
 #define USB_HOST_HCTSIZ1       ((volatile uint32_t *)(0x530 + USB_BASE))
 #define USB_HOST_HCDMA1        ((volatile uint32_t *)(0x534 + USB_BASE))
+
+#define USB_HOST_HCCHAR2       ((volatile uint32_t *)(0x540 + USB_BASE))
+#define USB_HOST_HCINTMSK2     ((volatile uint32_t *)(0x54C + USB_BASE))
+#define USB_HOST_HCTSIZ2       ((volatile uint32_t *)(0x550 + USB_BASE))
+#define USB_HOST_HCDMA2        ((volatile uint32_t *)(0x554 + USB_BASE))
+#define USB_HOST_HCCHAR3       ((volatile uint32_t *)(0x560 + USB_BASE))
+#define USB_HOST_HCINTMSK3     ((volatile uint32_t *)(0x56C + USB_BASE))
+#define USB_HOST_HCTSIZ3       ((volatile uint32_t *)(0x570 + USB_BASE))
+#define USB_HOST_HCDMA3        ((volatile uint32_t *)(0x574 + USB_BASE))
 
 #define uint8_t unsigned char
 #define uint16_t unsigned short
