@@ -113,11 +113,6 @@ enum
 	PM_RSTC_RESET            = 0x00000102,
 };
 
-#define bool unsigned char
-#define uint8_t unsigned char
-#define uint16_t unsigned short
-#define uint32_t unsigned long
-
 void sysinit();
 void postinit();
 

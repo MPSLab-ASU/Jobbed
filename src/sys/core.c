@@ -1,6 +1,5 @@
 #include "../cpu/irq.h"
 #include "../drivers/uart.h"
-#include "../drivers/usb.h"
 #include "../graphics/lfb.h"
 #include "../graphics/drawer.h"
 #include "../lib/mem.h"
@@ -27,10 +26,6 @@ void sysinit() {
 
 	// Enable UART GPU IRQ
 	store32(1<<25, IRQ_ENABLE2);
-
-	// Enable USB Interrupt
-	store32(1<<9, IRQ_ENABLE1);
-	usbhost_start();
 
 	// Enable Timer
 	// As an IRQ
@@ -133,6 +128,4 @@ void postinit() {
 	}
 
 	write_string(&g_Drawer, "\n> ");
-
-	usb_trig();
 }

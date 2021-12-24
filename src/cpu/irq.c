@@ -1,6 +1,5 @@
 #include "../cpu/irq.h"
 #include "../drivers/uart.h"
-#include "../drivers/usb.h"
 #include "../graphics/drawer.h"
 #include "../sys/core.h"
 #include "../sys/timer.h"
@@ -93,26 +92,6 @@ void c_irq_handler(void) {
 				enableirq();
 				return;
 			}
-		} else if (load32(IRQ_PENDING1) & (1 << 9))  {
-			unsigned long reg = *USB_CORE_GINTSTS;
-			*USB_CORE_GINTSTS = reg;  //clear
-			g_Drawer.y = 20;
-			write_hex32(&g_Drawer, reg);
-			g_Drawer.x = 0;
-			g_Drawer.y = 0;
-			if (reg & 1 << 28) { uart_string("Connector ID Status Change\n"); }
-			if (reg & 1 << 27) { uart_string("LPM Transaction Received Interrupt\n"); }
-			if (reg & 1 << 26) { uart_string("Periodic TxFIFO Empty\n"); }
-			if (reg & 1 << 25) { uart_string("Host Channels Interrupt\n"); 
-			                   }
-			if (reg & 1 << 24) { *USB_HOST_HPRT |= 1 << 1;  //clear host port interrupt
-			                     uart_string("Host Port Interrupt\n"); }
-			if (reg & 1 <<  6) { uart_string("Global IN Non-periodic NAK Effective\n"); }
-			if (reg & 1 <<  5) { uart_string("Non-periodic TxFIFO Empty\n"); }
-			if (reg & 1 <<  4) { uart_string("Host and Device RxFIFO Non-Empty (RxFLvl) \n"); }
-			if (reg & 1 <<  3) { uart_string("Host and Device Start of Frame\n"); }
-			if (reg & 1 <<  2) { uart_string("OTG Interrupt\n"); }
-			if (reg & 1 <<  1) { uart_string("Mode Mismatch Interrupt\n"); }
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
