@@ -22,7 +22,7 @@ enum
 #ifdef BSP23
 	MMIO_BASE = 0x3F000000, // For Raspberry Pi 2 and 3
 #else
-	MMIO_BASE = 0xFE000000, // For Raspberry Pi 2 and 3
+	MMIO_BASE = 0xFE000000,
 #endif
 
 	// The offsets for reach register.
@@ -110,8 +110,41 @@ enum
 	PM_RSTC_WRCFG_CLR        = 0xffffffcf,
 	PM_RSTC_WRCFG_SET        = 0x00000030,
 	PM_RSTC_WRCFG_FULL_RESET = 0x00000020,
-	PM_RSTC_RESET            = 0x00000102
+	PM_RSTC_RESET            = 0x00000102,
 };
+#define uint32_t unsigned long
+#define USB_BASE          0x3F980000
+//CORE
+#define USB_CORE_GAHBCFG       ((volatile uint32_t *)(0x8   + USB_BASE))
+#define USB_CORE_GINTSTS       ((volatile uint32_t *)(0x14  + USB_BASE))
+#define USB_CORE_GINTMSK       ((volatile uint32_t *)(0x18  + USB_BASE))
+#define USB_CORE_GUID          ((volatile uint32_t *)(0x3C  + USB_BASE))
+#define USB_CORE_GSNPSID       ((volatile uint32_t *)(0x40  + USB_BASE))
+//HOST
+#define USB_HOST_HCFG          ((volatile uint32_t *)(0x400 + USB_BASE))
+#define USB_HOST_HAINTMSK      ((volatile uint32_t *)(0x418 + USB_BASE))
+#define USB_HOST_HPRT          ((volatile uint32_t *)(0x440 + USB_BASE))
+//CHANNEL
+#define USB_HOST_HCCHAR0       ((volatile uint32_t *)(0x500 + USB_BASE))
+#define USB_HOST_HCINTMSK0     ((volatile uint32_t *)(0x50C + USB_BASE))
+#define USB_HOST_HCTSIZ0       ((volatile uint32_t *)(0x510 + USB_BASE))
+#define USB_HOST_HCDMA0        ((volatile uint32_t *)(0x514 + USB_BASE))
+#define USB_HOST_HCCHAR1       ((volatile uint32_t *)(0x520 + USB_BASE))
+#define USB_HOST_HCINTMSK1     ((volatile uint32_t *)(0x52C + USB_BASE))
+#define USB_HOST_HCTSIZ1       ((volatile uint32_t *)(0x530 + USB_BASE))
+#define USB_HOST_HCDMA1        ((volatile uint32_t *)(0x534 + USB_BASE))
+
+#define uint8_t unsigned char
+#define uint16_t unsigned short
+#define uint32_t unsigned long
+
+struct UsbDeviceRequest {
+	uint8_t Type;
+	uint8_t Request;
+	uint16_t Value;
+	uint16_t Index;
+	uint16_t Length;
+} __attribute__((__packed__));
 
 void sysinit();
 void postinit();

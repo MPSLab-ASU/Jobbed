@@ -6,6 +6,7 @@
 /// https://elixir.bootlin.com/linux/v4.9/source/arch/arm/include/asm/spinlock.h
 /// https://elixir.bootlin.com/linux/v4.9/source/arch/arm/include/asm/spinlock_types.h#L23
 /// https://www.cs.uic.edu/~jbell/CourseNotes/OperatingSystems/3_Processes.html
+/// https://developer.arm.com/documentation/dht0008/a/arm-synchronization-primitives/practical-uses/implementing-a-semaphore?lang=en
 
 static inline void atm_lock(unsigned long pid, unsigned long* addr) {
 	unsigned long tmp, current_lock_value;
