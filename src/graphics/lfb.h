@@ -2,7 +2,7 @@
 #define GRAPHICS_LFB_H
 
 #define GG_MAX_X 128
-#define GG_MAX_Y 96
+#define GG_MAX_Y  46
 
 #ifndef GRAPHICS_LFB_C
 extern unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */

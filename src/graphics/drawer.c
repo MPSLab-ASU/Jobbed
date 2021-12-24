@@ -12,7 +12,7 @@ void write_cchar(struct Drawer* d, char s, unsigned int c) {
 		d->x = 0;
 	} else {
 		draw_cletter(d->x++, d->y, s, c);
-		if (d->x > GG_MAX_X) {
+		if (d->x >= GG_MAX_X) {
 			d->y += 1;
 			d->x = 0;
 		}
@@ -35,7 +35,7 @@ void write_cstring(struct Drawer* d, char* s, unsigned int c) {
 			idx++;
 		} else {
 			draw_cletter(d->x++, d->y, s[idx++], c);
-			if (d->x > GG_MAX_X) {
+			if (d->x >= GG_MAX_X) {
 				d->y += 1;
 				d->x = 0;
 			}
@@ -56,7 +56,7 @@ void set_drawer(struct Drawer* d, unsigned int x, unsigned int y) {
 void write_chex32(struct Drawer* d, unsigned long val, unsigned int c) {
 	draw_chex32(d->x, d->y, val, c);
 	d->x += 8;
-	if (d->x > GG_MAX_X) {
+	if (d->x >= GG_MAX_X) {
 		d->y += 1;
 		d->x %= GG_MAX_X;
 	}
