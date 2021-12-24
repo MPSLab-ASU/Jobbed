@@ -3,15 +3,18 @@
 
 extern unsigned long cntfrq;
 
-static inline unsigned long load32(unsigned long addr) {
+static inline unsigned long load32(unsigned long addr)
+{
 	return *(volatile unsigned long*)addr;
 }
 
-static inline void store32(unsigned long value, unsigned long addr) {
+static inline void store32(unsigned long value, unsigned long addr)
+{
 	*(volatile unsigned long*)addr = value;
 }
 
-static inline void delay(unsigned long cycles) {
+static inline void delay(unsigned long cycles)
+{
 	asm volatile("__delay_%=: subs %[cycles], %[cycles], #1;bne __delay_%=\n"
 			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
 }
@@ -113,7 +116,7 @@ enum
 	PM_RSTC_RESET            = 0x00000102,
 };
 
-void sysinit();
-void postinit();
+void sysinit(void);
+void postinit(void);
 
 #endif

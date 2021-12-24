@@ -88,4 +88,4 @@ prefetch_handler:   .word io_halt
 data_handler:       .word io_halt
 unused_handler:     .word io_halt
 irq_handler:        .word irq
-fiq_handler:        .word fiq
+fiq_handler:        .word io_halt // fiq

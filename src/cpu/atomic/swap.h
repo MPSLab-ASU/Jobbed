@@ -8,7 +8,8 @@
 /// https://www.cs.uic.edu/~jbell/CourseNotes/OperatingSystems/3_Processes.html
 /// https://developer.arm.com/documentation/dht0008/a/arm-synchronization-primitives/practical-uses/implementing-a-semaphore?lang=en
 
-static inline void atm_lock(unsigned long pid, unsigned long* addr) {
+static inline void atm_lock(unsigned long pid, unsigned long* addr)
+{
 	unsigned long tmp, current_lock_value;
 	asm volatile(
 "1:	ldrex	%0, [%3]\n"
@@ -23,7 +24,8 @@ static inline void atm_lock(unsigned long pid, unsigned long* addr) {
 	: "cc");
 }
 
-static inline void atm_release(unsigned long* addr) {
+static inline void atm_release(unsigned long* addr)
+{
 	unsigned long cleared = NULL_PID;
 	asm volatile(
 "	dmb\n"

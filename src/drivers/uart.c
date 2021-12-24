@@ -1,11 +1,13 @@
 #include "../drivers/uart.h"
 
-void uart_hexn(unsigned long c_val) {
+void uart_hexn(unsigned long c_val)
+{
 	uart_hex(c_val);
-	uart_char(0x0a);
+	uart_char('\n');
 }
 
-void uart_10(unsigned long val) {
+void uart_10(unsigned long val)
+{
 	unsigned long t = val;
 	unsigned long c;
 	char buffer[11] = "0000000000\0";

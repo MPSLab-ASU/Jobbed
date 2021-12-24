@@ -5,6 +5,6 @@
 extern struct Mutex exe_cnt_m;
 #endif
 
-void c_timer();
+void c_timer(void);
 
 #endif

@@ -1,9 +1,9 @@
+#include "../drivers/uart.h"
 #include "../graphics/drawer.h"
 #include "../sys/core.h"
 #include "../sys/timer.h"
-#include "../util/time.h"
 #include "../util/mutex.h"
-#include "../drivers/uart.h"
+#include "../util/time.h"
 
 #define SYS_TIMER_C
 extern char* os_info_v;
@@ -11,7 +11,8 @@ extern char* os_info_v;
 unsigned long exe_cnt = 0;
 struct Mutex exe_cnt_m = {.addr = &exe_cnt, .pid = NULL_PID};
 
-void c_timer() {
+void c_timer(void)
+{
 	// Reset the counter
 	write_cntv_tval(cntfrq/100);
 
@@ -46,11 +47,19 @@ void c_timer() {
 	g_Drawer.x = 0;
 	g_Drawer.y = 9;
 	write_string(&g_Drawer, "Timer Counter: ");
-	if (exe_cnt_m.pid == 0) {
+	if (exe_cnt_m.pid == NULL_PID) {
 		write_cstring(&g_Drawer, "Free!", 0xFF00FF);
 	} else {
 		write_cstring(&g_Drawer, "Locked by ", 0xFF00FF);
-		write_c10(&g_Drawer, exe_cnt_m.pid, 0xFF00FF);
+		if (exe_cnt_m.pid == SYS_PID)
+			write_cstring(&g_Drawer, "System", 0xFF00FF);
+		else if (exe_cnt_m.pid == SCHED_PID)
+			write_cstring(&g_Drawer, "Scheduler", 0xFF00FF);
+		else {
+			write_cstring(&g_Drawer, "Process ", 0xFF00FF);
+			write_c10(&g_Drawer, exe_cnt_m.pid, 0xFF00FF);
+		}
+		write_cchar(&g_Drawer, '!', 0xFF00FF);
 	}
 
 	g_Drawer.x = x;

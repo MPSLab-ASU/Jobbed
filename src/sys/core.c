@@ -1,14 +1,14 @@
 #include "../cpu/irq.h"
 #include "../drivers/uart.h"
-#include "../graphics/lfb.h"
 #include "../graphics/drawer.h"
+#include "../graphics/lfb.h"
 #include "../lib/mem.h"
 #include "../lib/strings.h"
-#include "../util/time.h"
-#include "../util/mutex.h"
 #include "../sys/core.h"
-#include "../sys/timer.h"
 #include "../sys/power.h"
+#include "../sys/timer.h"
+#include "../util/mutex.h"
+#include "../util/time.h"
 
 #ifndef VERSION
 char* os_info_v = "?";
@@ -17,13 +17,13 @@ char* os_info_v = VERSION;
 #endif
 
 // Initialize IRQs
-void sysinit() {
+void sysinit(void)
+{
 	// Route GPU interrupts to Core 0
 	store32(0x00, GPU_INTERRUPTS_ROUTING);
 
 	// Mask Overrun of UART0
 	store32(1<<4, UART0_IMSC);
-
 	// Enable UART GPU IRQ
 	store32(1<<25, IRQ_ENABLE2);
 
@@ -50,7 +50,8 @@ void sysinit() {
 	enablefiq();
 }
 
-void output_irq_status(void) {
+void output_irq_status(void)
+{
 	// Basic IRQ
 	unsigned long ib_val = load32(IRQ_BASIC_ENABLE);
 	// IRQ 1
@@ -91,16 +92,10 @@ void output_irq_status(void) {
 	} else {
 		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 	}
-	write_string(&g_Drawer, "\nTIMER: ");
-	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
-	// Output the frequency
-	write_string(&g_Drawer, " @ ");
-	unsigned long frq = read_cntfrq()/1000;
-	write_10(&g_Drawer, frq);
-	write_string(&g_Drawer, " kHz");
 }
 
-void postinit() {
+void postinit(void)
+{
 	// OS Info
 	write_cstring(&g_Drawer, "DendritOS", 0xFF0000);
 	write_cstring(&g_Drawer, " v", 0x00FFFF);
@@ -110,12 +105,24 @@ void postinit() {
 		write_10(&g_Drawer, *(exe_cnt_m.addr));
 		release_mutex(&exe_cnt_m, SYS_PID);
 	}
+
 	// Commands
 	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T");
 
 	// GPU IRQ Statuses
 	write_string(&g_Drawer, "\n");
 	output_irq_status();
+
+	// Timer Status
+	write_string(&g_Drawer, "\nTIMER: ");
+	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
+	// Output the frequency
+	write_string(&g_Drawer, " @ ");
+	unsigned long frq = read_cntfrq()/1000;
+	write_10(&g_Drawer, frq);
+	write_string(&g_Drawer, " kHz");
+
+	// Video Status
 	write_string(&g_Drawer, "\nVIDEO: ");
 	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
 	write_10(&g_Drawer, width);
@@ -127,5 +134,6 @@ void postinit() {
 		write_string(&g_Drawer, " BGR");
 	}
 
+	// Output Serial Data Recieve Line
 	write_string(&g_Drawer, "\n> ");
 }

@@ -1,4 +1,3 @@
-
 const char glyphs[] = {
 	0b10000001,
 	0b00111000,
@@ -1298,4 +1297,3 @@ const char glyphs_byte[] = {
 	0b01000000,
 	0b00000000,
 };
-

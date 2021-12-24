@@ -8,17 +8,21 @@
 extern unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
 #endif
 
-void lfb_init();
-void lfb_showpicture();
+void lfb_init(void);
+void lfb_showpicture(void);
+
+void clear_screen(void);
 
 void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c);
-void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c);
-void draw_cstring(unsigned int lx, unsigned int ly, char* s, unsigned int c);
-void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c);
-
 void draw_byte(unsigned char lx, unsigned char ly, unsigned char letter);
+
+void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c);
 void draw_letter(unsigned char lx, unsigned char ly, unsigned char letter);
+
+void draw_cstring(unsigned int lx, unsigned int ly, char* s, unsigned int c);
 void draw_string(unsigned int lx, unsigned int ly, char* s);
+
+void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c);
 void draw_hex32(unsigned int lx, unsigned int ly, unsigned long val);
 
 #endif

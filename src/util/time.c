@@ -2,7 +2,6 @@
 
 void routing_core0cntv_to_core0irq(void)
 {
-	// IRQ
 	store32(0x08, CORE0_TIMER_IRQCNTL);
 }
 

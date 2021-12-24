@@ -1,8 +1,8 @@
 #include "../drivers/uart.h"
+#include "../graphics/glyphs.h"
+#include "../graphics/homer.h"
 #include "../graphics/lfb.h"
 #include "../graphics/mbox.h"
-#include "../graphics/homer.h"
-#include "../graphics/glyphs.h"
 
 #define GRAPHICS_LFB_C
 unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
@@ -11,7 +11,7 @@ unsigned char *lfb;                         /* raw frame buffer address */
 /**
  * Set screen resolution to 1024x768
  */
-void lfb_init()
+void lfb_init(void)
 {
 	mbox[0] = 35*4;
 	mbox[1] = MBOX_REQUEST;
@@ -71,11 +71,23 @@ void lfb_init()
 	}
 }
 
+void clear_screen(void)
+{
+	unsigned char *ptr=lfb;
+	for(unsigned int y = 0; y < height; y++) {
+		for(unsigned int x = 0; x < width; x++) {
+			*(unsigned int*)ptr = 0x000000;
+			ptr += 4;
+		}
+	}
+}
+
 /**
  * Show a picture
  */
-void lfb_showpicture()
+void lfb_showpicture(void)
 {
+	clear_screen();
 	unsigned int x,y;
 	unsigned char *ptr=lfb;
 	char *data=homer_data, pixel[4];
@@ -93,7 +105,8 @@ void lfb_showpicture()
 	}
 }
 
-void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c) {
+void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c)
+{
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
 	ptr += (pitch*ly*GLYPH_Y+lx*4*GLYPH_X);
@@ -114,7 +127,13 @@ void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsign
 	}
 }
 
-void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c) {
+void draw_byte(unsigned char lx, unsigned char ly, unsigned char letter)
+{
+	draw_cbyte(lx, ly, letter, 0xFFFFFF);
+}
+
+void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c)
+{
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
 	ptr += (pitch*ly*GLYPH_Y+lx*4*GLYPH_X);
@@ -132,7 +151,13 @@ void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsi
 	}
 }
 
-void draw_cstring(unsigned int lx, unsigned int ly, char* s, unsigned int c) {
+void draw_letter(unsigned char lx, unsigned char ly, unsigned char letter)
+{
+	draw_cletter(lx, ly, letter, 0xFFFFFF);
+}
+
+void draw_cstring(unsigned int lx, unsigned int ly, char* s, unsigned int c)
+{
 	unsigned int x = lx % GG_MAX_X, y = ly % GG_MAX_Y;
 	unsigned int idx = 0;
 	while(s[idx] != 0) {
@@ -145,7 +170,13 @@ void draw_cstring(unsigned int lx, unsigned int ly, char* s, unsigned int c) {
 	}
 }
 
-void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c) {
+void draw_string(unsigned int lx, unsigned int ly, char* s)
+{
+	draw_cstring(lx, ly, s, 0xFFFFFF);
+}
+
+void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c)
+{
 	unsigned int x = lx % GG_MAX_X, y = ly % GG_MAX_Y;
 	for(unsigned int i = 0; i < GLYPH_X; i++) {
 		draw_cbyte(x++, y, 0xF & (val >> ((GLYPH_X-1)-i)*4), c);
@@ -157,15 +188,7 @@ void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned i
 	}
 }
 
-void draw_byte(unsigned char lx, unsigned char ly, unsigned char letter) {
-	draw_cbyte(lx, ly, letter, 0xFFFFFF);
-}
-void draw_letter(unsigned char lx, unsigned char ly, unsigned char letter) {
-	draw_cletter(lx, ly, letter, 0xFFFFFF);
-}
-void draw_string(unsigned int lx, unsigned int ly, char* s){
-	draw_cstring(lx, ly, s, 0xFFFFFF);
-}
-void draw_hex32(unsigned int lx, unsigned int ly, unsigned long val) {
+void draw_hex32(unsigned int lx, unsigned int ly, unsigned long val)
+{
 	draw_chex32(lx, ly, val, 0xFFFFFF);
 }

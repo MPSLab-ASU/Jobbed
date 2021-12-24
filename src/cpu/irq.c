@@ -8,10 +8,9 @@
 
 extern unsigned long cmdidx;
 extern char cmd[2048];
-extern void disable_irq(void);
-extern void enable_irq(void);
 
-void c_irq_handler(void) {
+void c_irq_handler(void)
+{
 	disableirq();
 	unsigned long source = load32(CORE0_IRQ_SOURCE);
 	if (source & (1 << 8)) {
@@ -56,12 +55,12 @@ void c_irq_handler(void) {
 						} else if (data == 0x6C) {
 							cmd[off] = (char) data;
 							off += 1;
-							lock_mutex(&exe_cnt_m, SCHED_PID);
+							lock_mutex(&exe_cnt_m, SYS_PID);
 						// Release Case
 						} else if (data == 0x72) {
 							cmd[off] = (char) data;
 							off += 1;
-							release_mutex(&exe_cnt_m, SCHED_PID);
+							release_mutex(&exe_cnt_m, SYS_PID);
 						// Else output
 						} else {
 							cmd[off] = (char) data;
