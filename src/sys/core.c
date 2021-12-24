@@ -85,19 +85,19 @@ void output_irq_status(void) {
 	}
 
 	// Check TIMER IRQ
-	write_string(&g_Drawer, "\nTIMER: ");
+	write_string(&g_Drawer, "   TIMER: ");
 	if (ib_val & (1<<0)) {
 		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
-		// Output the frequency
-		write_string(&g_Drawer, " @ ");
-		unsigned long frq = read_cntfrq()/1000;
-		write_10(&g_Drawer, frq);
-		write_string(&g_Drawer, " kHz");
 	} else {
 		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 	}
 	write_string(&g_Drawer, "\nTIMER: ");
-	write_cstring(&g_Drawer, "Enabled", 0x00FF00);
+	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
+	// Output the frequency
+	write_string(&g_Drawer, " @ ");
+	unsigned long frq = read_cntfrq()/1000;
+	write_10(&g_Drawer, frq);
+	write_string(&g_Drawer, " kHz");
 }
 
 void postinit() {
@@ -111,19 +111,12 @@ void postinit() {
 		release_mutex(&exe_cnt_m, SYS_PID);
 	}
 	// Commands
-	write_string(&g_Drawer, "\nMonitor Ctrl-A m  Exit: Ctrl-A x");
-	write_string(&g_Drawer, "\nTimer: Ctrl-T");
+	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T");
 
 	// GPU IRQ Statuses
 	write_string(&g_Drawer, "\n");
 	output_irq_status();
-	write_string(&g_Drawer, "\n> ");
-
-	unsigned int x = g_Drawer.x;
-	unsigned int y = g_Drawer.y;
-	g_Drawer.x = 0;
-	g_Drawer.y = 12;
-	write_string(&g_Drawer, "VIDEO: ");
+	write_string(&g_Drawer, "\nVIDEO: ");
 	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
 	write_10(&g_Drawer, width);
 	write_string(&g_Drawer, "x");
@@ -133,6 +126,6 @@ void postinit() {
 	} else {
 		write_string(&g_Drawer, " BGR");
 	}
-	g_Drawer.x = x;
-	g_Drawer.y = y;
+
+	write_string(&g_Drawer, "\n> ");
 }

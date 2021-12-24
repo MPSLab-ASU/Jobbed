@@ -12,7 +12,6 @@ extern void disable_irq(void);
 extern void enable_irq(void);
 
 void c_irq_handler(void) {
-	//disable_irq();
 	disableirq();
 	unsigned long source = load32(CORE0_IRQ_SOURCE);
 	if (source & (1 << 8)) {
@@ -26,7 +25,7 @@ void c_irq_handler(void) {
 					unsigned int x = g_Drawer.x;
 					unsigned int y = g_Drawer.y;
 					g_Drawer.x = 0;
-					g_Drawer.y = 7;
+					g_Drawer.y = 5;
 					write_string(&g_Drawer, "TIMER: ");
 					if(timer_status == 0) {
 						cntfrq = read_cntfrq();
@@ -83,21 +82,19 @@ void c_irq_handler(void) {
 					cmdidx = off;
 				}
 				g_Drawer.x = 0;
-				g_Drawer.y = 8;
+				g_Drawer.y = 7;
 				for(int i = 0; i < 128; i++)
 					write_char(&g_Drawer, ' ');
 				g_Drawer.x = 0;
-				g_Drawer.y = 8;
+				g_Drawer.y = 7;
 				write_string(&g_Drawer, "> ");
 				write_string(&g_Drawer, cmd);
-				//enable_irq();
 				enableirq();
 				return;
 			}
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
-		//enable_irq();
 		enableirq();
 		return;
 	}

@@ -4,8 +4,6 @@ void routing_core0cntv_to_core0irq(void)
 {
 	// IRQ
 	store32(0x08, CORE0_TIMER_IRQCNTL);
-	// FIQ
-	//store32(0x80, CORE0_TIMER_IRQCNTL);
 }
 
 unsigned long read_core0timer_pending(void)

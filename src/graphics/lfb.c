@@ -96,36 +96,39 @@ void lfb_showpicture()
 void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c) {
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
-	ptr += (pitch*ly+lx*4)*8;
-	unsigned char ltr = letter & 0x7F;
-	for(y=0; y<8; y++) {
-		for(x=0; x<8; x++) {
-			if((1 << (7-x)) & glyphs_byte[y+8*(ltr)]) {
+	ptr += (pitch*ly*GLYPH_Y+lx*4*GLYPH_X);
+	unsigned char ltr = (letter & 0xF) + 0x30;
+	if (ltr > 0x39) {
+		ltr += 7;
+	}
+	for(y=0; y<GLYPH_Y; y++) {
+		for(x=0; x<GLYPH_X; x++) {
+			if((0x80 >> ((GLYPH_X-1)-x)) & glyphs[y+GLYPH_Y*(ltr)]) {
 				*((unsigned int*)ptr) = isrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 			} else {
 				*((unsigned int*)ptr) = 0x000000;
 			}
 			ptr += 4;
 		}
-		ptr += pitch - 8*4;
+		ptr += pitch - GLYPH_X*4;
 	}
 }
 
 void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c) {
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
-	ptr += (pitch*ly+lx*4)*8;
+	ptr += (pitch*ly*GLYPH_Y+lx*4*GLYPH_X);
 	unsigned char ltr = letter & 0x7F;
-	for(y=0; y<8; y++) {
-		for(x=0; x<8; x++) {
-			if((1 << (7-x)) & glyphs[y+8*(ltr)]) {
+	for(y=0; y<GLYPH_Y; y++) {
+		for(x=0; x<GLYPH_X; x++) {
+			if((0b10000000 >> ((GLYPH_X-1)-x)) & glyphs[y+GLYPH_Y*(ltr)]) {
 				*((unsigned int*)ptr) = isrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 			} else {
 				*((unsigned int*)ptr) = 0x000000;
 			}
 			ptr += 4;
 		}
-		ptr += pitch - 8*4;
+		ptr += pitch - GLYPH_X*4;
 	}
 }
 
@@ -144,8 +147,8 @@ void draw_cstring(unsigned int lx, unsigned int ly, char* s, unsigned int c) {
 
 void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c) {
 	unsigned int x = lx % GG_MAX_X, y = ly % GG_MAX_Y;
-	for(unsigned int i = 0; i < 8; i++) {
-		draw_cbyte(x++, y, 0xF & (val >> (7-i)*4), c);
+	for(unsigned int i = 0; i < GLYPH_X; i++) {
+		draw_cbyte(x++, y, 0xF & (val >> ((GLYPH_X-1)-i)*4), c);
 		if (x > GG_MAX_X) {
 			y += 1;
 			x = 0;
