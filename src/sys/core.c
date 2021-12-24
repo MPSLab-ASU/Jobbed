@@ -30,33 +30,7 @@ void sysinit() {
 
 	// Enable USB Interrupt
 	store32(1<<9, IRQ_ENABLE1);
-	// USB Host power on
-	// HPRT.PrtPwr = 1'b1 -> HPRT.PrtRst = 1'b1 -> wait 60msec -> HPRT.PrtRst = 1'b0
-	*USB_HOST_HPRT |= 1 << 12;
-	*USB_HOST_HPRT |= 1 << 8;
-	delay(0x100000);
-	*USB_HOST_HPRT &= ~(1 << 8);
-	
-	// enable irq
-	// GAHBCFG.GlblIntrMsk = 1'b1
-	// GINTMSK.ConIDStsChngMsk = 1'b1, GINTMSK.PrtIntMsk = 1'b1, GINTMSK.SofMsk = 1'b1
-	*USB_CORE_GAHBCFG   |= 1;
-	*USB_CORE_GINTMSK    =  1 << 28 | 1 << 24 | 0 << 3;
-	
-	// port enable and retry detect
-	// HPRT.PrtPwr = 1'b1, HPRT.PrtEnChng = 1'b1, HPRT.PrtConnDet = 1'b1
-	*USB_HOST_HPRT = 1 << 12 | 1 << 3 | 1 << 1; 
-	
-	// enable channel irq
-	// HAINTMASK.HAINTMsk = 16'h3
-	// HCINTMSK0.XferComplMsk = 1'b1
-	*USB_HOST_HAINTMSK   |= 0x3;
-	*USB_HOST_HCINTMSK0  |= 1;
-	*USB_HOST_HCINTMSK1  |= 1;
-	
-	// HCCAR1.EPDir = 1'b0 (OUT) / 1'b01(IN), HCCAR1.MPS = 11'h40
-	*USB_HOST_HCCHAR0   |= 0x40;            // OUT
-	*USB_HOST_HCCHAR1   |= 1 << 15 | 0x40;  // IN
+	usbhost_start();
 
 	// Enable Timer
 	// As an IRQ
@@ -160,9 +134,5 @@ void postinit() {
 
 	write_string(&g_Drawer, "\n> ");
 
-	send_packet();
-	for (int i = 0; i < 18; i++) {
-		uart_hex(usb_buffer1[i]);
-		uart_char('\n');
-	}
+	usb_trig();
 }
