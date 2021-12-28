@@ -5,6 +5,9 @@
 #include "../util/mutex.h"
 #include "../util/time.h"
 
+/// Cycles Per Second
+#define CPS 10
+
 #define SYS_TIMER_C
 extern char* os_info_v;
 
@@ -14,7 +17,7 @@ struct Mutex exe_cnt_m = {.addr = &exe_cnt, .pid = NULL_PID};
 void c_timer(void)
 {
 	// Reset the counter
-	write_cntv_tval(cntfrq/100);
+	write_cntv_tval(cntfrq/CPS);
 
 	unsigned int x = g_Drawer.x;
 	unsigned int y = g_Drawer.y;
