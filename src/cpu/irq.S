@@ -32,13 +32,15 @@ a_irq_handler:
 	cmp r0, #0
 	beq a_irq_handler.etimer
 	// Disable
-	bl disable_cntv
+	mov r0, #0
+	mcr p15, 0, r0, c14, c3, 1
 	b a_irq_handler.ttimer
 a_irq_handler.etimer:
 	// Enable
 	ldr r0, =cntfrq
 	bl write_cntv_tval
-	bl enable_cntv
+	mov r0, #1
+	mcr p15, 0, r0, c14, c3, 1
 	// Otherwise continue
 a_irq_handler.ttimer:
 	pop {r0}

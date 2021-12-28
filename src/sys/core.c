@@ -39,7 +39,7 @@ void sysinit(void)
 	// Route timer to core0 irq
 	routing_core0cntv_to_core0irq();
 	// Enable timer
-	enable_cntv();
+	enablecntv();
 
 	// Graphics Initialize
 	lfb_init();

@@ -12,20 +12,6 @@ unsigned long read_core0timer_pending(void)
 	return tmp;
 }
 
-void enable_cntv(void)
-{
-	unsigned long cntv_ctl;
-	cntv_ctl = 1;
-	asm volatile ("mcr p15, 0, %0, c14, c3, 1" :: "r"(cntv_ctl) ); // write CNTV_CTL
-}
-
-void disable_cntv(void)
-{
-	unsigned long cntv_ctl;
-	cntv_ctl = 0;
-	asm volatile ("mcr p15, 0, %0, c14, c3, 1" :: "r"(cntv_ctl) ); // write CNTV_CTL
-}
-
 unsigned long long read_cntvct(void)
 {
 	unsigned long long val;

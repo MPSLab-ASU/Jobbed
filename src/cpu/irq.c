@@ -29,10 +29,10 @@ void c_irq_handler(void)
 					if(timer_status == 0) {
 						cntfrq = read_cntfrq();
 						write_cntv_tval(cntfrq);
-						enable_cntv();
+						enablecntv();
 						write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
 					} else {
-						disable_cntv();
+						disablecntv();
 						write_cstring(&g_Drawer, "Disabled", 0xFF0000);
 					}
 					g_Drawer.x = x;
