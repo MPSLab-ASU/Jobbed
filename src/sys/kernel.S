@@ -6,7 +6,7 @@ kernel_main:
 	bl sysinit
 	bl postinit
 kernel_main.loop:
-	wfi
+	wfe
 	b kernel_main.loop
 	pop {lr}
 

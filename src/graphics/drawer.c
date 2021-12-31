@@ -69,16 +69,16 @@ void write_hex32(struct Drawer* d, unsigned long val)
 
 void write_c10(struct Drawer* d, unsigned long val, unsigned int c)
 {
-	static char out[] = "0000000000";
-	char* s = (char*)out+10;
+	static char out[] = "0000000000\0";
+	char* s = (char*)out+9;
 	unsigned long tmp = val;
-	if(tmp == 0)
-		s--;
-	while (tmp != 0) {
-		s--;
+	for(int i = 0; i < 10; i++) {
 		unsigned char rem = tmp%10;
 		tmp /= 10;
 		*s = rem + 0x30;
+		if (tmp==0)
+			break;
+		s--;
 	}
 	write_cstring(d, s, c);
 }
