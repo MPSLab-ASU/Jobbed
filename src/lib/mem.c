@@ -41,3 +41,22 @@ unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n)
 	}
 	return 1;
 }
+
+#define MAX_MM 0x100000
+static unsigned char rpi_heap[MAX_MM] = {0,};
+
+void* malloc(unsigned char size)
+{
+	unsigned char* mem = (unsigned char*)rpi_heap;
+	unsigned long i = 0;
+	while (mem[i] != 0) {
+		i += mem[i]+1;
+	}
+	mem[i] = size;
+	return (void*)&mem[i+1];
+}
+
+void free(__attribute__((unused)) void* memloc)
+{
+	// TODO: Implement free
+}

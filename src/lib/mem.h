@@ -8,4 +8,7 @@ void memshow32(unsigned long* addr, unsigned int n);
 void memcpy32(unsigned long* src, unsigned long* dest, unsigned int n);
 unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n);
 
+void* malloc(unsigned char size);
+void free(void* memloc);
+
 #endif
