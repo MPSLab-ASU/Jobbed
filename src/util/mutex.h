@@ -8,7 +8,7 @@
 struct Mutex {
 	unsigned long* addr;
 	unsigned long pid;
-};
+} __attribute__((packed, aligned(4)));;
 
 unsigned char lock_mutex(struct Mutex*, unsigned long);
 unsigned char release_mutex(struct Mutex*, unsigned long);

@@ -22,6 +22,7 @@ struct Scheduler {
 };
 #endif
 
+void add_fxn(void (*task)(void), unsigned char priority);
 void add_task(struct Task*);
 unsigned int get_task_length(void);
 void execute_task(void);

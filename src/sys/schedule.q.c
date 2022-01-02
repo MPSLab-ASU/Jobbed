@@ -1,45 +1,8 @@
+#if !(defined(LL) || defined(FLAT))
 #include "../sys/schedule.h"
-#include "../lib/ll.h"
 #include "../lib/q.h"
+#include "../lib/mem.h"
 
-#ifdef IGNORE
-#ifdef FLAT
-static struct Task* task_list[256];
-
-static struct Scheduler scheduler = {
-	.tasks = task_list,
-};
-
-static unsigned int ntask_i = 0;
-
-void add_task(struct Task* t)
-{
-	scheduler.tasks[ntask_i] = t;
-	ntask_i += 1;
-	if (ntask_i > 256) {
-		ntask_i = 0;
-	}
-}
-
-unsigned int get_task_length(void)
-{
-	return ntask_i;
-}
-
-void execute_task(void)
-{
-	if (scheduler.tasks[ntask_i-1] != 0)
-		scheduler.tasks[ntask_i-1]->task();
-}
-#elseif LL
-static struct LL bl = {
-	.prev = 0,
-	.next = 0,
-};
-static struct Scheduler scheduler = {
-	.tasks = &bl,
-};
-#else
 static struct Q_base bq = {
 	.next = 0,
 	.last = 0,
@@ -47,6 +10,14 @@ static struct Q_base bq = {
 static struct Scheduler  scheduler = {
 	.tasks = &bq,
 };
+
+void add_fxn(void (*task)(void), unsigned char priority)
+{
+	struct Task* t = (struct Task*)malloc(sizeof(struct Task));
+	t->priority = priority;
+	t->task = task;
+	add_task(t);
+}
 
 void add_task(struct Task* t)
 {
@@ -79,5 +50,5 @@ void execute_task(void)
 		popq(scheduler.tasks);
 	}
 }
-#endif
+
 #endif

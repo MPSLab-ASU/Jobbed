@@ -10,5 +10,8 @@ unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n);
 
 void* malloc(unsigned char size);
 void free(void* memloc);
+void* heap_base(void);
+void* heap_top(void);
+void heap_info(void);
 
 #endif

@@ -26,7 +26,7 @@ ifeq ($(BSP),2)
 	CFLAGS += -DBSP23
 endif
 
-CFLAGS += -DVERSION="\"0.0c\""
+CFLAGS += -DVERSION="\"0.0e $(shell git log --pretty=format:'%h' -n 1)\""
 
 .PHONY: clean run run-debug debug export tree
 

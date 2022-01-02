@@ -27,6 +27,7 @@ void popq(struct Q_base* qb)
 	if (qb->next == 0)
 		return;
 	if (qb->next == qb->last) {
+		free(qb->next->data);
 		free(qb->next);
 		qb->next = 0;
 		qb->last = 0;
@@ -34,5 +35,6 @@ void popq(struct Q_base* qb)
 	}
 	struct Q* t = qb->next;
 	qb->next = qb->next->next;
+	free(t->data);
 	free(t);
 }
