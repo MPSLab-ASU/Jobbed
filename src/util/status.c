@@ -63,10 +63,11 @@ void status(void)
 	write_cstring(&g_Drawer, " v", 0x00FFFF);
 	write_cstring(&g_Drawer, os_info_v, 0x00FFFF);
 	write_string(&g_Drawer, " #");
-	if (lock_mutex(&exe_cnt_m, SYS_PID) == 0) {
+	write_10(&g_Drawer, *((unsigned long*)exe_cnt_m.addr));
+	/* if (lock_mutex(&exe_cnt_m, SYS_PID) == 0) {
 		write_10(&g_Drawer, *((unsigned long*)exe_cnt_m.addr));
 		release_mutex(&exe_cnt_m, SYS_PID);
-	}
+	} */
 
 	// Commands
 	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T");

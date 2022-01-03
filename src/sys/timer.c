@@ -24,11 +24,18 @@ void increase_counter(void)
 	}
 }
 
+inline void hard_increase_counter(void)
+{
+	unsigned long* counter = (unsigned long*)exe_cnt_m.addr;
+	*counter += 1;
+}
+
 void c_timer(void)
 {
 	// Reset the counter
 	write_cntv_tval(cntfrq/CPS);
 
-	increase_counter();
+	hard_increase_counter();
+	//increase_counter();
 	status();
 }

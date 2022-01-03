@@ -49,4 +49,6 @@ void sysinit(void)
 	// Enable IRQ & FIQ
 	enableirq();
 	enablefiq();
+
+	// Start Scheduler
 }
