@@ -6,7 +6,7 @@
 #define SCHED_PID 2
 
 struct Mutex {
-	unsigned long* addr;
+	void* addr;
 	unsigned long pid;
 } __attribute__((packed, aligned(4)));;
 

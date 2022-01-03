@@ -26,12 +26,13 @@ void c_timer(void)
 
 	// Lock the execution counter
 	if (lock_mutex(&exe_cnt_m, SCHED_PID) == 0) {
-		*(exe_cnt_m.addr) += 1;
+		unsigned long* counter = (unsigned long*)exe_cnt_m.addr;
+		*counter += 1;
 		write_cstring(&g_Drawer, "DendritOS", 0xFF0000);
 		write_cstring(&g_Drawer, " v", 0x00FFFF);
 		write_cstring(&g_Drawer, os_info_v, 0x00FFFF);
 		write_string(&g_Drawer, " #");
-		write_10(&g_Drawer, *(exe_cnt_m.addr));
+		write_10(&g_Drawer, *((unsigned long*)exe_cnt_m.addr));
 		release_mutex(&exe_cnt_m, SCHED_PID);
 	}
 
