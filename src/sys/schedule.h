@@ -1,6 +1,12 @@
 #ifndef SYS_SCHEDULE_H
 #define SYS_SCHEDULE_H
 
+#define STACK_SIZE 0x1000
+struct TaskMemory {
+	unsigned long reg[16];
+	unsigned char stack[STACK_SIZE];
+};
+
 struct Task {
 	unsigned char priority;
 	void (*task)(void);
@@ -23,7 +29,6 @@ struct Scheduler {
 #endif
 
 void add_fxn(void (*task)(void), unsigned char priority);
-void add_task(struct Task*);
 unsigned int get_task_length(void);
 void execute_task(void);
 

@@ -16,11 +16,6 @@ void add_fxn(void (*task)(void), unsigned char priority)
 	struct Task* t = (struct Task*)malloc(sizeof(struct Task));
 	t->priority = priority;
 	t->task = task;
-	add_task(t);
-}
-
-void add_task(struct Task* t)
-{
 	pushq(scheduler.tasks, t);
 }
 

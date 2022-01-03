@@ -33,8 +33,6 @@ void sysinit(void)
 	// Enable Timer
 	// As an IRQ
 	store32(1<<0, IRQ_BASIC_ENABLE);
-	// As a  FIQ
-	//store32(0xC0, FIQ_CONTROL);
 	// Get the frequency
 	cntfrq = read_cntfrq();
 	// Clear cntv interrupt and set next 1 second timer
