@@ -1,6 +1,12 @@
 #ifndef LIB_MEM_H
 #define LIB_MEM_H
 
+struct MemTab {
+	unsigned char size;
+	unsigned char in_use;
+	void* data;
+} __attribute__((packed));
+
 void memcpy(unsigned char* src, unsigned char* dest, unsigned int n);
 unsigned char memcmp(unsigned char* a, unsigned char* b, unsigned int n);
 

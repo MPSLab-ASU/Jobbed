@@ -1,3 +1,4 @@
+#include "../lib/mem.h"
 #include "../drivers/uart.h"
 
 void memshow32(unsigned long* addr, unsigned int n)
@@ -51,14 +52,15 @@ void* malloc(unsigned char size)
 	unsigned char* mem = (unsigned char*)rpi_heap;
 	unsigned long i = 0;
 	// TODO: Use Null PID
-	while ((mem[i] != 0) && !(mem[i] == size && mem[i+1]==0)) {
+	while (((void*)(mem+i) < rpi_heap_top) && !(mem[i] == size && mem[i+1]==0)) {
 		i += mem[i]+2;
 	}
+	// Update top of heap
+	if (mem[i] == 0)
+		rpi_heap_top = (void*)&mem[i+2+size];
 	mem[i] = size;
 	// Use allocator's PID
 	mem[i+1] = 1;
-	// Update top of heap
-	rpi_heap_top = (void*)&mem[i+2+size];
 	return (void*)&mem[i+2];
 }
 
@@ -91,17 +93,18 @@ void heap_info(void)
 {
 	unsigned char* base = rpi_heap;
 	while ((void*)base < rpi_heap_top) {
+		unsigned char size = *base;
 		if(base[1] == 0) {
 			uart_char('F');
 			uart_char(' ');
 		}
 		uart_hex((unsigned long)(base+2));
 		uart_string(" Size: ");
-		uart_10(base[0]);
+		uart_10(size);
 		uart_string("\n");
 		static char* data = "00 \0";
 		static unsigned char temp = 0;
-		for(unsigned int i = 0; i < base[0]; i++) {
+		for(unsigned int i = 0; i < size; i++) {
 			temp = (base[2+i]>>4)&0xF;
 			if(temp > 9)
 				temp += 7;
@@ -115,7 +118,7 @@ void heap_info(void)
 			uart_string(data);
 		}
 		uart_char('\n');
-		base += *base + 2;
+		base += size + 2;
 	}
 	uart_char('\n');
 }
