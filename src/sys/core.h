@@ -117,6 +117,5 @@ enum
 };
 
 void sysinit(void);
-void postinit(void);
 
 #endif

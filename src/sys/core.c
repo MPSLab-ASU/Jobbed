@@ -11,6 +11,7 @@
 #include "../sys/schedule.h"
 #include "../sys/timer.h"
 #include "../util/mutex.h"
+#include "../util/status.h"
 #include "../util/time.h"
 
 #ifndef VERSION
@@ -29,7 +30,6 @@ void sysinit(void)
 	store32(1<<4, UART0_IMSC);
 	// Enable UART GPU IRQ
 	store32(1<<25, IRQ_ENABLE2);
-
 	// Enable Timer
 	// As an IRQ
 	store32(1<<0, IRQ_BASIC_ENABLE);
@@ -49,92 +49,4 @@ void sysinit(void)
 	// Enable IRQ & FIQ
 	enableirq();
 	enablefiq();
-}
-
-void output_irq_status(void)
-{
-	// Basic IRQ
-	unsigned long ib_val = load32(IRQ_BASIC_ENABLE);
-	// IRQ 1
-	unsigned long i1_val = load32(IRQ_ENABLE1);
-	// IRQ 2
-	unsigned long i2_val = load32(IRQ_ENABLE2);
-	// FIQ
-	unsigned long f_val = load32(FIQ_CONTROL);
-
-	// Check GPU Interrupt Routing
-	unsigned long g_val = load32(GPU_INTERRUPTS_ROUTING);
-	write_string(&g_Drawer, "GPU IRQ: Core ");
-	write_10(&g_Drawer, g_val & 0b11);
-	write_string(&g_Drawer, " | GPU FIQ: Core ");
-	write_10(&g_Drawer, (g_val >> 2) & 0b11);
-
-	write_string(&g_Drawer, "\n");
-	write_hex32(&g_Drawer, ib_val);
-	write_string(&g_Drawer, " ");
-	write_hex32(&g_Drawer, i1_val);
-	write_string(&g_Drawer, " ");
-	write_hex32(&g_Drawer, i2_val);
-	write_string(&g_Drawer, " ");
-	write_hex32(&g_Drawer,  f_val);
-
-	// Check UART IRQ
-	write_string(&g_Drawer, "\nUART: ");
-	if (i2_val & (1<<25)) {
-		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
-	} else {
-		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
-	}
-
-	// Check TIMER IRQ
-	write_string(&g_Drawer, "   TIMER: ");
-	if (ib_val & (1<<0)) {
-		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
-	} else {
-		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
-	}
-}
-
-void postinit(void)
-{
-	// OS Info
-	write_cstring(&g_Drawer, "DendritOS", 0xFF0000);
-	write_cstring(&g_Drawer, " v", 0x00FFFF);
-	write_cstring(&g_Drawer, os_info_v, 0x00FFFF);
-	write_string(&g_Drawer, " #");
-	if (lock_mutex(&exe_cnt_m, SYS_PID) == 0) {
-		write_10(&g_Drawer, *((unsigned long*)exe_cnt_m.addr));
-		release_mutex(&exe_cnt_m, SYS_PID);
-	}
-
-	// Commands
-	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T");
-
-	// GPU IRQ Statuses
-	write_string(&g_Drawer, "\n");
-	output_irq_status();
-
-	// Timer Status
-	write_string(&g_Drawer, "\nTIMER: ");
-	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
-	// Output the frequency
-	write_string(&g_Drawer, " @ ");
-	unsigned long frq = read_cntfrq()/1000;
-	write_10(&g_Drawer, frq);
-	write_string(&g_Drawer, " kHz");
-
-	// Video Status
-	write_string(&g_Drawer, "\nVIDEO: ");
-	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
-	write_10(&g_Drawer, width);
-	write_string(&g_Drawer, "x");
-	write_10(&g_Drawer, height);
-	if(isrgb) {
-		write_string(&g_Drawer, " RGB");
-	} else {
-		write_string(&g_Drawer, " BGR");
-	}
-
-	// Output Serial Data Recieve Line
-	write_string(&g_Drawer, "\n> ");
 }
