@@ -12,5 +12,6 @@ struct Mutex {
 
 unsigned char lock_mutex(struct Mutex*, unsigned long);
 unsigned char release_mutex(struct Mutex*, unsigned long);
+struct Mutex* create_mutex(void* addr);
 
 #endif

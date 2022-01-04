@@ -8,7 +8,6 @@
 #include "../lib/strings.h"
 #include "../sys/core.h"
 #include "../sys/power.h"
-#include "../sys/schedule.h"
 #include "../sys/timer.h"
 #include "../util/mutex.h"
 #include "../util/status.h"
@@ -51,4 +50,10 @@ void sysinit(void)
 	enablefiq();
 
 	// Start Scheduler
+	unsigned long count1 = -5;
+	struct Mutex* m = create_mutex(&count1);
+	if (lock_mutex(m, SYS_PID) == 0) {
+		uart_hex(*(unsigned long*)m->addr);
+		release_mutex(m, SYS_PID);
+	}
 }

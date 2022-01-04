@@ -123,6 +123,28 @@ void status(void)
 		}
 		write_cchar(&g_Drawer, '!', 0xFF00FF);
 	}
+
+	g_Drawer.x = 0;
+	g_Drawer.y = 9;
+	for(int i = 0; i < 128; i++)
+		write_char(&g_Drawer, ' ');
+	g_Drawer.x = 0;
+	g_Drawer.y = 9;
+	/*
+	struct Q* q = scheduler.tasks->next;
+	while (q != 0) {
+		struct Task* t = q->data;
+		write_hex32(&g_Drawer, (unsigned long)t->task);
+		write_char(&g_Drawer, ' ');
+		q = q->next;
+	}
+	write_char(&g_Drawer, '\n');
+	*/
+
+	unsigned long sp;
+	asm volatile ("mov %0, sp": "=r"(sp));
+	write_hex32(&g_Drawer, sp);
+
 	g_Drawer.x = x;
 	g_Drawer.y = y;
 }

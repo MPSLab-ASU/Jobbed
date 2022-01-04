@@ -15,9 +15,11 @@ void memcpy32(unsigned long* src, unsigned long* dest, unsigned int n);
 unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n);
 
 void* malloc(unsigned char size);
+void* malloca(unsigned char size, unsigned char amnt);
 void free(void* memloc);
 void* heap_base(void);
 void* heap_top(void);
 void heap_info(void);
+void heap_info_u(void);
 
 #endif

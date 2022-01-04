@@ -64,6 +64,45 @@ void* malloc(unsigned char size)
 	return (void*)&mem[i+2];
 }
 
+void* malloca(unsigned char size, unsigned char amnt)
+{
+	unsigned char* mem = (unsigned char*)rpi_heap;
+	unsigned long i = 0;
+	// TODO: Use Null PID
+	while(1) {
+		unsigned long diff = (unsigned long)mem + i + 2;
+		diff %= amnt;
+		diff = amnt - diff;
+		if((mem[i] == size) && mem[i+1]==0) {
+			if(diff == 0) {
+				mem[i] = size;
+				mem[i+1] = 1;
+				return (void*)&mem[i+2];
+			}
+		} else if (mem[i] == 0) {
+			if(diff == 0 || diff == amnt) {
+				mem[i] = size;
+				mem[i+1] = 1;
+				rpi_heap_top = (void*)&mem[i+2+size];
+				return (void*)&mem[i+2];
+			} else {
+				if(diff <= 2) {
+					diff += amnt;
+				}
+				mem[i] = diff-2;
+				mem[i+1] = 0;
+				i += diff;
+				mem[i] = size;
+				mem[i+1] = 1;
+				rpi_heap_top = (void*)&mem[i+2+size];
+				return (void*)&mem[i+2];
+			}
+		}
+
+		i += mem[i]+2;
+	}
+}
+
 void free(void* memloc)
 {
 	// Don't try to free memory outside of heap
@@ -97,6 +136,40 @@ void heap_info(void)
 		if(base[1] == 0) {
 			uart_char('F');
 			uart_char(' ');
+		}
+		uart_hex((unsigned long)(base+2));
+		uart_string(" Size: ");
+		uart_10(size);
+		uart_string("\n");
+		static char* data = "00 \0";
+		static unsigned char temp = 0;
+		for(unsigned int i = 0; i < size; i++) {
+			temp = (base[2+i]>>4)&0xF;
+			if(temp > 9)
+				temp += 7;
+			temp += 0x30;
+			data[0] = temp;
+			temp = (base[2+i])&0xF;
+			if(temp > 9)
+				temp += 7;
+			temp += 0x30;
+			data[1] = temp;
+			uart_string(data);
+		}
+		uart_char('\n');
+		base += size + 2;
+	}
+	uart_char('\n');
+}
+
+void heap_info_u(void)
+{
+	unsigned char* base = rpi_heap;
+	while ((void*)base < rpi_heap_top) {
+		unsigned char size = *base;
+		if(base[1] == 0) {
+			base += size + 2;
+			continue;
 		}
 		uart_hex((unsigned long)(base+2));
 		uart_string(" Size: ");

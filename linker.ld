@@ -18,6 +18,8 @@ SECTIONS
     .data :
     {
         *(.data*)
+	__stacks_start = .;
+	KEEP(*(.data.stacks))
     }
     . = ALIGN(4096); /* align to page size */
     __data_end = .;

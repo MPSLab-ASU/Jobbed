@@ -1,4 +1,5 @@
 #include "../cpu/atomic/swap.h"
+#include "../lib/mem.h"
 #include "../util/mutex.h"
 
 unsigned char lock_mutex(struct Mutex* m, unsigned long pid)
@@ -20,4 +21,12 @@ unsigned char release_mutex(struct Mutex* m, unsigned long pid)
 		return 0;
 	}
 	return 1;
+}
+
+struct Mutex* create_mutex(void* addr)
+{
+	// Ensure aligned to word - Important for Atomic Swap
+	struct Mutex* m = (struct Mutex*)malloca(sizeof(struct Mutex), 4);
+	m->addr = addr;
+	return m;
 }

@@ -4,10 +4,13 @@
 #include "../sys/core.h"
 #include "../sys/timer.h"
 #include "../util/mutex.h"
+#include "../util/status.h"
 #include "../util/time.h"
 
 extern unsigned long cmdidx;
 extern char cmd[2048];
+
+void localtest(void);
 
 void c_irq_handler(void)
 {
@@ -61,6 +64,10 @@ void c_irq_handler(void)
 							cmd[off] = (char) data;
 							off += 1;
 							release_mutex(&exe_cnt_m, SYS_PID);
+						// New Task Case
+						} else if (data == 0x61) {
+							cmd[off] = (char) data;
+							off += 1;
 						// Else output
 						} else {
 							cmd[off] = (char) data;
@@ -98,4 +105,8 @@ void c_irq_handler(void)
 		return;
 	}
 	return;
+}
+
+void localtest(void)
+{
 }
