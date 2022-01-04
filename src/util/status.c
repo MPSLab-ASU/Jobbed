@@ -141,8 +141,7 @@ void status(void)
 	write_char(&g_Drawer, '\n');
 	*/
 
-	unsigned long sp;
-	asm volatile ("mov %0, sp": "=r"(sp));
+	unsigned long sp = (unsigned long)getsp();
 	write_hex32(&g_Drawer, sp);
 
 	g_Drawer.x = x;

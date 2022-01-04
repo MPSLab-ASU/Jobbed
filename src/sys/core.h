@@ -19,6 +19,28 @@ static inline void delay(unsigned long cycles)
 			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
 }
 
+static inline void preserveregs(void)
+{
+	asm volatile("push {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11}");
+}
+
+static inline void restoreregs(void)
+{
+	asm volatile("pop {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11}");
+}
+
+static inline void* getsp(void)
+{
+	void* out;
+	asm volatile ("mov %0, sp" : "=r"(out));
+	return out;
+}
+
+static inline void setsp(void* in)
+{
+	asm volatile ("mov sp, %0" :: "r"(in));
+}
+
 enum
 {
 	// The offset for the MMIO area
