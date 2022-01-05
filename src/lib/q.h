@@ -11,11 +11,11 @@ struct Q {
 	void* data;
 };
 
-struct Q_base* newq();
-void pushq(struct Q_base* qb, void* val);
-void popq(struct Q_base* qb);
+struct Q_base* new_q();
+void push_q(struct Q_base* qb, void* val);
+void pop_q(struct Q_base* qb);
 
-#define showq(QQ, TYPE) { \
+#define show_q(QQ, TYPE) { \
 	if (QQ->next != 0) { \
 		struct Q* t = QQ->next; \
 		while (t->next != 0) { \

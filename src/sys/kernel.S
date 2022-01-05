@@ -2,12 +2,10 @@
 
 .globl kernel_main
 kernel_main:
-	push {lr}
 	bl sysinit
 kernel_main.loop:
 	wfe
 	b kernel_main.loop
-	pop {lr}
 
 .section ".data"
 .globl cntfrq
@@ -19,3 +17,7 @@ cmdidx:
 .globl cmd
 cmd:
 	.space 2049
+
+.section ".bss.heap"
+mheap:
+	.space 0x100000

@@ -1,7 +1,7 @@
 #include "../lib/ll.h"
 #include "../lib/mem.h"
 
-struct LL* new(void* val)
+struct LL* new_ll(void* val)
 {
 	struct LL* ll = (struct LL*)malloc(sizeof(struct LL));
 	ll->prev = ll;
@@ -10,7 +10,7 @@ struct LL* new(void* val)
 	return ll;
 }
 
-void push(struct LL* l, void* val)
+void push_ll(struct LL* l, void* val)
 {
 	struct LL* ll = (struct LL*)malloc(sizeof(struct LL));
 	ll->prev = l->prev;
@@ -20,7 +20,7 @@ void push(struct LL* l, void* val)
 	ll->data = val;
 }
 
-void remove(struct LL* l, unsigned long idx)
+void remove_ll(struct LL* l, unsigned long idx)
 {
 	struct LL* t = l;
 	for(unsigned long i = 0; i < idx; i++) {

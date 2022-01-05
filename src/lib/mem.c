@@ -73,6 +73,7 @@ void* malloca(unsigned char size, unsigned char amnt)
 		unsigned long diff = (unsigned long)mem + i + 2;
 		diff %= amnt;
 		diff = amnt - diff;
+		diff %= amnt;
 		if((mem[i] == size) && mem[i+1]==0) {
 			if(diff == 0) {
 				mem[i] = size;
@@ -90,7 +91,6 @@ void* malloca(unsigned char size, unsigned char amnt)
 					diff += amnt;
 				}
 				mem[i] = diff-2;
-				mem[i+1] = 0;
 				i += diff;
 				mem[i] = size;
 				mem[i+1] = 1;
@@ -115,6 +115,11 @@ void free(void* memloc)
 	// Clear out old memory
 	for(unsigned int i = 0; i < size; i++) {
 		base[i+2] = 0;
+	}
+	// If it is the last entry, clear it and move the heap top down
+	if (base + size + 2 == rpi_heap_top) {
+		base[0] = 0;
+		rpi_heap_top = base;
 	}
 }
 

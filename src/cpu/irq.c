@@ -2,13 +2,11 @@
 #include "../drivers/uart.h"
 #include "../graphics/drawer.h"
 #include "../sys/core.h"
+#include "../sys/kernel.h"
 #include "../sys/timer.h"
 #include "../util/mutex.h"
 #include "../util/status.h"
 #include "../util/time.h"
-
-extern unsigned long cmdidx;
-extern char cmd[2048];
 
 void localtest(void);
 

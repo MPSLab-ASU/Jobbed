@@ -1,6 +1,6 @@
 #include "../drivers/uart.h"
 #include "../graphics/glyphs.h"
-#include "../graphics/homer.h"
+#include "../graphics/philosopher_toad.h"
 #include "../graphics/lfb.h"
 #include "../graphics/mbox.h"
 
@@ -90,18 +90,18 @@ void lfb_showpicture(void)
 	clear_screen();
 	unsigned int x,y;
 	unsigned char *ptr=lfb;
-	char *data=homer_data, pixel[4];
+	char *data=toad_data, pixel[4];
 
-	ptr = lfb + (height-homer_height)*pitch + (width-homer_width)*4;
-	for(y=0;y<homer_height;y++) {
-		for(x=0;x<homer_width;x++) {
+	ptr = lfb + (height-toad_height)*pitch + (width-toad_width)*4;
+	for(y=0;y<toad_height;y++) {
+		for(x=0;x<toad_width;x++) {
 			HEADER_PIXEL(data, pixel);
 			// the image is in RGB. So if we have an RGB framebuffer, we can copy the pixels
 			// directly, but for BGR we must swap R (pixel[0]) and B (pixel[2]) channels.
 			*((unsigned int*)ptr)=isrgb ? *((unsigned int *)&pixel) : (unsigned int)(pixel[0]<<16 | pixel[1]<<8 | pixel[2]);
 			ptr+=4;
 		}
-		ptr+=pitch-homer_width*4;
+		ptr+=pitch-toad_width*4;
 	}
 }
 

@@ -9,7 +9,8 @@ unsigned long read_cntv_tval(void);
 void write_cntv_tval(unsigned long val);
 unsigned long read_cntfrq(void);
 
-static inline void enablecntv(void) {
+static inline void enablecntv(void)
+{
 	unsigned long cntv_ctl;
 	cntv_ctl = 1;
 	asm volatile ("mcr p15, 0, %0, c14, c3, 1" :: "r"(cntv_ctl) ); // write CNTV_CTL

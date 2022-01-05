@@ -1,6 +1,10 @@
 #ifndef SYS_CORE_H
 #define SYS_CORE_H
 
+#ifndef SYS_CORE_C
+extern char* os_info_v;
+#endif
+
 extern unsigned long cntfrq;
 
 static inline unsigned long load32(unsigned long addr)
@@ -39,6 +43,13 @@ static inline void* getsp(void)
 static inline void setsp(void* in)
 {
 	asm volatile ("mov sp, %0" :: "r"(in));
+}
+
+static inline void* heap_end(void)
+{
+	unsigned long value;
+	asm volatile ("ldr %0, =__bss_end": "=r"(value));
+	return (void*)value;
 }
 
 enum

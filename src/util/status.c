@@ -6,8 +6,6 @@
 #include "../util/status.h"
 #include "../util/time.h"
 
-extern char* os_info_v;
-
 void output_irq_status(void)
 {
 	// Basic IRQ

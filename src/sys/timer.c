@@ -9,8 +9,6 @@
 /// Cycles Per Second
 #define CPS 10
 
-extern char* os_info_v;
-
 #define SYS_TIMER_C
 static unsigned long exe_cnt = 0;
 struct Mutex exe_cnt_m = {.addr = &exe_cnt, .pid = NULL_PID};

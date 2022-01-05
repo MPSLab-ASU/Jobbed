@@ -13,6 +13,7 @@
 #include "../util/status.h"
 #include "../util/time.h"
 
+#define SYS_CORE_C
 #ifndef VERSION
 char* os_info_v = "?";
 #else

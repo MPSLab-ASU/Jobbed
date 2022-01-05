@@ -7,11 +7,11 @@ struct LL {
 	void* data;
 };
 
-struct LL* new(void* val);
-void push(struct LL* l, void* val);
-void remove(struct LL* l, unsigned long idx);
+struct LL* new_ll(void* val);
+void push_ll(struct LL* l, void* val);
+void remove_ll(struct LL* l, unsigned long idx);
 
-#define showl(L, TYPE) { \
+#define show_ll(L, TYPE) { \
 	struct LL* t = L; \
 	do { \
 		uart_hex(*(TYPE*)t->data); \

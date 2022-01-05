@@ -1,7 +1,7 @@
 #include "../lib/q.h"
 #include "../lib/mem.h"
 
-struct Q_base* newq()
+struct Q_base* new_q()
 {
 	struct Q_base* q = (struct Q_base*)malloc(sizeof(struct Q_base));
 	q->next = 0;
@@ -9,7 +9,7 @@ struct Q_base* newq()
 	return q;
 }
 
-void pushq(struct Q_base* qb, void* val)
+void push_q(struct Q_base* qb, void* val)
 {
 	struct Q* n = (struct Q*)malloc(sizeof(struct Q));
 	n->next = 0;
@@ -22,7 +22,7 @@ void pushq(struct Q_base* qb, void* val)
 	qb->last = n;
 }
 
-void popq(struct Q_base* qb)
+void pop_q(struct Q_base* qb)
 {
 	if (qb->next == 0)
 		return;

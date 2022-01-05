@@ -9,6 +9,7 @@ SECTIONS
     .text :
     {
         KEEP(*(.text.boot))
+        KEEP(*(.text.kernel))
         *(.text*)
     }
     . = ALIGN(4096); /* align to page size */
@@ -29,6 +30,7 @@ SECTIONS
     {
         bss = .;
         *(.bss*)
+	KEEP(*(.bss.heap))
     }
     . = ALIGN(4096); /* align to page size */
     __bss_end = .;
