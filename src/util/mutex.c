@@ -1,6 +1,6 @@
-#include "../cpu/atomic/swap.h"
-#include "../lib/mem.h"
-#include "../util/mutex.h"
+#include <cpu/atomic/swap.h>
+#include <lib/mem.h>
+#include <util/mutex.h>
 
 unsigned char lock_mutex(struct Mutex* m, unsigned long pid)
 {

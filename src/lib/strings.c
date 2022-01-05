@@ -1,4 +1,4 @@
-#include "../lib/strings.h"
+#include <lib/strings.h>
 
 unsigned long strlen(string_t s)
 {

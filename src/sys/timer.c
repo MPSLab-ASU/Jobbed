@@ -1,10 +1,12 @@
-#include "../drivers/uart.h"
-#include "../graphics/drawer.h"
-#include "../sys/core.h"
-#include "../sys/timer.h"
-#include "../util/mutex.h"
-#include "../util/status.h"
-#include "../util/time.h"
+#include <drivers/uart.h>
+#include <graphics/drawer.h>
+#include <sys/core.h>
+#include <sys/kernel.h>
+#include <sys/timer.h>
+#include <util/mutex.h>
+#include <util/status.h>
+#include <util/time.h>
+#include <symbols.h>
 
 /// Cycles Per Second
 #define CPS 10

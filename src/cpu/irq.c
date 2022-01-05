@@ -1,12 +1,13 @@
-#include "../cpu/irq.h"
-#include "../drivers/uart.h"
-#include "../graphics/drawer.h"
-#include "../sys/core.h"
-#include "../sys/kernel.h"
-#include "../sys/timer.h"
-#include "../util/mutex.h"
-#include "../util/status.h"
-#include "../util/time.h"
+#include <cpu/irq.h>
+#include <drivers/uart.h>
+#include <graphics/drawer.h>
+#include <symbols.h>
+#include <sys/core.h>
+#include <sys/kernel.h>
+#include <sys/timer.h>
+#include <util/mutex.h>
+#include <util/status.h>
+#include <util/time.h>
 
 void localtest(void);
 

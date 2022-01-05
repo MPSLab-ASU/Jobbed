@@ -1,5 +1,5 @@
-#include "../graphics/drawer.h"
-#include "../graphics/lfb.h"
+#include <graphics/drawer.h>
+#include <graphics/lfb.h>
 
 #define GRAPHICS_DRAWER_C
 struct Drawer g_Drawer = {.x = 0, .y = 0};

@@ -1,5 +1,6 @@
-#include "../sys/core.h"
-#include "../sys/power.h"
+#include <symbols.h>
+#include <sys/core.h>
+#include <sys/power.h>
 
 void reboot(void)
 {

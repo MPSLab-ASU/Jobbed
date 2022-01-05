@@ -1,8 +1,8 @@
-#include "../drivers/uart.h"
-#include "../graphics/glyphs.h"
-#include "../graphics/philosopher_toad.h"
-#include "../graphics/lfb.h"
-#include "../graphics/mbox.h"
+#include <drivers/uart.h>
+#include <graphics/glyphs.h>
+#include <graphics/lfb.h>
+#include <graphics/mbox.h>
+#include <graphics/philosopher_toad.h>
 
 #define GRAPHICS_LFB_C
 unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */

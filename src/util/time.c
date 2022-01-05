@@ -1,4 +1,5 @@
-#include "../sys/core.h"
+#include <symbols.h>
+#include <sys/core.h>
 
 void routing_core0cntv_to_core0irq(void)
 {

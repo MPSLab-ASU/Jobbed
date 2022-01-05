@@ -1,4 +1,4 @@
-#include "../drivers/uart.h"
+#include <drivers/uart.h>
 
 void uart_10(unsigned long val)
 {

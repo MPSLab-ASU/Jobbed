@@ -1,10 +1,11 @@
-#include "../graphics/drawer.h"
-#include "../graphics/lfb.h"
-#include "../sys/core.h"
-#include "../sys/timer.h"
-#include "../util/mutex.h"
-#include "../util/status.h"
-#include "../util/time.h"
+#include <graphics/drawer.h>
+#include <graphics/lfb.h>
+#include <symbols.h>
+#include <sys/core.h>
+#include <sys/timer.h>
+#include <util/mutex.h>
+#include <util/status.h>
+#include <util/time.h>
 
 void output_irq_status(void)
 {

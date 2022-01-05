@@ -1,5 +1,5 @@
-#include "../lib/mem.h"
-#include "../drivers/uart.h"
+#include <drivers/uart.h>
+#include <lib/mem.h>
 
 void memshow32(unsigned long* addr, unsigned int n)
 {

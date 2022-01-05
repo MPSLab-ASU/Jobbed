@@ -1,5 +1,5 @@
-#include "../lib/q.h"
-#include "../lib/mem.h"
+#include <lib/q.h>
+#include <lib/mem.h>
 
 struct Q_base* new_q()
 {

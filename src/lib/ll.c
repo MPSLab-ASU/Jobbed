@@ -1,5 +1,5 @@
-#include "../lib/ll.h"
-#include "../lib/mem.h"
+#include <lib/ll.h>
+#include <lib/mem.h>
 
 struct LL* new_ll(void* val)
 {
