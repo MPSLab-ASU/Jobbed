@@ -13,7 +13,6 @@ void localtest(void);
 
 void c_irq_handler(void)
 {
-	disableirq();
 	unsigned long source = load32(CORE0_IRQ_SOURCE);
 	if (source & (1 << 8)) {
 		if(load32(IRQ_PENDING2) & (1 << 25)) {
@@ -94,13 +93,11 @@ void c_irq_handler(void)
 				g_Drawer.y = 7;
 				write_string(&g_Drawer, "> ");
 				write_string(&g_Drawer, cmd);
-				enableirq();
 				return;
 			}
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
-		enableirq();
 		return;
 	}
 	return;
