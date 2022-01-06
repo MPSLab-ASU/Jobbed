@@ -38,3 +38,17 @@ void pop_q(struct Q_base* qb)
 	free(t->data);
 	free(t);
 }
+
+unsigned long length_q(struct Q_base* qb)
+{
+	unsigned long length = 0;
+	if(qb->next == 0)
+		return length;
+	length++;
+	struct Q* q = qb->next;
+	while (q != qb->last) {
+		length++;
+		q = q->next;
+	}
+	return length;
+}

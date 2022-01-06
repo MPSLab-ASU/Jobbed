@@ -4,16 +4,17 @@
 struct Q_base {
 	struct Q* next;
 	struct Q* last;
-};
+} __attribute__((packed));
 
 struct Q {
 	struct Q* next;
 	void* data;
-};
+} __attribute__((packed));
 
 struct Q_base* new_q();
 void push_q(struct Q_base* qb, void* val);
 void pop_q(struct Q_base* qb);
+unsigned long length_q(struct Q_base* qb);
 
 #define show_q(QQ, TYPE) { \
 	if (QQ->next != 0) { \

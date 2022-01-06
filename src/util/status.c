@@ -1,3 +1,4 @@
+#include <cpu.h>
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
 #include <symbols.h>
@@ -129,19 +130,24 @@ void status(void)
 		write_char(&g_Drawer, ' ');
 	g_Drawer.x = 0;
 	g_Drawer.y = 9;
-	/*
-	struct Q* q = scheduler.tasks->next;
-	while (q != 0) {
-		struct Task* t = q->data;
-		write_hex32(&g_Drawer, (unsigned long)t->task);
-		write_char(&g_Drawer, ' ');
-		q = q->next;
-	}
-	write_char(&g_Drawer, '\n');
-	*/
 
-	unsigned long sp = (unsigned long)getsp();
+	unsigned long sp = (unsigned long)getsvcstack();
 	write_hex32(&g_Drawer, sp);
+	write_char(&g_Drawer, ' ');
+	sp = (unsigned long)getirqstack();
+	write_hex32(&g_Drawer, sp);
+	write_char(&g_Drawer, ' ');
+	sp = (unsigned long)getfiqstack();
+	write_hex32(&g_Drawer, sp);
+	write_char(&g_Drawer, '\n');
+	for(unsigned long i = 1; i <= 14; i++) {
+		write_hex32(&g_Drawer, *(unsigned long*)(0x4000 - i*4));
+		if(i % 6 == 0) {
+			write_char(&g_Drawer, '\n');
+		} else {
+			write_char(&g_Drawer, ' ');
+		}
+	}
 
 	g_Drawer.x = x;
 	g_Drawer.y = y;

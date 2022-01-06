@@ -2,7 +2,6 @@
 #include <drivers/uart.h>
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
-#include <lib/ll.h>
 #include <lib/mem.h>
 #include <lib/q.h>
 #include <lib/strings.h>
@@ -10,6 +9,7 @@
 #include <sys/core.h>
 #include <sys/kernel.h>
 #include <sys/power.h>
+#include <sys/schedule.h>
 #include <sys/timer.h>
 #include <util/mutex.h>
 #include <util/status.h>
@@ -21,6 +21,8 @@ char* os_info_v = "?";
 #else
 char* os_info_v = VERSION;
 #endif
+
+void testlocal(void);
 
 // Initialize IRQs
 void sysinit(void)
@@ -53,4 +55,28 @@ void sysinit(void)
 	enablefiq();
 
 	// Start Scheduler
+	init_scheduler();
+	add_thread(testlocal, 0);
+	add_thread(testlocal, 1);
+	add_thread(testlocal, 3);
+	add_thread(testlocal, 0);
+	add_thread(testlocal, 5);
+	add_thread(testlocal, 8);
+	delay(0x80000000);
+	schedule();
+}
+
+struct Mutex testm = {.addr = (void*)0xDEADBEEF, .pid = NULL_PID};
+void testlocal(void)
+{
+	unsigned char testd = 0xDE;
+	struct Thread* t = scheduler.rthread_ll->data;
+	delay(0x04000000);
+	testd -= 50;
+	uart_string("Ran Thread ");
+	delay(0x04000000);
+	uart_10(t->data.pid);
+	uart_char(' ');
+	uart_10(testd);
+	uart_char('\n');
 }

@@ -21,16 +21,6 @@ static inline void delay(unsigned long cycles)
 			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
 }
 
-static inline void preserveregs(void)
-{
-	asm volatile("push {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11}");
-}
-
-static inline void restoreregs(void)
-{
-	asm volatile("pop {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11}");
-}
-
 static inline void* getsp(void)
 {
 	void* out;
