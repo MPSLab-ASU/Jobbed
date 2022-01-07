@@ -1,10 +1,9 @@
 .section .text
 .globl schedule
+// TODO: Implement Scheduler for IRQ
+
 // Implemented the scheduler in Assembly since the C defined was messing around with the program stacks
 //  This way, I can be confident that the stacks will be unchanged
-//
-// TODO: Mark threads as READY and RUNNING
-//
 schedule:
 	ldr r3, =scheduler
 	// r3 = struct Scheduler*
@@ -38,12 +37,17 @@ schedule.current_thread_exists:
 	// Next is not the same as the current
 	// Preserve stack of current
 	ldr r2,  [r1, #0x8] // struct Thread* current
+	mov r1, #0 // THREAD_READY
+	strh r1, [r2, #0x0e]
 	str sp,  [r2, #0x4] // void* stack // Preserve stack
 	// Preserve program counter of current
 	str lr,  [r2, #0x0] // void* thread // Preserve pc
 	ldr r2,  [r0, #0x8] // struct Thread* next
 	// Set new stack pointer
 	ldr sp,  [r2, #0x4]
+	// Set the thread as running
+	mov r1, #1 // THREAD_RUNNING
+	strh r1,  [r2, #0x0e] // unsigned short status
 	add r2,  r2, #0x18
 	// Set new running thread
 	str r0,  [r3, #0x0] // struct LL* next_thread_ll // Set new running thread
@@ -71,6 +75,9 @@ schedule.dont_overwrite_sys_stack:
 	ldr sp, [r1, #0x4] // void* stack
 	// Store the running thread ll entry
 	str r0, [r3, #0x0] // struct LL* rthread_ll
+	ldr r2, [r0, #0x8] // struct Thread* thread
+	mov r0, #1 // THREAD_RUNNING
+	strh r0, [r2, #0x0e]
 	// Set context
 	add r1, r1, #0x18 // struct cpu_context*
 	str r1, [r3, #0x4] // store to scheduler.ctx

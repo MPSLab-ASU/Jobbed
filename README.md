@@ -11,3 +11,7 @@ https://wiki.osdev.org/ARM_RaspberryPi
 https://elinux.org/RPi_Framebuffer
 https://github.com/bztsrc/raspi3-tutorial
 https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials
+
+## Todo
+Implement Scheduler for IRQ
+Fix mutex with scheduler

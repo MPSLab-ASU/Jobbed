@@ -62,7 +62,7 @@ void sysinit(void)
 	add_thread(testlocal, 0);
 	add_thread(testlocal, 5);
 	add_thread(testlocal, 8);
-	delay(0x20000000);
+	//delay(0x20000000);
 	schedule();
 }
 
@@ -96,7 +96,6 @@ void testlocal(void)
 	} else if (t->data.pid == 5) {
 		add_thread(testlocal1, 1);
 		schedule();
-		sched_info();
 	}
 	uart_string("Done!\n");
 }

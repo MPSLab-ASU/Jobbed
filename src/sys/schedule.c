@@ -156,15 +156,11 @@ void cleanup(void)
 		scheduler.rthread_ll = 0;
 	}
 	// Schedule next thread
-	//uart_string("Scheduling from cleanup!\n");
-	//sched_info();
-	//schedule();
 	schedule();
 }
 
 void sched_info(void)
 {
-	disableirq();
 	uart_string("Scheduler Information\n");
 	for(unsigned long i = 0; i < PRIORITIES; i++) {
 		struct LL* ll = scheduler.tlist[i].next;
@@ -186,5 +182,4 @@ void sched_info(void)
 		}
 		uart_char('\n');
 	}
-	enableirq();
 }
