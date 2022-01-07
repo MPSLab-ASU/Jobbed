@@ -21,6 +21,20 @@ static inline void delay(unsigned long cycles)
 			: "=r"(cycles): [cycles]"0"(cycles) : "cc");
 }
 
+static inline void* getlr(void)
+{
+	void* out;
+	asm volatile ("mov %0, lr" : "=r"(out));
+	return out;
+}
+
+static inline void* getpc(void)
+{
+	void* out;
+	asm volatile ("mov %0, pc" : "=r"(out));
+	return out;
+}
+
 static inline void* getsp(void)
 {
 	void* out;

@@ -62,21 +62,41 @@ void sysinit(void)
 	add_thread(testlocal, 0);
 	add_thread(testlocal, 5);
 	add_thread(testlocal, 8);
-	delay(0x80000000);
+	delay(0x20000000);
 	schedule();
 }
 
 struct Mutex testm = {.addr = (void*)0xDEADBEEF, .pid = NULL_PID};
+void testlocal1(void)
+{
+	unsigned long a = 5;
+	struct Thread* t = scheduler.rthread_ll->data;
+	uart_string("vRan Thread ");
+	uart_10(t->data.pid);
+	uart_string(" Pri. ");
+	uart_10(t->data.priority);
+	uart_string(" ...\n");
+	add_thread(testlocal, 0);
+	schedule();
+	a += t->data.pid;
+	uart_10(a);
+	uart_string(" Done!\n");
+}
 void testlocal(void)
 {
-	unsigned char testd = 0xDE;
 	struct Thread* t = scheduler.rthread_ll->data;
-	delay(0x04000000);
-	testd -= 50;
 	uart_string("Ran Thread ");
-	delay(0x04000000);
 	uart_10(t->data.pid);
-	uart_char(' ');
-	uart_10(testd);
-	uart_char('\n');
+	uart_string(" Pri. ");
+	uart_10(t->data.priority);
+	uart_string(" ...\n");
+	//delay(0x80000000);
+	if (t->data.pid == 6) {
+		add_thread(testlocal, 0);
+	} else if (t->data.pid == 5) {
+		add_thread(testlocal1, 1);
+		schedule();
+		sched_info();
+	}
+	uart_string("Done!\n");
 }

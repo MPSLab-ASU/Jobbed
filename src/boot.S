@@ -66,6 +66,37 @@ io_halt:
 	wfi
 	b io_halt
 
+io_halt_undefined:
+	ldr r0, =undefined_msg
+	ldr r0, [r0]
+	bl uart_char
+	b io_halt
+io_halt_swi:
+	ldr r0, =swi_msg
+	ldr r0, [r0]
+	bl uart_char
+	b io_halt
+io_halt_prefetch:
+	ldr r0, =prefetch_msg
+	ldr r0, [r0]
+	bl uart_char
+	b io_halt
+io_halt_data:
+	ldr r0, =data_msg
+	ldr r0, [r0]
+	bl uart_char
+	b io_halt
+io_halt_unused:
+	ldr r0, =unused_msg
+	ldr r0, [r0]
+	bl uart_char
+	b io_halt
+io_halt_fiq:
+	ldr r0, =fiq_msg
+	ldr r0, [r0]
+	bl uart_char
+	b io_halt
+
 .align 5
 vector:
 	ldr pc, reset_handler
@@ -78,10 +109,16 @@ vector:
 	ldr pc, fiq_handler
 
 reset_handler:      .word reset
-undefined_handler:  .word io_halt
-swi_handler:        .word io_halt
-prefetch_handler:   .word io_halt
-data_handler:       .word io_halt
-unused_handler:     .word io_halt
+undefined_handler:  .word io_halt_undefined
+swi_handler:        .word io_halt_swi
+prefetch_handler:   .word io_halt_prefetch
+data_handler:       .word io_halt_data
+unused_handler:     .word io_halt_unused
 irq_handler:        .word irq
-fiq_handler:        .word io_halt // fiq
+fiq_handler:        .word io_halt_fiq
+undefined_msg:	.asciz "Undefined\n"
+swi_msg:	.asciz "SWI\n"
+prefetch_msg:	.asciz "Prefetch\n"
+data_msg:	.asciz "Data\n"
+unused_msg:	.asciz "unused\n"
+fiq_msg:	.asciz "FIQ\n"
