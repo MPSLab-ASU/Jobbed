@@ -59,11 +59,10 @@ void sysinit(void)
 	add_thread(testlocal, 0);
 	add_thread(testlocal, 1);
 	add_thread(testlocal, 3);
-	add_thread(testlocal, 0);
-	add_thread(testlocal, 5);
-	add_thread(testlocal, 8);
 	//delay(0x20000000);
 	schedule();
+	heap_info();
+	sched_info();
 }
 
 struct Mutex testm = {.addr = (void*)0xDEADBEEF, .pid = NULL_PID};
@@ -82,6 +81,7 @@ void testlocal1(void)
 	uart_10(a);
 	uart_string(" Done!\n");
 }
+
 void testlocal(void)
 {
 	struct Thread* t = scheduler.rthread_ll->data;
@@ -91,9 +91,7 @@ void testlocal(void)
 	uart_10(t->data.priority);
 	uart_string(" ...\n");
 	//delay(0x80000000);
-	if (t->data.pid == 6) {
-		add_thread(testlocal, 0);
-	} else if (t->data.pid == 5) {
+	if (t->data.pid == 5) {
 		add_thread(testlocal1, 1);
 		schedule();
 	}

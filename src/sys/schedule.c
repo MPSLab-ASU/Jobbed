@@ -139,9 +139,9 @@ void cleanup(void)
 	if (scheduler.rthread_ll != 0) {
 		// Mark the thread as finished
 		struct Thread* t = scheduler.rthread_ll->data;
-		uart_string("Cleaning up thread ");
-		uart_10(t->data.pid);
-		uart_char('\n');
+		//uart_string("Cleaning up thread ");
+		//uart_10(t->data.pid);
+		//uart_char('\n');
 		t->data.status = THREAD_FINISHED;
 		// Mark the stack space as free
 		unsigned long sidx = (unsigned long)(heap_end() - t->stack_base)/STACK_SIZE;
@@ -152,6 +152,7 @@ void cleanup(void)
 		struct LL* next = ll->next;
 		prev->next = ll->next;
 		next->prev = ll->prev;
+		free(ll->data);
 		free(ll);
 		scheduler.rthread_ll = 0;
 	}
