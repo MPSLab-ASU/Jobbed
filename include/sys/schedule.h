@@ -19,6 +19,7 @@ struct ThreadData {
 	void* mutex_waiting;
 	unsigned long pid;
 	unsigned char priority;
+	unsigned char preempt_count;
 };
 
 struct Thread {
@@ -44,28 +45,8 @@ extern struct Scheduler scheduler;
 void init_scheduler(void);
 void add_thread(void (*thread_fxn)(void), unsigned char priority);
 void schedule(void);
+void schedule_irq(void);
 void remove_running_thread(void);
-
-static inline void preserveregs(struct Thread* thread)
-{
-	// Preserve current stack pointer
-	void* sp = getsp();
-	// Get current mode
-	unsigned long mode = getmode();
-	// Set supervisor mode - "User mode"
-	setsvc();
-	void* ssp = getsp();
-	// Move stack to reserved register area
-	setsp(thread->stack_base - 0x1000 + 16*4);
-	// Push registers to the stack
-	asm volatile ("push {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}");
-	// Restore stack to previous
-	setsp(ssp);
-	// Restore mode
-	setmode(mode);
-	// Restore current stack pointer
-	setsp(sp);
-}
 
 static inline void preservestack(struct Thread* thread)
 {
@@ -78,27 +59,6 @@ static inline void preservestack(struct Thread* thread)
 	thread->stack = ssp;
 	// Restore mode
 	setmode(mode);
-}
-
-static inline void restoreregs(struct Thread* thread)
-{
-	// Preserve current stack pointer
-	void* sp = getsp();
-	// Get current mode
-	unsigned long mode = getmode();
-	// Set supervisor mode - "User mode"
-	setsvc();
-	void* ssp = getsp();
-	// Move stack to reserved register area
-	setsp(thread->stack_base - 0x1000 + 16*4 - 14*4);
-	// Restore registers on the stack
-	asm volatile ("pop {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}");
-	// Restore stack to previous
-	setsp(ssp);
-	// Restore mode
-	setmode(mode);
-	// Restore current stack pointer
-	setsp(sp);
 }
 
 static inline void restorestack(struct Thread* thread)

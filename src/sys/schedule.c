@@ -84,14 +84,21 @@ struct LL* get_next_thread(void)
 unsigned long syssp = 0;
 void schedule(void)
 {
+	// Preserve current process's registers
+	//  in the current stack
+	asm volatile ("push {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}");
+	// Get current thread
 	struct LL* current_thread_ll = scheduler.rthread_ll;
+	// Get next thread
 	struct LL* next_thread_ll = get_next_thread();
+
+	// If there is a current thread
 	if (current_thread_ll) {
+		// If we are switching the thread
 		if (current_thread_ll != next_thread_ll) {
 			// Context switch
 			struct Thread* current_thread = current_thread_ll->data;
 			struct Thread* next_thread = next_thread_ll->data;
-			//preserveregs(current_thread);
 			preservestack(current_thread);
 			preservepc(current_thread);
 			restorestack(next_thread);
@@ -109,8 +116,11 @@ void schedule(void)
 	}
 	if (scheduler.rthread_ll) {
 		struct Thread* rthread = scheduler.rthread_ll->data;
+		// Restore process's registers
+		asm volatile ("pop {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}");
 		// Run the thread - i.e. jump to the pc
-		rthread->thread();
+		asm volatile ("blx lr");
+		//rthread->thread();
 		// Remove the currently running thread after completion
 		remove_running_thread();
 		// Schedule the next thread
