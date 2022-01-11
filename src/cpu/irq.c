@@ -4,6 +4,7 @@
 #include <symbols.h>
 #include <sys/core.h>
 #include <sys/kernel.h>
+#include <sys/schedule.h>
 #include <sys/timer.h>
 #include <util/mutex.h>
 #include <util/status.h>
@@ -105,4 +106,12 @@ void c_irq_handler(void)
 
 void localtest(void)
 {
+	struct Thread* t = scheduler.rthread_ll->data;
+	uart_string("Running IRQ Task... ");
+	uart_10(t->data.pid);
+	uart_char('\n');
+	uart_string("Finished! ");
+	uart_10(t->data.pid);
+	uart_char('\n');
+	sched_info();
 }

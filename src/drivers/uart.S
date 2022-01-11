@@ -49,5 +49,5 @@ uart_hex.hloop:
 uart_hex.print:
 	str r1, [r2]
 	subs r3, #1
-	bge uart_hex.hloop
+	bge uart_hex.loop // Jump back to wait for availablilty
 	pop {r4, pc}

@@ -15,6 +15,7 @@ struct Scheduler scheduler = {
 		{.prev = 0, .next = 0, .data = 0},
 	},
 	.rthread_ll = 0,
+	.ctx = 0,
 };
 unsigned long syssp = 0;
 struct cpu_context syscpu = {
@@ -183,4 +184,6 @@ void sched_info(void)
 		}
 		uart_char('\n');
 	}
+	uart_string("Stacks:\n");
+	memshow32((unsigned long*)stacks_table, 6);
 }

@@ -65,7 +65,14 @@ void schedule_c(void);
 void schedule_irq(void);
 void cleanup(void);
 void sched_info(void);
-void yield(void);
+struct LL* get_next_thread(void);
+
+static inline void yield(void)
+{
+	struct Thread* t = scheduler.rthread_ll->data;
+	t->data.status = THREAD_WAITING;
+	schedule();
+}
 
 static inline void preserve_stack(struct Thread* thread)
 {

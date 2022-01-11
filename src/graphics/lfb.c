@@ -8,6 +8,9 @@
 unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
 unsigned char *lfb;                         /* raw frame buffer address */
 
+#define SCR_WIDTH  1024
+#define SCR_HEIGHT 768
+
 /**
  * Set screen resolution to 1024x768
  */
@@ -19,14 +22,14 @@ void lfb_init(void)
 	mbox[2] = 0x48003;  //set phy wh
 	mbox[3] = 8;
 	mbox[4] = 8;
-	mbox[5] = 1024;         //FrameBufferInfo.width
-	mbox[6] = 768;          //FrameBufferInfo.height
+	mbox[5] = SCR_WIDTH;         //FrameBufferInfo.width
+	mbox[6] = SCR_HEIGHT;          //FrameBufferInfo.height
 
 	mbox[7] = 0x48004;  //set virt wh
 	mbox[8] = 8;
 	mbox[9] = 8;
-	mbox[10] = 1024;        //FrameBufferInfo.virtual_width
-	mbox[11] = 768;         //FrameBufferInfo.virtual_height
+	mbox[10] = SCR_WIDTH;        //FrameBufferInfo.virtual_width
+	mbox[11] = SCR_HEIGHT;         //FrameBufferInfo.virtual_height
 
 	mbox[12] = 0x48009; //set virt offset
 	mbox[13] = 8;

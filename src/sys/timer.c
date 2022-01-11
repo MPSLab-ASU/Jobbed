@@ -9,7 +9,7 @@
 #include <symbols.h>
 
 /// Cycles Per Second
-#define CPS 10
+#define CPS 100
 
 #define SYS_TIMER_C
 static unsigned long exe_cnt = 0;

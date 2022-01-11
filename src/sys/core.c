@@ -50,19 +50,16 @@ void sysinit(void)
 	lfb_init();
 	lfb_showpicture();
 
+	// Start Scheduler
+	init_scheduler();
+
 	// Enable IRQ & FIQ
 	enableirq();
 	enablefiq();
 
-	// Start Scheduler
-	init_scheduler();
 	add_thread(testlocal, 0);
 	add_thread(testlocal, 1);
 	add_thread(testlocal, 3);
-	//delay(0x20000000);
-	schedule();
-	heap_info();
-	sched_info();
 }
 
 struct Mutex testm = {.addr = (void*)0xDEADBEEF, .pid = NULL_PID};
@@ -95,5 +92,23 @@ void testlocal(void)
 		add_thread(testlocal1, 1);
 		schedule();
 	}
-	uart_string("Done!\n");
+	if (t->data.pid == 3) {
+		yield();
+		yield();
+		yield();
+		yield();
+		yield();
+		yield();
+		yield();
+		// Example
+		/*
+			while (uart_tx_full) {
+				t->data.status = THREAD_WAITING;
+				schedule();
+			} // Will wait until uart_tx is not full
+		*/
+	}
+	uart_string("Done! ");
+	uart_10(t->data.pid);
+	uart_char('\n');
 }

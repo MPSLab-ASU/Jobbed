@@ -47,6 +47,7 @@ unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n)
 static unsigned char rpi_heap[MAX_MM] = {0,};
 static void* rpi_heap_top = &rpi_heap;
 
+// TODO: Put size at end and cleanup from tail
 void* malloc(unsigned char size)
 {
 	unsigned char* mem = (unsigned char*)rpi_heap;

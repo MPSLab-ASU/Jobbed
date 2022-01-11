@@ -4,6 +4,7 @@
 kernel_main:
 	bl sysinit
 kernel_main.loop:
+	//bl schedule
 	wfe
 	b kernel_main.loop
 
