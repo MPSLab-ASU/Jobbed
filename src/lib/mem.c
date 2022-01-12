@@ -188,7 +188,7 @@ void heap_info_u(void)
 	while ((void*)base < rpi_heap_top) {
 		unsigned char size = base[MEM_SIZE_OFFSET];
 		if(base[MEM_USE_OFFSET] == 0) {
-			base += MEM_META_SIZE;
+			base += size + MEM_META_SIZE;
 			continue;
 		}
 		uart_hex((unsigned long)(base + MEM_BASE_SIZE));
