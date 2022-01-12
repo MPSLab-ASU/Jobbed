@@ -8,9 +8,6 @@
 #include <util/time.h>
 #include <symbols.h>
 
-/// Cycles Per Second
-#define CPS 100
-
 #define SYS_TIMER_C
 static unsigned long exe_cnt = 0;
 struct Mutex exe_cnt_m = {.addr = &exe_cnt, .pid = NULL_PID};

@@ -1,6 +1,11 @@
 #ifndef LIB_MEM_H
 #define LIB_MEM_H
 
+#define MEM_SIZE_OFFSET 0
+#define MEM_USE_OFFSET 1
+#define MEM_BASE_SIZE 2
+#define MEM_META_SIZE 3
+
 struct MemTab {
 	unsigned char size;
 	unsigned char in_use;

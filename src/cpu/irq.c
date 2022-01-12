@@ -30,7 +30,7 @@ void c_irq_handler(void)
 					write_string(&g_Drawer, "TIMER: ");
 					if(timer_status == 0) {
 						cntfrq = read_cntfrq();
-						write_cntv_tval(cntfrq);
+						write_cntv_tval(cntfrq/CPS);
 						enablecntv();
 						write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
 					} else {
@@ -67,6 +67,7 @@ void c_irq_handler(void)
 						} else if (data == 0x61) {
 							cmd[off] = (char) data;
 							off += 1;
+							heap_info_u();
 						// Else output
 						} else {
 							cmd[off] = (char) data;

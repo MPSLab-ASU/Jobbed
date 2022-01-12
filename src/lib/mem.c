@@ -53,54 +53,63 @@ void* malloc(unsigned char size)
 	unsigned char* mem = (unsigned char*)rpi_heap;
 	unsigned long i = 0;
 	// TODO: Use Null PID
-	while (((void*)(mem+i) < rpi_heap_top) && !(mem[i] == size && mem[i+1]==0)) {
-		i += mem[i]+2;
+	while (((void*)(mem + i) < rpi_heap_top) && !(mem[i + MEM_SIZE_OFFSET] == size && mem[i + MEM_USE_OFFSET]==0)) {
+		i += mem[i] + MEM_META_SIZE;
 	}
 	// Update top of heap
 	if (mem[i] == 0)
-		rpi_heap_top = (void*)&mem[i+2+size];
+		rpi_heap_top = (void*)&mem[i + MEM_META_SIZE + size];
 	mem[i] = size;
+	mem[i + MEM_BASE_SIZE + size] = size;
 	// Use allocator's PID
-	mem[i+1] = 1;
-	return (void*)&mem[i+2];
+	mem[i + MEM_USE_OFFSET] = 1;
+	return (void*)&mem[i + MEM_BASE_SIZE];
 }
 
 void* malloca(unsigned char size, unsigned char amnt)
 {
+	// Return malloc if alignment size is 0 or 1 - trivial alignment
+	if(amnt == 0 || amnt == 1)
+		return malloc(size);
 	unsigned char* mem = (unsigned char*)rpi_heap;
 	unsigned long i = 0;
 	// TODO: Use Null PID
 	while(1) {
-		unsigned long diff = (unsigned long)mem + i + 2;
+		unsigned long diff = (unsigned long)mem + i + MEM_BASE_SIZE;
 		diff %= amnt;
 		diff = amnt - diff;
 		diff %= amnt;
-		if((mem[i] == size) && mem[i+1]==0) {
+		if((mem[i + MEM_SIZE_OFFSET] == size) && mem[i + MEM_USE_OFFSET]==0) {
 			if(diff == 0) {
-				mem[i] = size;
-				mem[i+1] = 1;
-				return (void*)&mem[i+2];
+				mem[i + MEM_SIZE_OFFSET] = size;
+				mem[i + MEM_BASE_SIZE + size] = size;
+				mem[i + MEM_USE_OFFSET] = 1;
+				return (void*)&mem[i + MEM_BASE_SIZE];
 			}
 		} else if (mem[i] == 0) {
-			if(diff == 0 || diff == amnt) {
-				mem[i] = size;
-				mem[i+1] = 1;
-				rpi_heap_top = (void*)&mem[i+2+size];
-				return (void*)&mem[i+2];
+			if(diff == 0) {
+				mem[i + MEM_SIZE_OFFSET] = size;
+				mem[i + MEM_BASE_SIZE + size] = size;
+				mem[i + MEM_USE_OFFSET] = 1;
+				rpi_heap_top = (void*)&mem[i + MEM_META_SIZE + size];
+				return (void*)&mem[i + MEM_BASE_SIZE];
 			} else {
-				if(diff <= 2) {
+				while (diff <= MEM_BASE_SIZE) {
 					diff += amnt;
 				}
-				mem[i] = diff-2;
+				unsigned long empty_size = diff - MEM_META_SIZE;
+				mem[i + MEM_SIZE_OFFSET] = empty_size;
+				mem[i + MEM_BASE_SIZE + empty_size] = empty_size;
 				i += diff;
-				mem[i] = size;
-				mem[i+1] = 1;
-				rpi_heap_top = (void*)&mem[i+2+size];
-				return (void*)&mem[i+2];
+				mem[i + MEM_SIZE_OFFSET] = size;
+				mem[i + MEM_BASE_SIZE + size] = size;
+				mem[i + MEM_USE_OFFSET] = 1;
+				rpi_heap_top = (void*)&mem[i + MEM_META_SIZE + size];
+				return (void*)&mem[i + MEM_BASE_SIZE];
 			}
 		}
 
-		i += mem[i]+2;
+		i += mem[i] + MEM_META_SIZE;
 	}
 }
 
@@ -109,18 +118,23 @@ void free(void* memloc)
 	// Don't try to free memory outside of heap
 	if(!(((void*)rpi_heap <= memloc) && (memloc < rpi_heap_top)))
 		return;
-	unsigned char* base = memloc - 2;
-	unsigned char size = *base;
+	unsigned char* base = memloc - MEM_BASE_SIZE;
+	unsigned char size = base[MEM_SIZE_OFFSET];
 	// TODO: Use Null PID
-	base[1] = 0;
+	base[MEM_USE_OFFSET] = 0;
 	// Clear out old memory
 	for(unsigned int i = 0; i < size; i++) {
-		base[i+2] = 0;
+		base[i + MEM_BASE_SIZE] = 0;
 	}
 	// If it is the last entry, clear it and move the heap top down
-	if (base + size + 2 == rpi_heap_top) {
-		base[0] = 0;
-		rpi_heap_top = base;
+	if (base + size + MEM_META_SIZE == rpi_heap_top) {
+		while(base[MEM_USE_OFFSET] == 0 && base >= rpi_heap) {
+			base[MEM_SIZE_OFFSET] = 0;
+			base[MEM_BASE_SIZE + size] = 0;
+			rpi_heap_top = base;
+			unsigned long psize = *(base - 1);
+			base -= psize + MEM_META_SIZE;
+		}
 	}
 }
 
@@ -138,24 +152,24 @@ void heap_info(void)
 {
 	unsigned char* base = rpi_heap;
 	while ((void*)base < rpi_heap_top) {
-		unsigned char size = *base;
-		if(base[1] == 0) {
+		unsigned char size = base[MEM_SIZE_OFFSET];
+		if(base[MEM_USE_OFFSET] == 0) {
 			uart_char('F');
 			uart_char(' ');
 		}
-		uart_hex((unsigned long)(base+2));
+		uart_hex((unsigned long)(base + MEM_BASE_SIZE));
 		uart_string(" Size: ");
 		uart_10(size);
 		uart_string("\n");
 		static char* data = "00 \0";
 		static unsigned char temp = 0;
 		for(unsigned int i = 0; i < size; i++) {
-			temp = (base[2+i]>>4)&0xF;
+			temp = (base[MEM_BASE_SIZE + i]>>4)&0xF;
 			if(temp > 9)
 				temp += 7;
 			temp += 0x30;
 			data[0] = temp;
-			temp = (base[2+i])&0xF;
+			temp = (base[MEM_BASE_SIZE + i])&0xF;
 			if(temp > 9)
 				temp += 7;
 			temp += 0x30;
@@ -163,7 +177,7 @@ void heap_info(void)
 			uart_string(data);
 		}
 		uart_char('\n');
-		base += size + 2;
+		base += size + MEM_META_SIZE;
 	}
 	uart_char('\n');
 }
@@ -172,24 +186,24 @@ void heap_info_u(void)
 {
 	unsigned char* base = rpi_heap;
 	while ((void*)base < rpi_heap_top) {
-		unsigned char size = *base;
-		if(base[1] == 0) {
-			base += size + 2;
+		unsigned char size = base[MEM_SIZE_OFFSET];
+		if(base[MEM_USE_OFFSET] == 0) {
+			base += MEM_META_SIZE;
 			continue;
 		}
-		uart_hex((unsigned long)(base+2));
+		uart_hex((unsigned long)(base + MEM_BASE_SIZE));
 		uart_string(" Size: ");
 		uart_10(size);
 		uart_string("\n");
 		static char* data = "00 \0";
 		static unsigned char temp = 0;
 		for(unsigned int i = 0; i < size; i++) {
-			temp = (base[2+i]>>4)&0xF;
+			temp = (base[MEM_BASE_SIZE + i]>>4)&0xF;
 			if(temp > 9)
 				temp += 7;
 			temp += 0x30;
 			data[0] = temp;
-			temp = (base[2+i])&0xF;
+			temp = (base[MEM_BASE_SIZE + i])&0xF;
 			if(temp > 9)
 				temp += 7;
 			temp += 0x30;
@@ -197,7 +211,7 @@ void heap_info_u(void)
 			uart_string(data);
 		}
 		uart_char('\n');
-		base += size + 2;
+		base += size + MEM_META_SIZE;
 	}
 	uart_char('\n');
 }
