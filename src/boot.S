@@ -67,34 +67,51 @@ io_halt:
 	b io_halt
 
 io_halt_undefined:
+	stmfd sp!, {r0-r12,lr}
+	ldr r0, [lr, #-8]
+	push {r0}
 	ldr r0, =undefined_msg
-	ldr r0, [r0]
-	bl uart_char
-	b io_halt
+	bl uart_string
+	pop {r0}
+	bl uart_hexn
+	// Skip instruction for now
+	// In future, 
+	//  ldmfd ... pc->lr
+	//  subs pc, lr, #8
+	ldmfd sp!, {r0-r12,pc}^
 io_halt_swi:
+	stmfd sp!, {r0-r12,lr}
+	ldr r0, [lr, #-4]
+	bic r0, #0xFF000000
+	push {r0}
 	ldr r0, =swi_msg
-	ldr r0, [r0]
-	bl uart_char
-	b io_halt
+	bl uart_string
+	pop {r0}
+	bl uart_hexn
+	ldmfd sp!, {r0-r12,pc}^
 io_halt_prefetch:
 	ldr r0, =prefetch_msg
-	ldr r0, [r0]
-	bl uart_char
+	push {lr}
+	bl uart_string
+	pop {lr}
 	b io_halt
 io_halt_data:
 	ldr r0, =data_msg
-	ldr r0, [r0]
-	bl uart_char
+	push {lr}
+	bl uart_string
+	pop {lr}
 	b io_halt
 io_halt_unused:
 	ldr r0, =unused_msg
-	ldr r0, [r0]
-	bl uart_char
+	push {lr}
+	bl uart_string
+	pop {lr}
 	b io_halt
 io_halt_fiq:
 	ldr r0, =fiq_msg
-	ldr r0, [r0]
-	bl uart_char
+	push {lr}
+	bl uart_string
+	pop {lr}
 	b io_halt
 
 .align 5
@@ -116,9 +133,11 @@ data_handler:       .word io_halt_data
 unused_handler:     .word io_halt_unused
 irq_handler:        .word irq
 fiq_handler:        .word io_halt_fiq
-undefined_msg:	.asciz "Undefined\n"
-swi_msg:	.asciz "SWI\n"
-prefetch_msg:	.asciz "Prefetch\n"
-data_msg:	.asciz "Data\n"
-unused_msg:	.asciz "unused\n"
+
+.section .data
+undefined_msg:	.asciz "Undefined Handler\n"
+swi_msg:	.asciz "SWI Handler\n"
+prefetch_msg:	.asciz "Prefetch Handler\n"
+data_msg:	.asciz "Data Handler\n"
+unused_msg:	.asciz "Unused Handler\n"
 fiq_msg:	.asciz "FIQ\n"

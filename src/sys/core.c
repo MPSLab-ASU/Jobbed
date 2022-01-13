@@ -57,10 +57,9 @@ void sysinit(void)
 	enableirq();
 	enablefiq();
 
-	add_thread(testlocal, 0);
-	add_thread(testlocal, 1);
-	add_thread(testlocal, 3);
-	void* a = malloca(7, 9);
+	//add_thread(testlocal, 0);
+	//add_thread(testlocal, 1);
+	//add_thread(testlocal, 3);
 }
 
 struct Mutex testm = {.addr = (void*)0xDEADBEEF, .pid = NULL_PID};
