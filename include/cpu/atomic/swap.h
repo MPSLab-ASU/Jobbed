@@ -22,7 +22,7 @@ static inline void atm_lock(unsigned long pid, unsigned long* addr)
 "	dmb"
 	: "=&r" (current_lock_value), "=&r" (tmp)
 	: "r" (pid), "r" (addr)
-	: "cc");
+	: "cc", "memory");
 }
 
 static inline void atm_release(unsigned long* addr)
@@ -34,7 +34,7 @@ static inline void atm_release(unsigned long* addr)
 "	dsb\n"
 "	sev"
 	:: "r" (cleared), "r" (addr)
-	: "cc");
+	: "cc", "memory");
 }
 
 #endif
