@@ -4,10 +4,10 @@
 uart_char:
 	mov r2, #0x1000
 	movt r2, #0x3f20
-uart_char.loop:
+1:
 	ldr r3, [r2, #24]
 	tst r3, #0b100000
-	bne uart_char.loop
+	bne 1b
 	str r0, [r2]
 	bx lr
 
@@ -18,11 +18,11 @@ uart_string:
 	ldrb    r0, [r0]
 	cmp     r0, #0
 	popeq   {r4, pc}
-uart_string.loop:
+1:
 	bl      uart_char
 	ldrb    r0, [r4, #1]!
 	cmp     r0, #0
-	bne     uart_string.loop
+	bne 1b
 	pop     {r4, pc}
 
 .globl uart_hex
@@ -30,12 +30,12 @@ uart_hex:
 	push {r4, lr}
 	mov r2, #0x1000
 	movt r2, #0x3f20
-uart_hex.loop:
+1:
 	ldr r3, [r2, #24]
 	tst r3, #0b100000
-	bne uart_hex.loop
+	bne 1b
 	mov r3, #7
-uart_hex.hloop:
+2:
 	mov r1, r0
 	asr r1, r3
 	asr r1, r3
@@ -44,10 +44,10 @@ uart_hex.hloop:
 	and r1, #0xf
 	add r1, #0x30
 	cmp r1, #0x3A
-	blt uart_hex.print
+	blt 3f
 	add r1, #7
-uart_hex.print:
+3:
 	str r1, [r2]
 	subs r3, #1
-	bge uart_hex.hloop // Jump back to wait for availablilty
+	bge 2b // Jump back to wait for availablilty
 	pop {r4, pc}
