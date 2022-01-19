@@ -139,6 +139,9 @@ void status(void)
 	write_char(&g_Drawer, ' ');
 	sp = (unsigned long)getfiqstack();
 	write_hex32(&g_Drawer, sp);
+	write_char(&g_Drawer, ' ');
+	sp = (unsigned long)getsysstack();
+	write_hex32(&g_Drawer, sp);
 	write_char(&g_Drawer, '\n');
 	for(unsigned long i = 1; i <= 14; i++) {
 		write_hex32(&g_Drawer, *(unsigned long*)(0x4000 - i*4));
