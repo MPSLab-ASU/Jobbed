@@ -174,7 +174,7 @@ fiq_handler:        .word io_halt_fiq
 .section .data
 undefined_msg:	.asciz "Undefined Handler\nUNDEF "
 undefined_at:	.asciz " @ 0x"
-svc_msg:	.asciz "SVC Handler\nSVC #"
+svc_msg:	.asciz "SVC Handler #"
 prefetch_msg:	.asciz "Prefetch Handler\n"
 data_msg:	.asciz "Data Handler\n"
 fiq_msg:	.asciz "FIQ\n"
