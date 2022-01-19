@@ -3,15 +3,26 @@
 .globl kernel_main
 kernel_main:
 	bl sysinit
-kernel_main.loop:
+	cps #0x10
+	// Intentional undefined instruction
+	.word 0xf7f0a000
+	// Supervisor Call #1 - Does nothing special
+	svc #1
+	mrs r0, cpsr
+	bl uart_hexn
+	// Supervisor Call #1 - Returns in supervisor mode
+	svc #0
+	mrs r0, cpsr
+	bl uart_hexn
+1:
 	//bl schedule
 	wfe
-	b kernel_main.loop
+	b 1b
 
 .section ".data"
 .globl cntfrq
-cntfrq:
-	.word 0,0,0,0
+cntfrq: // 32 bits
+	.word 0
 .globl cmdidx
 cmdidx:
 	.word 0
