@@ -67,6 +67,7 @@ void c_irq_handler(void)
 						} else if (data == 0x61) {
 							cmd[off] = (char) data;
 							off += 1;
+							//_start(); // Trigger reset
 							//heap_info_u();
 						// Else output
 						} else {
