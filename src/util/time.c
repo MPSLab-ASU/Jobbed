@@ -1,6 +1,11 @@
 #include <symbols.h>
 #include <sys/core.h>
 
+void routing_core0cntv_to_core0fiq(void)
+{
+	store32(0x80, CORE0_TIMER_IRQCNTL);
+}
+
 void routing_core0cntv_to_core0irq(void)
 {
 	store32(0x08, CORE0_TIMER_IRQCNTL);

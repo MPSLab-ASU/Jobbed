@@ -124,12 +124,14 @@ void status(void)
 		write_cchar(&g_Drawer, '!', 0xFF00FF);
 	}
 
+
 	g_Drawer.x = 0;
 	g_Drawer.y = 9;
+	write_string(&g_Drawer, "SVC      IRQ      FIQ      User/SYS\n");
 	for(int i = 0; i < 128; i++)
 		write_char(&g_Drawer, ' ');
 	g_Drawer.x = 0;
-	g_Drawer.y = 9;
+	g_Drawer.y = 10;
 
 	unsigned long sp = (unsigned long)getsvcstack();
 	write_hex32(&g_Drawer, sp);
@@ -143,14 +145,23 @@ void status(void)
 	sp = (unsigned long)getsysstack();
 	write_hex32(&g_Drawer, sp);
 	write_char(&g_Drawer, '\n');
+	/* WRITE Stack Values
 	for(unsigned long i = 1; i <= 14; i++) {
-		write_hex32(&g_Drawer, *(unsigned long*)(0x4000 - i*4));
+		write_hex32(&g_Drawer, *(unsigned long*)(0x2000 - i*4));
 		if(i % 6 == 0) {
 			write_char(&g_Drawer, '\n');
 		} else {
 			write_char(&g_Drawer, ' ');
 		}
 	}
+	write_char(&g_Drawer, '\n');
+	*/
+	unsigned long coren;
+	asm volatile (
+	"mrc p15, #0, %0, c0, c0, #5\n"
+	"and %0, %0, #3" : "=r"(coren) :: "cc");
+	write_string(&g_Drawer, "Status Updated by Core #");
+	write_10(&g_Drawer, coren);
 
 	g_Drawer.x = x;
 	g_Drawer.y = y;
