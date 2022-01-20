@@ -86,6 +86,7 @@ irq:
 	pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 	subs pc, lr, #4
 
+// TODO: Each core needs to set up their stacks
 core1run:
 core2run:
 core3run:
@@ -94,7 +95,6 @@ io_halt:
 	wfi
 	b io_halt
 
-// TODO: SETUP OTHER STACKS
 undefined:
 	stmfd sp!, {r0-r12,lr}
 	ldr r0, [lr, #-4]
