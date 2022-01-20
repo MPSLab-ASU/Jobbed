@@ -28,7 +28,7 @@ void testlocal(void);
 void sysinit(void)
 {
 	// Route GPU interrupts to Core 0
-	store32(0x00, GPU_INTERRUPTS_ROUTING);
+	store32(0x04, GPU_INTERRUPTS_ROUTING);
 
 	// Mask Overrun of UART0
 	store32(1<<4, UART0_IMSC);
@@ -41,8 +41,10 @@ void sysinit(void)
 	cntfrq = read_cntfrq();
 	// Clear cntv interrupt and set next 1 second timer
 	write_cntv_tval(cntfrq);
-	// Route timer to core0 irq
-	routing_core0cntv_to_core0irq();
+	//// Route timer to core0 irq
+	//routing_core0cntv_to_core0irq();
+	// Route timer to core0 fiq
+	routing_core0cntv_to_core0fiq();
 	// Enable timer
 	enablecntv();
 
