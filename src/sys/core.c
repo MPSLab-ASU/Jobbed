@@ -33,6 +33,7 @@ void sysinit(void)
 	cmdidx = 0;
 	for(int i = 0; i < 2048; i++)
 		cmd[i] = 0;
+	*(unsigned long*) SYS_TIMER_C0 = 60000000; // 60 second trigger
 	///...
 
 	// Route GPU interrupts to Core 0

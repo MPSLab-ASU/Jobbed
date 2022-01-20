@@ -51,3 +51,17 @@ unsigned long read_cntfrq(void)
 	asm volatile ("mrc p15, 0, %0, c14, c0, 0" : "=r"(val) );
 	return val;
 }
+
+unsigned long long get_time(void)
+{
+	union {
+		unsigned long long tval;
+		struct {
+			unsigned long high;
+			unsigned long low;
+		} tvalb;
+	} t;
+	t.tvalb.low = *(unsigned long*)SYS_TIMER_CLO;
+	t.tvalb.high = *(unsigned long*)SYS_TIMER_CHI;
+	return t.tval;
+}

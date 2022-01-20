@@ -102,6 +102,8 @@ void c_irq_handler(void)
 	} else if (source & (1 << 3)) {
 		c_timer();
 		return;
+	} else {
+		uart_string("Unknown Interrupt Detected!");
 	}
 	return;
 }
@@ -196,6 +198,8 @@ void c_fiq_handler(void)
 	} else if (source & (1 << 3)) {
 		c_timer();
 		return;
+	} else {
+		uart_string("Unknown Interrupt Detected!");
 	}
 	return;
 }

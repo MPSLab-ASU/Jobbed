@@ -9,6 +9,7 @@ unsigned long long read_cntvoff(void);
 unsigned long read_cntv_tval(void);
 void write_cntv_tval(unsigned long val);
 unsigned long read_cntfrq(void);
+unsigned long long get_time(void);
 
 static inline void enablecntv(void)
 {

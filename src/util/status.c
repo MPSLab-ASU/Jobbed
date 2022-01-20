@@ -162,6 +162,15 @@ void status(void)
 	"and %0, %0, #3" : "=r"(coren) :: "cc");
 	write_string(&g_Drawer, "Status Updated by Core #");
 	write_10(&g_Drawer, coren);
+	write_string(&g_Drawer, "\nSys Timer Status: ");
+	coren = *(unsigned long*)SYS_TIMER_CS;
+	write_10(&g_Drawer, coren);
+	write_string(&g_Drawer, " : ");
+	unsigned long long tval = get_time();
+	write_hex32(&g_Drawer, (tval >> 32));
+	write_hex32(&g_Drawer, tval);
+	write_char(&g_Drawer, '\n');
+	write_10(&g_Drawer, ((unsigned long)tval)/1000000);
 
 	g_Drawer.x = x;
 	g_Drawer.y = y;
