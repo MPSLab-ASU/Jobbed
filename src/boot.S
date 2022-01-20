@@ -9,8 +9,12 @@ reset:
 	// disable core0,1,2.
 	mrc p15, #0, r1, c0, c0, #5
 	and r1, r1, #3
-	cmp r1, #0
-	bne io_halt
+	cmp r1, #1
+	beq core1run
+	cmp r1, #2
+	beq core2run
+	cmp r1, #3
+	bge core3run
 
 	// set vector address.
 	ldr r0, =vector
@@ -82,6 +86,9 @@ irq:
 	pop  {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 	subs pc, lr, #4
 
+core1run:
+core2run:
+core3run:
 .globl io_halt
 io_halt:
 	wfi
@@ -101,6 +108,7 @@ undefined:
 	// Output lr
 	mov r1, #0x1000
 	ldr r0, [r1, #-4]
+	sub r0, #4
 	bl uart_hexn
 	// Skip instruction for now
 	// In future, 
@@ -144,12 +152,13 @@ io_halt_data:
 	sub r0, #8
 	bl uart_hexn
 	ldmfd sp!, {r0-r12,pc}^
-io_halt_fiq:
-	ldr r0, =fiq_msg
-	push {lr}
-	bl uart_string
-	pop {lr}
-	b io_halt
+fiq:
+	stmfd sp!, {r0-r12,lr}
+	//ldr r0, =fiq_msg
+	//bl uart_string
+	bl c_fiq_handler
+	ldmfd sp!, {r0-r12,lr}
+	subs pc, lr, #4
 
 .align 5
 vector:
@@ -169,7 +178,7 @@ prefetch_handler:   .word io_halt_prefetch
 data_handler:       .word io_halt_data
 unused_handler:     .word io_halt
 irq_handler:        .word irq
-fiq_handler:        .word io_halt_fiq
+fiq_handler:        .word fiq
 
 .section .data
 undefined_msg:	.asciz "Undefined Handler\nUNDEF "
