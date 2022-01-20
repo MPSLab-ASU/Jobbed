@@ -82,6 +82,7 @@ enum
 
 	CORE0_TIMER_IRQCNTL = 0x40000040,
 	CORE0_IRQ_SOURCE    = 0x40000060,
+	CORE0_FIQ_SOURCE    = 0x40000070,
 
 	/* Power Management, Reset controller and Watchdog registers */
 	//BCM2835_PERI_BASE        = 0x3F000000,

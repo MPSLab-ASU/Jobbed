@@ -1,6 +1,7 @@
 #ifndef UTIL_TIME_H
 #define UTIL_TIME_H
 
+void routing_core0cntv_to_core0fiq(void);
 void routing_core0cntv_to_core0irq(void);
 unsigned long read_core0timer_pending(void);
 unsigned long long read_cntvct(void);
