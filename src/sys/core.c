@@ -27,8 +27,16 @@ void testlocal(void);
 // Initialize IRQs
 void sysinit(void)
 {
+	// Clear System Globals
+	*(unsigned long*)exe_cnt_m.addr = 0;
+	exe_cnt_m.pid = NULL_PID;
+	cmdidx = 0;
+	for(int i = 0; i < 2048; i++)
+		cmd[i] = 0;
+	///...
+
 	// Route GPU interrupts to Core 0
-	store32(0x04, GPU_INTERRUPTS_ROUTING);
+	store32(0x00, GPU_INTERRUPTS_ROUTING);
 
 	// Mask Overrun of UART0
 	store32(1<<4, UART0_IMSC);
