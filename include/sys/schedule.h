@@ -41,7 +41,6 @@ struct ThreadQueues {
 };
 
 struct Scheduler {
-	void* sp;
 	struct Thread* rthread;
 	struct ThreadQueues thread_queues[PRIORITIES];
 };

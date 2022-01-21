@@ -4,6 +4,7 @@
 #include <sys/schedule.h>
 
 #ifndef GLOBALS_C
+extern unsigned long irqlr;
 extern unsigned long cntfrq;
 extern unsigned long cmdidx;
 extern char cmd[2048];
