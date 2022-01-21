@@ -20,6 +20,7 @@ extern unsigned long stimel;
 extern unsigned long stimeh;
 extern struct Drawer g_Drawer;
 extern struct Scheduler scheduler;
+extern struct Thread usrloopthread;
 extern unsigned int gwidth, gheight, gpitch, gisrgb;
 extern unsigned char stacks_table[MAX_THREADS];
 #endif

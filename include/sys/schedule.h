@@ -50,7 +50,7 @@ void init_scheduler(void);
 // void add_thread(void* pc, void* arg, unsigned char priority);
 /// TODO: ENSURE IRQ/ FIQ entry switches 
 ///  to user mode then calls the SVC call
-// extern void schedule(void);
+extern void schedule(void);
 // void yield(void);
 // struct Thread* next_thread(void);
 

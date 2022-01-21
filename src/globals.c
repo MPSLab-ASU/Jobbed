@@ -19,6 +19,7 @@ __attribute__((section(".bss"))) unsigned long stimel;
 __attribute__((section(".bss"))) unsigned long stimeh;
 __attribute__((section(".bss"))) struct Drawer g_Drawer;
 __attribute__((section(".bss"))) struct Scheduler scheduler;
+__attribute__((section(".bss"))) struct Thread usrloopthread;
 __attribute__((section(".bss"))) unsigned int gwidth;
 __attribute__((section(".bss"))) unsigned int gheight;
 __attribute__((section(".bss"))) unsigned int gpitch;
