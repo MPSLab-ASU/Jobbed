@@ -6,6 +6,7 @@
 #define MEM_BASE_SIZE 2
 #define MEM_META_SIZE 3
 #define NULL 0
+#define MAX_MM 0x100000
 
 struct MemTab {
 	unsigned char size;
@@ -20,6 +21,7 @@ struct RotBuffer {
 	unsigned int woffset;
 };
 
+void memshow(unsigned char* addr, unsigned int n);
 void memset(unsigned char* dest, unsigned char value, unsigned int n);
 void memcpy(unsigned char* src, unsigned char* dest, unsigned int n);
 unsigned char memcmp(unsigned char* a, unsigned char* b, unsigned int n);

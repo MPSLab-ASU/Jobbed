@@ -1,10 +1,6 @@
 #ifndef SYS_CORE_H
 #define SYS_CORE_H
 
-#ifndef SYS_CORE_C
-extern char* os_info_v;
-#endif
-
 static inline unsigned long load32(unsigned long addr)
 {
 	return *(volatile unsigned long*)addr;

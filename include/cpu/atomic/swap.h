@@ -1,6 +1,6 @@
 #ifndef CPU_ATOMIC_SWAP_A_H
 #define CPU_ATOMIC_SWAP_A_H
-#include "../../util/mutex.h"
+#include <util/mutex.h>
 
 /// https://stackoverflow.com/questions/16329123/use-of-strexeq-instead-of-strex-for-spinlock-implementation-in-arm
 /// https://elixir.bootlin.com/linux/v4.9/source/arch/arm/include/asm/spinlock.h

@@ -1,28 +1,9 @@
 #include <cpu/irq.h>
 #include <drivers/uart.h>
+#include <globals.h>
 #include <sys/core.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
-
-#define SYS_SCHEDULE_C
-struct Scheduler scheduler = {
-	.tlist = {
-		{.prev = 0, .next = 0, .data = 0},
-		{.prev = 0, .next = 0, .data = 0},
-		{.prev = 0, .next = 0, .data = 0},
-		{.prev = 0, .next = 0, .data = 0},
-		{.prev = 0, .next = 0, .data = 0},
-		{.prev = 0, .next = 0, .data = 0},
-	},
-	.rthread_ll = 0,
-	.ctx = 0,
-};
-unsigned long syssp = 0;
-struct cpu_context syscpu = {
-	.r4 = 0, .r5 = 0, .r6 = 0, .r7 = 0,
-	.r8 = 0, .r9 = 0, .r10 = 0, .r11 = 0,
-	.r12 = 0, .lr = 0,
-};
 
 void init_scheduler(void)
 {
@@ -32,10 +13,8 @@ void init_scheduler(void)
 		scheduler.tlist[i].data = 0;
 	}
 	scheduler.rthread_ll = 0;
-	scheduler.ctx = &syscpu;
+	scheduler.ctx = &svccpu;
 }
-
-unsigned char stacks_table[MAX_THREADS] = {0, };
 
 void* get_stack(void)
 {
@@ -48,7 +27,6 @@ void* get_stack(void)
 	return 0;
 }
 
-static unsigned long nextpid = 3;
 void add_thread(void (*thread_fxn)(void), unsigned char priority)
 {
 	struct Thread* thread = (struct Thread*)malloca(sizeof(struct Thread), 4);
@@ -119,7 +97,7 @@ void schedule_c(void)
 	}
 	else if (next_thread_ll != 0) {
 		struct Thread* next_thread = next_thread_ll->data;
-		preserve_sys_stack(&syssp);
+		preserve_sys_stack(&svcsp);
 		restore_stack(next_thread);
 		scheduler.rthread_ll = next_thread_ll;
 		scheduler.ctx = &next_thread->data.cpu_context;
@@ -129,8 +107,8 @@ void schedule_c(void)
 		restore_ctx(scheduler.ctx);
 		asm volatile ("bx %0" :: "r"(rthread->thread));
 	} else {
-		scheduler.ctx = &syscpu;
-		restore_sys_stack(&syssp);
+		scheduler.ctx = &svccpu;
+		restore_sys_stack(&svcsp);
 		restore_ctx(scheduler.ctx);
 	}
 }

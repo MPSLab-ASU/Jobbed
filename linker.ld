@@ -30,6 +30,7 @@ SECTIONS
     {
         bss = .;
         *(.bss*)
+	KEEP(*(.bss.mmheap))
 	KEEP(*(.bss.heap))
     }
     . = ALIGN(4096); /* align to page size */

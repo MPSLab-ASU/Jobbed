@@ -4,10 +4,6 @@
 #define GG_MAX_X 128
 #define GG_MAX_Y  46
 
-#ifndef GRAPHICS_LFB_C
-extern unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
-#endif
-
 void lfb_init(void);
 void lfb_showpicture(void);
 

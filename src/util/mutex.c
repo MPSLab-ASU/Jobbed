@@ -1,4 +1,5 @@
 #include <cpu/atomic/swap.h>
+#include <globals.h>
 #include <lib/mem.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>

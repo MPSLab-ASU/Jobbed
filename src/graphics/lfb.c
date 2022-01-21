@@ -1,11 +1,10 @@
 #include <drivers/uart.h>
+#include <globals.h>
 #include <graphics/glyphs.h>
 #include <graphics/lfb.h>
 #include <graphics/mbox.h>
 #include <graphics/philosopher_toad.h>
 
-#define GRAPHICS_LFB_C
-unsigned int width, height, pitch, isrgb;   /* dimensions and channel order */
 unsigned char *lfb;                         /* raw frame buffer address */
 
 #define SCR_WIDTH  1024
@@ -64,10 +63,10 @@ void lfb_init(void)
 	//the closest supported resolution instead
 	if(mbox_call(MBOX_CH_PROP) && mbox[20]==32 && mbox[28]!=0) {
 		mbox[28]&=0x3FFFFFFF;   //convert GPU address to ARM address
-		width=mbox[5];          //get actual physical width
-		height=mbox[6];         //get actual physical height
-		pitch=mbox[33];         //get number of bytes per line
-		isrgb=mbox[24];         //get the actual channel order
+		gwidth=mbox[5];          //get actual physical width
+		gheight=mbox[6];         //get actual physical height
+		gpitch=mbox[33];         //get number of bytes per line
+		gisrgb=mbox[24];         //get the actual channel order
 		lfb=(void*)((unsigned long)mbox[28]);
 	} else {
 		uart_string("Unable to set screen resolution to 1024x768x32\n");
@@ -77,8 +76,8 @@ void lfb_init(void)
 void clear_screen(void)
 {
 	unsigned char *ptr=lfb;
-	for(unsigned int y = 0; y < height; y++) {
-		for(unsigned int x = 0; x < width; x++) {
+	for(unsigned int y = 0; y < gheight; y++) {
+		for(unsigned int x = 0; x < gwidth; x++) {
 			*(unsigned int*)ptr = 0x000000;
 			ptr += 4;
 		}
@@ -95,16 +94,16 @@ void lfb_showpicture(void)
 	unsigned char *ptr=lfb;
 	char *data=toad_data, pixel[4];
 
-	ptr = lfb + (height-toad_height)*pitch + (width-toad_width)*4;
+	ptr = lfb + (gheight-toad_height)*gpitch + (gwidth-toad_width)*4;
 	for(y=0;y<toad_height;y++) {
 		for(x=0;x<toad_width;x++) {
 			HEADER_PIXEL(data, pixel);
 			// the image is in RGB. So if we have an RGB framebuffer, we can copy the pixels
 			// directly, but for BGR we must swap R (pixel[0]) and B (pixel[2]) channels.
-			*((unsigned int*)ptr)=isrgb ? *((unsigned int *)&pixel) : (unsigned int)(pixel[0]<<16 | pixel[1]<<8 | pixel[2]);
+			*((unsigned int*)ptr)=gisrgb ? *((unsigned int *)&pixel) : (unsigned int)(pixel[0]<<16 | pixel[1]<<8 | pixel[2]);
 			ptr+=4;
 		}
-		ptr+=pitch-toad_width*4;
+		ptr+=gpitch-toad_width*4;
 	}
 }
 
@@ -112,7 +111,7 @@ void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsign
 {
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
-	ptr += (pitch*ly*GLYPH_Y+lx*4*GLYPH_X);
+	ptr += (gpitch*ly*GLYPH_Y+lx*4*GLYPH_X);
 	unsigned char ltr = (letter & 0xF) + 0x30;
 	if (ltr > 0x39) {
 		ltr += 7;
@@ -120,13 +119,13 @@ void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsign
 	for(y=0; y<GLYPH_Y; y++) {
 		for(x=0; x<GLYPH_X; x++) {
 			if((0x80 >> ((GLYPH_X-1)-x)) & glyphs[y+GLYPH_Y*(ltr)]) {
-				*((unsigned int*)ptr) = isrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
+				*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 			} else {
 				*((unsigned int*)ptr) = 0x000000;
 			}
 			ptr += 4;
 		}
-		ptr += pitch - GLYPH_X*4;
+		ptr += gpitch - GLYPH_X*4;
 	}
 }
 
@@ -139,18 +138,18 @@ void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsi
 {
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
-	ptr += (pitch*ly*GLYPH_Y+lx*4*GLYPH_X);
+	ptr += (gpitch*ly*GLYPH_Y+lx*4*GLYPH_X);
 	unsigned char ltr = letter & 0x7F;
 	for(y=0; y<GLYPH_Y; y++) {
 		for(x=0; x<GLYPH_X; x++) {
 			if((0x80 >> ((GLYPH_X-1)-x)) & glyphs[y+GLYPH_Y*(ltr)]) {
-				*((unsigned int*)ptr) = isrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
+				*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 			} else {
 				*((unsigned int*)ptr) = 0x000000;
 			}
 			ptr += 4;
 		}
-		ptr += pitch - GLYPH_X*4;
+		ptr += gpitch - GLYPH_X*4;
 	}
 }
 

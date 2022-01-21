@@ -1,16 +1,12 @@
 #include <drivers/uart.h>
+#include <globals.h>
 #include <graphics/drawer.h>
 #include <sys/core.h>
-#include <sys/kernel.h>
 #include <sys/timer.h>
 #include <util/mutex.h>
 #include <util/status.h>
 #include <util/time.h>
 #include <symbols.h>
-
-#define SYS_TIMER_C
-static unsigned long exe_cnt = 0;
-struct Mutex exe_cnt_m = {.addr = &exe_cnt, .pid = NULL_PID};
 
 void increase_counter(void)
 {

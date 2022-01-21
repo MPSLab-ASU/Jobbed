@@ -1,9 +1,6 @@
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
 
-#define GRAPHICS_DRAWER_C
-struct Drawer g_Drawer = {.x = 0, .y = 0};
-
 void write_cchar(struct Drawer* d, char s, unsigned int c)
 {
 	d->x %= GG_MAX_X;

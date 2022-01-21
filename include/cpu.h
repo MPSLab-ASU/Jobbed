@@ -1,6 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
 
+extern void _start(void);
+
 static inline unsigned long getmode(void)
 {
 	unsigned long mode;
@@ -10,13 +12,7 @@ static inline unsigned long getmode(void)
 
 static inline void setsvc(void)
 {
-	unsigned long mode;
-	asm volatile (
-	"mrs %0, cpsr\n"
-	"bic %0, %0, #0x1F\n"
-	"orr %0, %0, #0x13\n"
-	"msr cpsr_c, %0" 
-	: "=r"(mode));
+	asm volatile ( "cps #0x13" );
 }
 
 static inline void setmode(unsigned long mode)

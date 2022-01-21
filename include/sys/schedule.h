@@ -53,11 +53,6 @@ struct Scheduler {
 	struct LL tlist[PRIORITIES];
 };
 
-#ifndef SYS_SCHEDULE_C
-#define SYS_SCHEDULE_C
-extern struct Scheduler scheduler;
-#endif
-
 void init_scheduler(void);
 void add_thread(void (*thread_fxn)(void), unsigned char priority);
 extern void schedule(void);
@@ -66,13 +61,6 @@ void schedule_irq(void);
 void cleanup(void);
 void sched_info(void);
 struct LL* get_next_thread(void);
-
-static inline void yield(void)
-{
-	struct Thread* t = scheduler.rthread_ll->data;
-	t->data.status = THREAD_WAITING;
-	schedule();
-}
 
 static inline void preserve_stack(struct Thread* thread)
 {

@@ -91,7 +91,7 @@ schedule.current_thread_nexists:
 	ldr r1, [r0, #0x8]
 	// r1 =  struct Thread* next_thread
 	// Store system stack pointer
-	ldr r2, =syssp
+	ldr r2, =svcsp
 	push {r1}
 	ldr r1, [r2]
 	cmp r1, #0
@@ -127,9 +127,9 @@ schedule.no_next_thread:
 	// r1 = 0 = struct LL* current_thread_ll
 	// No thread to run
 	// Restore sys context
-	ldr r0, =syscpu
+	ldr r0, =svccpu
 	str r0, [r3, #0x4] // Store context
-	ldr r0, =syssp
+	ldr r0, =svcsp
 	ldr r1, [r0]
 	cmp r1, #0
 	beq schedule.exit

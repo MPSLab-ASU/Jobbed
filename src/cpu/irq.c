@@ -1,9 +1,9 @@
 #include <cpu/irq.h>
 #include <drivers/uart.h>
+#include <globals.h>
 #include <graphics/drawer.h>
 #include <symbols.h>
 #include <sys/core.h>
-#include <sys/kernel.h>
 #include <sys/schedule.h>
 #include <sys/timer.h>
 #include <util/mutex.h>
@@ -67,7 +67,7 @@ void c_irq_handler(void)
 						} else if (data == 0x61) {
 							cmd[off] = (char) data;
 							off += 1;
-							//_start(); // Trigger reset
+							_start(); // Trigger reset
 							//heap_info_u();
 						// Else output
 						} else {
@@ -98,12 +98,18 @@ void c_irq_handler(void)
 				write_string(&g_Drawer, cmd);
 				return;
 			}
+		} else if (*(unsigned long*)SYS_TIMER_CS == SYS_TIMER_SC_M0) {
+			volatile unsigned long* timer_cs = (unsigned long*)SYS_TIMER_CS;
+			volatile unsigned long* timer_chi = (unsigned long*)SYS_TIMER_CHI;
+			volatile unsigned long* nexttime = (unsigned long*)SYS_TIMER_C0;
+			*timer_cs = SYS_TIMER_SC_M0;
+			*nexttime = *timer_chi + 60000000;
+		} else {
+			uart_string("Pending?");
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
 		return;
-	} else {
-		uart_string("Unknown Interrupt Detected!");
 	}
 	return;
 }
@@ -194,12 +200,17 @@ void c_fiq_handler(void)
 				write_string(&g_Drawer, cmd);
 				return;
 			}
+		} else if (*(unsigned long*)SYS_TIMER_CS == SYS_TIMER_SC_M0) {
+			volatile unsigned long* timer_cs = (unsigned long*)SYS_TIMER_CS;
+			volatile unsigned long* timer_chi = (unsigned long*)SYS_TIMER_CHI;
+			volatile unsigned long* nexttime = (unsigned long*)SYS_TIMER_C0;
+			*timer_cs = SYS_TIMER_SC_M0;
+			//*nexttime = *timer_chi + 60000000;
+			*nexttime = *timer_chi + 10000;
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
 		return;
-	} else {
-		uart_string("Unknown Interrupt Detected!");
 	}
 	return;
 }

@@ -24,18 +24,3 @@ kernel_main:
 1:
 	wfe
 	b 1b
-
-.section ".data"
-.globl cntfrq
-cntfrq: // 32 bits
-	.word 0
-.globl cmdidx
-cmdidx:
-	.word 0
-.globl cmd
-cmd:
-	.space 2049
-
-.section ".bss.heap"
-mheap:
-	.space 0x100000

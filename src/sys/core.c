@@ -1,5 +1,6 @@
 #include <cpu/irq.h>
 #include <drivers/uart.h>
+#include <globals.h>
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
 #include <lib/mem.h>
@@ -7,7 +8,6 @@
 #include <lib/strings.h>
 #include <symbols.h>
 #include <sys/core.h>
-#include <sys/kernel.h>
 #include <sys/power.h>
 #include <sys/schedule.h>
 #include <sys/timer.h>
@@ -15,25 +15,19 @@
 #include <util/status.h>
 #include <util/time.h>
 
-#define SYS_CORE_C
-#ifndef VERSION
-char* os_info_v = "?";
-#else
-char* os_info_v = VERSION;
-#endif
-
 void testlocal(void);
 
 // Initialize IRQs
 void sysinit(void)
 {
 	// Clear System Globals
-	*(unsigned long*)exe_cnt_m.addr = 0;
+	exe_cnt_m.addr = &exe_cnt;
 	exe_cnt_m.pid = NULL_PID;
-	cmdidx = 0;
-	for(int i = 0; i < 2048; i++)
-		cmd[i] = 0;
-	*(unsigned long*) SYS_TIMER_C0 = 60000000; // 60 second trigger
+	nextpid = SCHED_PID + 1;
+	rpi_heap_top = &rpi_heap;
+	stimeh = *(unsigned long*)SYS_TIMER_CHI;
+	stimel = *(unsigned long*)SYS_TIMER_CLO;
+	*(unsigned long*) SYS_TIMER_C0 = 60000000 + stimeh; // 6 second trigger
 	///...
 
 	// Route GPU interrupts to Core 0
@@ -56,6 +50,8 @@ void sysinit(void)
 	routing_core0cntv_to_core0fiq();
 	// Enable timer
 	enablecntv();
+	// Enable system timer
+	store32(SYS_TIMER_SC_M0, IRQ_ENABLE1);
 
 	// Graphics Initialize
 	lfb_init();
@@ -73,7 +69,6 @@ void sysinit(void)
 	//add_thread(testlocal, 3);
 }
 
-struct Mutex testm = {.addr = (void*)0xDEADBEEF, .pid = NULL_PID};
 void testlocal1(void)
 {
 	unsigned long a = 5;
@@ -104,13 +99,6 @@ void testlocal(void)
 		schedule();
 	}
 	if (t->data.pid == 3) {
-		yield();
-		yield();
-		yield();
-		yield();
-		yield();
-		yield();
-		yield();
 		// Example
 		/*
 			while (uart_tx_full) {

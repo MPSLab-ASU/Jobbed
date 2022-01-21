@@ -1,4 +1,5 @@
 #include <cpu.h>
+#include <globals.h>
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
 #include <symbols.h>
@@ -93,10 +94,10 @@ void status(void)
 	// Video Status
 	write_string(&g_Drawer, "\nVIDEO: ");
 	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
-	write_10(&g_Drawer, width);
+	write_10(&g_Drawer, gwidth);
 	write_string(&g_Drawer, "x");
-	write_10(&g_Drawer, height);
-	if(isrgb) {
+	write_10(&g_Drawer, gheight);
+	if(gisrgb) {
 		write_string(&g_Drawer, " RGB");
 	} else {
 		write_string(&g_Drawer, " BGR");
@@ -162,13 +163,16 @@ void status(void)
 	"and %0, %0, #3" : "=r"(coren) :: "cc");
 	write_string(&g_Drawer, "Status Updated by Core #");
 	write_10(&g_Drawer, coren);
-	write_string(&g_Drawer, "\nSys Timer Status: ");
-	coren = *(unsigned long*)SYS_TIMER_CS;
+	write_string(&g_Drawer, "\nSys Timer Status ");
+	coren = *(volatile unsigned long*)SYS_TIMER_CS;
 	write_10(&g_Drawer, coren);
-	write_string(&g_Drawer, " : ");
+	write_string(&g_Drawer, ":");
 	unsigned long long tval = get_time();
 	write_hex32(&g_Drawer, (tval >> 32));
 	write_hex32(&g_Drawer, tval);
+	write_string(&g_Drawer, ":");
+	coren = *(volatile unsigned long*)SYS_TIMER_C0;
+	write_10(&g_Drawer, coren);
 	write_char(&g_Drawer, '\n');
 	write_10(&g_Drawer, ((unsigned long)tval)/1000000);
 

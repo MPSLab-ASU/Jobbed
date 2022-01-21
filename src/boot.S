@@ -6,6 +6,7 @@
  
 _start:
 reset:
+	cpsid if
 	// disable core0,1,2.
 	mrc p15, #0, r1, c0, c0, #5
 	and r1, r1, #3

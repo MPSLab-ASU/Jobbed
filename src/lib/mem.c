@@ -1,4 +1,5 @@
 #include <drivers/uart.h>
+#include <globals.h>
 #include <lib/mem.h>
 
 void memcpyrot(unsigned char* src, struct RotBuffer* rb, unsigned int n)
@@ -14,6 +15,26 @@ void memcpyrot(unsigned char* src, struct RotBuffer* rb, unsigned int n)
 		offset++;
 	}
 	rb->woffset = offset;
+}
+
+void memshow(unsigned char* addr, unsigned int n)
+{
+	unsigned char temp;
+	for(unsigned int i = 0; i < n; i++) {
+		temp = addr[i] >> 4;
+		temp += 0x30;
+		if (temp > 0x39)
+			temp += 7;
+		uart_char(temp);
+		temp = addr[i];
+		temp += 0x30;
+		if (temp > 0x39)
+			temp += 7;
+		uart_char(temp);
+		if (i+1 != n)
+			uart_char(0x20);
+	}
+	uart_char(0x0a);
 }
 
 void memshow32(unsigned long* addr, unsigned int n)
@@ -71,10 +92,6 @@ unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n)
 	}
 	return 1;
 }
-
-#define MAX_MM 0x100000
-static unsigned char rpi_heap[MAX_MM] = {0,};
-static void* rpi_heap_top = &rpi_heap;
 
 
 void* malloc(unsigned char size)
