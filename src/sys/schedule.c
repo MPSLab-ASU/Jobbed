@@ -23,30 +23,13 @@ void init_scheduler(void)
 	for (int i = 0; i < PRIORITIES; i++) {
 		tq = &scheduler.thread_queues[i];
 		struct ThreadRotBuffer* trb = &tq->ready;
-		trb->roffset = 0;
-		trb->woffset = 0;
-		for (int j = 0; j < TQUEUE_MAX; j++)
-			trb->queue[j] = 0;
-		trb = &tq->mwait;
-		trb->roffset = 0;
-		trb->woffset = 0;
-		for (int j = 0; j < TQUEUE_MAX; j++)
-			trb->queue[j] = 0;
-		trb = &tq->swait;
-		trb->roffset = 0;
-		trb->woffset = 0;
-		for (int j = 0; j < TQUEUE_MAX; j++)
-			trb->queue[j] = 0;
-		trb = &tq->finish;
-		trb->roffset = 0;
-		trb->woffset = 0;
-		for (int j = 0; j < TQUEUE_MAX; j++)
-			trb->queue[j] = 0;
-		trb = &tq->serror;
-		trb->roffset = 0;
-		trb->woffset = 0;
-		for (int j = 0; j < TQUEUE_MAX; j++)
-			trb->queue[j] = 0;
+		for (int i = 0; i < TQUEUE_CNT; i++) {
+			trb->roffset = 0;
+			trb->woffset = 0;
+			for (int j = 0; j < TQUEUE_MAX; j++)
+				trb->queue[j] = 0;
+			trb += 1;
+		}
 	}
 	// Initialize nextpid
 	nextpid = SCHED_PID + 1;
