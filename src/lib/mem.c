@@ -11,6 +11,13 @@ void memshow32(unsigned long* addr, unsigned int n)
 	uart_char(0x0a);
 }
 
+void memset(unsigned char* dest, unsigned char value, unsigned int n)
+{
+	for(unsigned int i = 0; i < n; i++) {
+		dest[i] = value;
+	}
+}
+
 void memcpy(unsigned char* src, unsigned char* dest, unsigned int n)
 {
 	for(unsigned int i = 0; i < n; i++) {
@@ -25,6 +32,13 @@ unsigned char memcmp(unsigned char* a, unsigned char* b, unsigned int n)
 			return 0;
 	}
 	return 1;
+}
+
+void memset32(unsigned long* dest, unsigned long value, unsigned int n)
+{
+	for(unsigned int i = 0; i < n; i++) {
+		dest[i] = value;
+	}
 }
 
 void memcpy32(unsigned long* src, unsigned long* dest, unsigned int n)
@@ -64,6 +78,13 @@ void* malloc(unsigned char size)
 	// Use allocator's PID
 	mem[i + MEM_USE_OFFSET] = 1;
 	return (void*)&mem[i + MEM_BASE_SIZE];
+}
+
+void* calloc(unsigned char size)
+{
+	void* addr = malloc(size);
+	memset(addr, 0, size);
+	return addr;
 }
 
 void* malloca(unsigned char size, unsigned char amnt)
@@ -111,6 +132,13 @@ void* malloca(unsigned char size, unsigned char amnt)
 
 		i += mem[i] + MEM_META_SIZE;
 	}
+}
+
+void* calloca(unsigned char size, unsigned char amnt)
+{
+	void* addr = malloca(size, amnt);
+	memset(addr, 0, size);
+	return addr;
 }
 
 void free(void* memloc)
