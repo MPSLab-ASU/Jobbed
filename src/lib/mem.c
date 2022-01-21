@@ -5,13 +5,15 @@ void memcpyrot(unsigned char* src, struct RotBuffer* rb, unsigned int n)
 {
 	if (n > rb->size)
 		return;
-	unsigned char* addr = rb->base + rb->offset;
+	unsigned char* base = rb->base;
+	unsigned int offset = rb->woffset;
 	for (unsigned int i = 0; i < n; i++) {
-		if (addr >= (unsigned char*)(rb->base + rb->size))
-			addr = rb->base;
-		*addr = src[i];
-		addr++;
+		if (offset >= rb->size)
+			offset = 0;
+		base[offset] = src[i];
+		offset++;
 	}
+	rb->woffset = offset;
 }
 
 void memshow32(unsigned long* addr, unsigned int n)

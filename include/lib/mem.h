@@ -15,7 +15,8 @@ struct MemTab {
 struct RotBuffer {
 	void* base;
 	unsigned int size;
-	unsigned int offset;
+	unsigned int roffset;
+	unsigned int woffset;
 };
 
 void memset(unsigned char* dest, unsigned char value, unsigned int n);
