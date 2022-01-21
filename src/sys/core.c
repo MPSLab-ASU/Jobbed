@@ -71,43 +71,43 @@ void sysinit(void)
 
 void testlocal1(void)
 {
-	unsigned long a = 5;
-	struct Thread* t = scheduler.rthread_ll->data;
-	uart_string("vRan Thread ");
-	uart_10(t->data.pid);
-	uart_string(" Pri. ");
-	uart_10(t->data.priority);
-	uart_string(" ...\n");
-	add_thread(testlocal, 0);
-	schedule();
-	a += t->data.pid;
-	uart_10(a);
-	uart_string(" Done!\n");
+	//unsigned long a = 5;
+	//struct Thread* t = scheduler.rthread_ll->data;
+	//uart_string("vRan Thread ");
+	//uart_10(t->data.pid);
+	//uart_string(" Pri. ");
+	//uart_10(t->data.priority);
+	//uart_string(" ...\n");
+	//add_thread(testlocal, 0);
+	//schedule();
+	//a += t->data.pid;
+	//uart_10(a);
+	//uart_string(" Done!\n");
 }
 
 void testlocal(void)
 {
-	struct Thread* t = scheduler.rthread_ll->data;
-	uart_string("Ran Thread ");
-	uart_10(t->data.pid);
-	uart_string(" Pri. ");
-	uart_10(t->data.priority);
-	uart_string(" ...\n");
-	//delay(0x80000000);
-	if (t->data.pid == 5) {
-		add_thread(testlocal1, 1);
-		schedule();
-	}
-	if (t->data.pid == 3) {
-		// Example
-		/*
-			while (uart_tx_full) {
-				t->data.status = THREAD_WAITING;
-				schedule();
-			} // Will wait until uart_tx is not full
-		*/
-	}
-	uart_string("Done! ");
-	uart_10(t->data.pid);
-	uart_char('\n');
+	//struct Thread* t = scheduler.rthread_ll->data;
+	//uart_string("Ran Thread ");
+	//uart_10(t->data.pid);
+	//uart_string(" Pri. ");
+	//uart_10(t->data.priority);
+	//uart_string(" ...\n");
+	////delay(0x80000000);
+	//if (t->data.pid == 5) {
+	//	add_thread(testlocal1, 1);
+	//	schedule();
+	//}
+	//if (t->data.pid == 3) {
+	//	// Example
+	//	/*
+	//		while (uart_tx_full) {
+	//			t->data.status = THREAD_WAITING;
+	//			schedule();
+	//		} // Will wait until uart_tx is not full
+	//	*/
+	//}
+	//uart_string("Done! ");
+	//uart_10(t->data.pid);
+	//uart_char('\n');
 }

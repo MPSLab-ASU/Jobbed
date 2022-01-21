@@ -9,16 +9,16 @@ unsigned char lock_mutex(struct Mutex* m, unsigned long pid)
 	if (m->pid == NULL_PID) {
 		// Use currently running thread's PID if no pid given
 		if (pid == 0) {
-			struct Thread* thread = scheduler.rthread_ll->data;
-			atm_lock(thread->data.pid, &m->pid);
+			struct Thread* thread = scheduler.rthread;
+			atm_lock(thread->pid, &m->pid);
 		} else {
 			atm_lock(pid, &m->pid);
 		}
 		return 0;
 	}
-	struct Thread* thread = scheduler.rthread_ll->data;
-	thread->data.status = THREAD_WAITING_FOR_MUTEX;
-	thread->data.mutex_waiting = m;
+	struct Thread* thread = scheduler.rthread;
+	thread->status = THREAD_MWAIT;
+	thread->mptr = m;
 	return 1;
 }
 
@@ -29,8 +29,8 @@ unsigned char release_mutex(struct Mutex* m, unsigned long pid)
 {
 	// Use current thread's PID if no pid
 	if (pid == 0) {
-		struct Thread* thread = scheduler.rthread_ll->data;
-		if (m->pid == thread->data.pid) {
+		struct Thread* thread = scheduler.rthread;
+		if (m->pid == thread->pid) {
 			atm_release(&m->pid);
 			return 0;
 		}
