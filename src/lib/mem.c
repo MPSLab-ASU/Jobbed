@@ -76,7 +76,7 @@ unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n)
 static unsigned char rpi_heap[MAX_MM] = {0,};
 static void* rpi_heap_top = &rpi_heap;
 
-// TODO: Put size at end and cleanup from tail
+
 void* malloc(unsigned char size)
 {
 	unsigned char* mem = (unsigned char*)rpi_heap;
@@ -85,6 +85,8 @@ void* malloc(unsigned char size)
 	while (((void*)(mem + i) < rpi_heap_top) && !(mem[i + MEM_SIZE_OFFSET] == size && mem[i + MEM_USE_OFFSET]==0)) {
 		i += mem[i] + MEM_META_SIZE;
 	}
+	if (mem + i >= (unsigned char*)(rpi_heap_top + MAX_MM))
+		return NULL;
 	// Update top of heap
 	if (mem[i] == 0)
 		rpi_heap_top = (void*)&mem[i + MEM_META_SIZE + size];
@@ -98,8 +100,23 @@ void* malloc(unsigned char size)
 void* calloc(unsigned char size)
 {
 	void* addr = malloc(size);
-	memset(addr, 0, size);
-	return addr;
+	if (addr != NULL) {
+		memset(addr, 0, size);
+		return addr;
+	}
+	return NULL;
+}
+void* realloc(void* old, unsigned char size)
+{
+	unsigned char osize = *(unsigned char*)(old - MEM_BASE_SIZE);
+	if (size <= osize)
+		return old;
+	void* new = malloc(size);
+	if (new != NULL) {
+		free(old);
+		return new;
+	}
+	return NULL;
 }
 
 void* malloca(unsigned char size, unsigned char amnt)
@@ -110,7 +127,7 @@ void* malloca(unsigned char size, unsigned char amnt)
 	unsigned char* mem = (unsigned char*)rpi_heap;
 	unsigned long i = 0;
 	// TODO: Use Null PID
-	while(1) {
+	while(mem + i < rpi_heap + MAX_MM) {
 		unsigned long diff = (unsigned long)mem + i + MEM_BASE_SIZE;
 		diff %= amnt;
 		diff = amnt - diff;
@@ -134,6 +151,10 @@ void* malloca(unsigned char size, unsigned char amnt)
 					diff += amnt;
 				}
 				unsigned long empty_size = diff - MEM_META_SIZE;
+				if(empty_size == 0) {
+					empty_size += amnt;
+					diff += amnt;
+				}
 				mem[i + MEM_SIZE_OFFSET] = empty_size;
 				mem[i + MEM_BASE_SIZE + empty_size] = empty_size;
 				i += diff;
@@ -147,13 +168,30 @@ void* malloca(unsigned char size, unsigned char amnt)
 
 		i += mem[i] + MEM_META_SIZE;
 	}
+	return NULL;
 }
 
 void* calloca(unsigned char size, unsigned char amnt)
 {
 	void* addr = malloca(size, amnt);
-	memset(addr, 0, size);
-	return addr;
+	if (addr != NULL) {
+		memset(addr, 0, size);
+		return addr;
+	}
+	return NULL;
+}
+
+void* realloca(void* old, unsigned char size, unsigned char amnt)
+{
+	unsigned char osize = *(unsigned char*)(old - MEM_BASE_SIZE);
+	if (size <= osize)
+		return old;
+	void* new = malloca(size, amnt);
+	if (new != NULL) {
+		free(old);
+		return new;
+	}
+	return NULL;
 }
 
 void free(void* memloc)

@@ -5,6 +5,7 @@
 #define MEM_USE_OFFSET 1
 #define MEM_BASE_SIZE 2
 #define MEM_META_SIZE 3
+#define NULL 0
 
 struct MemTab {
 	unsigned char size;
@@ -29,8 +30,10 @@ void memset32(unsigned long* dest, unsigned long value, unsigned int n);
 void memcpy32(unsigned long* src, unsigned long* dest, unsigned int n);
 unsigned char memcmp32(unsigned long* a, unsigned long* b, unsigned int n);
 
+void* realloc(void* old, unsigned char size);
 void* malloc(unsigned char size);
 void* calloc(unsigned char size);
+void* realloca(void* old, unsigned char size, unsigned char amnt);
 void* malloca(unsigned char size, unsigned char amnt);
 void* calloca(unsigned char size, unsigned char amnt);
 void free(void* memloc);
