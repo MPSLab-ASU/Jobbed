@@ -60,7 +60,7 @@ void status(void)
 	g_Drawer.x = 0;
 	g_Drawer.y = 0;
 	// OS Info
-	write_cstring(&g_Drawer, "DendritOS", 0xFF0000);
+	write_cstring(&g_Drawer, os_name, 0xFF0000);
 	write_cstring(&g_Drawer, " v", 0x00FFFF);
 	write_cstring(&g_Drawer, os_info_v, 0x00FFFF);
 	write_string(&g_Drawer, " #");

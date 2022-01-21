@@ -8,6 +8,7 @@ extern unsigned long cntfrq;
 extern unsigned long cmdidx;
 extern char cmd[2048];
 
+extern char* os_name;
 extern char* os_info_v;
 extern unsigned long exe_cnt;
 extern struct Mutex exe_cnt_m;
@@ -18,8 +19,6 @@ extern unsigned long stimel;
 extern unsigned long stimeh;
 extern struct Drawer g_Drawer;
 extern struct Scheduler scheduler;
-extern unsigned long svcsp;
-extern struct cpu_context svccpu;
 extern unsigned int gwidth, gheight, gpitch, gisrgb;
 extern unsigned char stacks_table[MAX_THREADS];
 #endif
