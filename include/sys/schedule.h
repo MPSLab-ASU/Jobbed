@@ -2,7 +2,7 @@
 #define SYS_SCHEDULE_H
 
 #define TQUEUE_MAX 0x100
-#define STACK_SIZE 0x1000
+#define STACK_SIZE 0x4000
 #define TQUEUE_CNT 5
 #define PRIORITIES 6
 #define MAX_THREADS TQUEUE_MAX*PRIORITIES*TQUEUE_CNT
@@ -47,7 +47,8 @@ struct Scheduler {
 
 
 void init_scheduler(void);
-// void add_thread(void* pc, void* arg, unsigned char priority);
+void add_thread(void* pc, void* arg, unsigned char priority);
+void uart_scheduler(void);
 /// TODO: ENSURE IRQ/ FIQ entry switches 
 ///  to user mode then calls the SVC call
 extern void schedule(void);

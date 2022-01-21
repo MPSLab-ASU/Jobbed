@@ -11,7 +11,3 @@ cmdidx:
 .global cmd
 cmd:
 	.space 2049
-
-.section ".bss.heap"
-mheap:
-	.space 0x100000

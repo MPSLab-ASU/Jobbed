@@ -23,7 +23,6 @@ void sysinit(void)
 	// Clear System Globals
 	exe_cnt_m.addr = &exe_cnt;
 	exe_cnt_m.pid = NULL_PID;
-	nextpid = SCHED_PID + 1;
 	rpi_heap_top = &rpi_heap;
 	stimeh = *(unsigned long*)SYS_TIMER_CHI;
 	stimel = *(unsigned long*)SYS_TIMER_CLO;
@@ -64,9 +63,12 @@ void sysinit(void)
 	enableirq();
 	enablefiq();
 
-	//add_thread(testlocal, 0);
-	//add_thread(testlocal, 1);
-	//add_thread(testlocal, 3);
+	add_thread(testlocal, 0, 0);
+	add_thread(testlocal, 0, 1);
+	add_thread(testlocal, 0, 1);
+	add_thread(testlocal, 0, 3);
+	add_thread(testlocal, 0, 5);
+	uart_scheduler();
 }
 
 void testlocal1(void)

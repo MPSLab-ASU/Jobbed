@@ -29,9 +29,9 @@ SECTIONS
     .bss :
     {
         bss = .;
-        *(.bss*)
-	KEEP(*(.bss.mmheap))
-	KEEP(*(.bss.heap))
+        *(.bss.*)
+	*(.bss.mmheap)
+	*(.bss.mmheap.base)
     }
     . = ALIGN(4096); /* align to page size */
     __bss_end = .;
