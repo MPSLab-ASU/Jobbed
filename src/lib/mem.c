@@ -1,6 +1,19 @@
 #include <drivers/uart.h>
 #include <lib/mem.h>
 
+void memcpyrot(unsigned char* src, struct RotBuffer* rb, unsigned int n)
+{
+	if (n > rb->size)
+		return;
+	unsigned char* addr = rb->base + rb->offset;
+	for (unsigned int i = 0; i < n; i++) {
+		if (addr >= (unsigned char*)(rb->base + rb->size))
+			addr = rb->base;
+		*addr = src[i];
+		addr++;
+	}
+}
+
 void memshow32(unsigned long* addr, unsigned int n)
 {
 	for(unsigned int i = 0; i < n; i++) {
