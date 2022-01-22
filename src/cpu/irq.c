@@ -68,7 +68,14 @@ void c_irq_handler(void)
 						} else if (data == 0x61) {
 							cmd[off] = (char) data;
 							off += 1;
-							_start(); // Trigger reset
+							//_start(); // Trigger reset
+							add_thread(localtest, 0, 0);
+							//heap_info_u();
+						} else if (data == 0x62) {
+							cmd[off] = (char) data;
+							off += 1;
+							//_start(); // Trigger reset
+							uart_scheduler();
 							//heap_info_u();
 						// Else output
 						} else {
@@ -115,7 +122,8 @@ void c_irq_handler(void)
 	return;
 }
 
-void c_fiq_handler(void)
+static unsigned long counter = 0;
+unsigned long c_fiq_handler(void)
 {
 	unsigned long source = load32(CORE0_FIQ_SOURCE);
 	if (source & (1 << 8)) {
@@ -199,7 +207,7 @@ void c_fiq_handler(void)
 				g_Drawer.y = 7;
 				write_string(&g_Drawer, "> ");
 				write_string(&g_Drawer, cmd);
-				return;
+				return 0;
 			}
 		} else if (*(unsigned long*)SYS_TIMER_CS == SYS_TIMER_SC_M0) {
 			volatile unsigned long* timer_cs = (unsigned long*)SYS_TIMER_CS;
@@ -211,18 +219,24 @@ void c_fiq_handler(void)
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
-		return;
+		if (counter++ >= 0x10) {
+			counter = 0;
+			//uart_scheduler();
+			return 1;
+		}
+		return 0;
 	}
-	return;
+	return 0;
 }
 
 void localtest(void)
 {
 	//struct Thread* t = scheduler.rthread_ll->data;
-	//uart_string("Running IRQ Task... ");
+	uart_string("Running IRQ Task...\n");
+	uart_scheduler();
 	//uart_10(t->data.pid);
 	//uart_char('\n');
-	//uart_string("Finished! ");
+	uart_string("Finished!\n");
 	//uart_10(t->data.pid);
 	//uart_char('\n');
 	//sched_info();

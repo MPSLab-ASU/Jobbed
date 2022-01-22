@@ -16,6 +16,7 @@
 #include <util/time.h>
 
 void testlocal(void);
+void longlocal(void);
 
 // Initialize IRQs
 void sysinit(void)
@@ -68,48 +69,17 @@ void sysinit(void)
 	add_thread(testlocal, 0, 1);
 	add_thread(testlocal, 0, 3);
 	add_thread(testlocal, 0, 5);
+	add_thread(longlocal, 0, 5);
 	uart_scheduler();
-}
-
-void testlocal1(void)
-{
-	//unsigned long a = 5;
-	//struct Thread* t = scheduler.rthread_ll->data;
-	//uart_string("vRan Thread ");
-	//uart_10(t->data.pid);
-	//uart_string(" Pri. ");
-	//uart_10(t->data.priority);
-	//uart_string(" ...\n");
-	//add_thread(testlocal, 0);
-	//schedule();
-	//a += t->data.pid;
-	//uart_10(a);
-	//uart_string(" Done!\n");
 }
 
 void testlocal(void)
 {
-	//struct Thread* t = scheduler.rthread_ll->data;
-	//uart_string("Ran Thread ");
-	//uart_10(t->data.pid);
-	//uart_string(" Pri. ");
-	//uart_10(t->data.priority);
-	//uart_string(" ...\n");
-	////delay(0x80000000);
-	//if (t->data.pid == 5) {
-	//	add_thread(testlocal1, 1);
-	//	schedule();
-	//}
-	//if (t->data.pid == 3) {
-	//	// Example
-	//	/*
-	//		while (uart_tx_full) {
-	//			t->data.status = THREAD_WAITING;
-	//			schedule();
-	//		} // Will wait until uart_tx is not full
-	//	*/
-	//}
-	//uart_string("Done! ");
-	//uart_10(t->data.pid);
-	//uart_char('\n');
+	uart_string("Ran thread!\n");
+	if (scheduler.rthread->pid == 4) {
+		add_thread(testlocal, 0, 0);
+		//uart_scheduler();
+	}
+	uart_hexn((unsigned long)getsp());
+	uart_string("Exiting thread!\n");
 }

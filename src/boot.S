@@ -120,28 +120,34 @@ svc:
 	stmfd sp!, {r0-r12,lr}
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
-	push {r0}
-	ldr r0, =svc_msg
-	bl uart_string
-	ldr r0, [sp]
-	bl uart_hexn
-	pop {r0}
+	/// push {r0}
+	/// ldr r0, =svc_msg
+	/// bl uart_string
+	/// ldr r0, [sp]
+	/// bl uart_hexn
+	/// pop {r0}
 	// SVC #0 returns to supervisor mode
 	// TODO: Make supervisor mode return to a specific location
 	//  (rather than to a user location) such as the kernel loop
 	cmp r0, #0
+	bne 2f
+	cps #0x13
+	b   1f
+2:
+	cmp r0, #2
 	bne 1f
-	mrs r0, spsr
-	bic r0, #0x1f
-	// Return in supervisor mode
-	orr r0, #0x13
-	msr spsr, r0
+	ldmfd sp!, {r0-r12,lr}
+	bl schedule
 1:
 	ldmfd sp!, {r0-r12,pc}^
 io_halt_prefetch:
 	stmfd sp!, {r0-r12,lr}
+	push {lr}
 	ldr r0, =prefetch_msg
 	bl uart_string
+	pop {lr}
+	mov r0, lr
+	bl uart_hexn
 	ldmfd sp!, {r0-r12,pc}^
 io_halt_data:
 	stmfd sp!, {r0-r12,lr}
@@ -158,6 +164,17 @@ fiq:
 	//ldr r0, =fiq_msg
 	//bl uart_string
 	bl c_fiq_handler
+	cmp r0, #1
+	bne 1f
+	ldmfd sp!, {r0-r12,lr}
+	sub lr, #4
+	stmfd sp!, {r0-r12,lr}
+	ldr r3, =irqlr
+	str lr, [r3, #0]
+	ldmfd sp!, {r0-r12,lr}
+	cps #0x13
+	b schedule
+1:
 	ldmfd sp!, {r0-r12,lr}
 	subs pc, lr, #4
 

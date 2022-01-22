@@ -3,15 +3,15 @@
 #include <sys/schedule.h>
 #include <util/mutex.h>
 
-void loop(void);
-void cleanup(void);
+extern void kernel_usr_task_loop(void);
+extern void cleanup(void);
 
 void init_scheduler(void)
 {
 	// Set rthread to usrloopthread - an infinitely running thread so that the pointer will never be null
-	usrloopthread.pc = (void*)loop;
+	usrloopthread.pc = (void*)kernel_usr_task_loop;
 	usrloopthread.sp = (void*)0x5FC8;
-	*(unsigned long**)usrloopthread.sp = (unsigned long*)loop;
+	*(unsigned long**)usrloopthread.sp = (unsigned long*)kernel_usr_task_loop;
 	usrloopthread.sp_base = (void*)0x6000;
 	usrloopthread.mptr = 0;
 	usrloopthread.pid = -1;
@@ -33,12 +33,6 @@ void init_scheduler(void)
 	}
 	// Initialize nextpid
 	nextpid = SCHED_PID + 1;
-}
-
-void loop(void)
-{
-	while(1)
-		asm volatile ("wfe");
 }
 
 void* get_stack(void)
@@ -111,10 +105,10 @@ void uart_scheduler(void)
 			uart_char('\n');
 			unsigned long roffset = trb->roffset;
 			while (roffset != trb->woffset) {
-				uart_hex((unsigned long)&trb->queue[roffset]);
+				uart_hex((unsigned long)trb->queue[roffset]);
 				uart_char(' ');
 				memshow32((void*)trb->queue[roffset], 6);
-				memshow32((void*)trb->queue[roffset]->sp, 14);
+				//memshow32((void*)trb->queue[roffset]->sp, 14);
 				roffset++;
 				roffset %= TQUEUE_MAX;
 			}
@@ -124,6 +118,19 @@ void uart_scheduler(void)
 	uart_string("==============\n");
 }
 
-void cleanup(void)
+struct Thread* next_thread(void)
 {
+	struct Thread* next = &usrloopthread;
+	for (int p = 0; p < PRIORITIES; p++) {
+		struct ThreadRotBuffer* rb = &scheduler.thread_queues[p].ready;
+		if (rb->roffset == rb->woffset)
+			continue;
+		return rb->queue[rb->roffset];
+	}
+	return next;
+}
+
+void* get_rthread_roffset(void)
+{
+	return &scheduler.thread_queues[scheduler.rthread->priority].ready.roffset;
 }

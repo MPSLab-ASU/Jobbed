@@ -12,7 +12,7 @@
 	ldr r2, [r3, #0] // struct Thread* rthread
 	str lr, [r2, #0] // svc_lr -> void* pc
 	str sp, [r2, #4] // svc_lr -> void* sp
-	cps #0x10 // Svc mode
+	cps #0x13 // Svc mode
 .endm
 
 .macro restore_ctx
@@ -25,7 +25,7 @@
 	// Restore Usr regs
 	ldmfd sp!, {lr}
 	ldmfd sp!, {r0-r12}
-	cps #0x10 // Svc mode
+	cps #0x13 // Svc mode
 .endm
 
 // Assumption: Enter in SVC mode
@@ -41,12 +41,34 @@ schedule:
 	mov r0, #0
 	str r0, [r1]
 1:
-	// bl get_next_thread // next_thread -> r0
+	bl next_thread // Thread* next -> r0
 	ldr r3, =scheduler
-	ldr r2, [r3, #0] // struct Thread* current
+	ldr r2, [r3, #0] // Thread* current
 	cmp r0, r2 // current = next?
 	beq 2f
 	str r0, [r3, #0] // next -> rthread
 2:
 	restore_ctx
-	movs pc, lr
+	subs pc, lr, #0
+
+.globl cleanup
+cleanup:
+	// roffset++
+	bl get_rthread_roffset
+	ldr r1, [r0, #0]
+	add r1, #1
+	str r1, [r0, #0]
+	// usrloop -> rthread
+	ldr r2, =usrloopthread
+	str r2, [r3, #0]
+	ldr sp, [r2, #4]
+	ldmfd sp!,{lr}
+	ldmfd sp!,{r0-r12}
+	ldr lr, =kernel_usr_task_loop
+	// svc sched
+	svc #2
+.globl kernel_usr_task_loop
+kernel_usr_task_loop:
+	wfe
+	//svc #2
+	b kernel_usr_task_loop

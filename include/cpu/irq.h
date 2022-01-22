@@ -19,6 +19,6 @@ static inline void disablefiq(void)
 }
 
 void c_irq_handler(void);
-void c_fiq_handler(void);
+unsigned long c_fiq_handler(void);
 
 #endif
