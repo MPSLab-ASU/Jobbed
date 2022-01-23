@@ -162,13 +162,10 @@ svc:
 	ldmfd sp!, {r0-r12,pc}^
 io_halt_prefetch:
 	stmfd sp!, {r0-r12,lr}
+	mov r4, lr
 	ldr r0, =prefetch_msg
 	bl uart_string
-	mrs r1, spsr
-	mrs r2, cpsr
-	msr cpsr_c, r1
-	mov r0, lr
-	msr cpsr_c, r2
+	mov r0, r4
 	bl uart_hexn
 	ldmfd sp!, {r0-r12,lr}
 	subs pc, lr, #4
