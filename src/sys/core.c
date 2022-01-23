@@ -16,7 +16,8 @@
 #include <util/time.h>
 
 void testlocal(void);
-void longlocal(void);
+void testnew(void);
+void __attribute__((naked)) usr_schedule(void);
 
 // Initialize IRQs
 void sysinit(void)
@@ -69,7 +70,7 @@ void sysinit(void)
 	add_thread(testlocal, 0, 1);
 	add_thread(testlocal, 0, 3);
 	add_thread(testlocal, 0, 5);
-	add_thread(longlocal, 0, 5);
+	add_thread(testnew, 0, 4);
 	uart_scheduler();
 }
 
@@ -82,4 +83,17 @@ void testlocal(void)
 	}
 	uart_hexn((unsigned long)getsp());
 	uart_string("Exiting thread!\n");
+}
+
+void testnew(void)
+{
+	uart_string("Ran special\n");
+	add_thread(testlocal, 0, 0);
+	usr_schedule();
+	uart_string("Finish special!\n");
+}
+
+void __attribute__((naked)) usr_schedule(void)
+{
+	asm volatile ("svc #2");
 }
