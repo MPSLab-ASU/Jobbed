@@ -155,6 +155,9 @@ svc:
 	ldr r3, =stacks_table
 	mov r0, #0
 	strb r0, [r3, r1]
+	// Free the thread after freeing the stack
+	mov r0, r2
+	bl free
 1:
 	ldmfd sp!, {r0-r12,pc}^
 io_halt_prefetch:

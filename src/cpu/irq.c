@@ -77,6 +77,13 @@ void c_irq_handler(void)
 							//_start(); // Trigger reset
 							uart_scheduler();
 							//heap_info_u();
+						} else if (data == 0x63) {
+							cmd[off] = (char) data;
+							off += 1;
+							//_start(); // Trigger reset
+							//uart_scheduler();
+							heap_info();
+							//heap_info_u();
 						// Else output
 						} else {
 							cmd[off] = (char) data;
@@ -220,12 +227,12 @@ unsigned long c_fiq_handler(void)
 	} else if (source & (1 << 3)) {
 		c_timer();
 		counter++;
-		if (counter % 0x60 == 0) {
+		if (counter % 0x100 == 0) {
 			add_thread(localtest, 0, 0);
 		} else if (counter % 0x6000 == 0) {
 			counter = 0;
 		}
-		if (counter % 0x10 == 0) {
+		if (counter % 0x60 == 0) {
 			//uart_scheduler();
 			return 1;
 		} 
@@ -236,4 +243,5 @@ unsigned long c_fiq_handler(void)
 
 void localtest(void)
 {
+	uart_char('.');
 }
