@@ -58,6 +58,8 @@ cleanup:
 	ldr r1, [r0, #0]
 	add r1, #1
 	str r1, [r0, #0]
+	// cleanup stack
+	svc #3
 	// usrloop -> rthread
 	ldr r2, =usrloopthread
 	str r2, [r3, #0]

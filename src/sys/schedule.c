@@ -4,7 +4,6 @@
 #include <util/mutex.h>
 
 extern void kernel_usr_task_loop(void);
-extern void cleanup(void);
 
 void init_scheduler(void)
 {
@@ -12,7 +11,7 @@ void init_scheduler(void)
 	usrloopthread.pc = (void*)kernel_usr_task_loop;
 	usrloopthread.sp = (void*)0x5FC8;
 	*(unsigned long**)usrloopthread.sp = (unsigned long*)kernel_usr_task_loop;
-	usrloopthread.sp_base = (void*)0x6000;
+	usrloopthread.sp_base = -1;
 	usrloopthread.mptr = 0;
 	usrloopthread.pid = -1;
 	usrloopthread.priority = -1;
@@ -35,25 +34,29 @@ void init_scheduler(void)
 	nextpid = SCHED_PID + 1;
 }
 
-void* get_stack(void)
+struct RStack get_stack(void)
 {
+	struct RStack r = {.sp = 0, .idx = -1};
 	for (int i = 0; i < MAX_THREADS; i++) {
 		if (stacks_table[i] == 0) {
 			stacks_table[i] = 1;
-			return (void*)0x20000000 - STACK_SIZE*i;
+			r.idx = i;
+			r.sp = (void*)0x20000000 - STACK_SIZE*i;
+			return r;
 		}
 	}
-	return 0;
+	return r;
 }
 
 void add_thread(void* pc, void* arg, unsigned char priority)
 {
-	void* sp = get_stack();
+	//void* sp = get_stack();
+	struct RStack r = get_stack();
 	struct Thread* thread = (struct Thread*)malloca(sizeof(struct Thread), 4);
 	thread->pc = pc;
-	if (sp) {
-		thread->sp_base = sp;
-		unsigned long* argp = sp;
+	if (r.sp) {
+		thread->sp_base = r.idx;
+		unsigned long* argp = r.sp;
 		argp -= 1;
 		*argp = (unsigned long)arg; // Set r0 to the argument
 		argp -= 13;
@@ -61,8 +64,8 @@ void add_thread(void* pc, void* arg, unsigned char priority)
 		thread->sp = (void*)argp;
 		thread->status = THREAD_READY;
 	} else {
-		thread->sp_base = 0;
-		thread->sp = 0;
+		thread->sp_base = r.idx;
+		thread->sp = r.sp;
 		thread->status = THREAD_SERROR;
 	}
 	thread->mptr = (void*)0;

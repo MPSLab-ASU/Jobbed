@@ -15,10 +15,15 @@ enum ThreadStatus {
 	THREAD_SERROR = 4, // Stack Error
 };
 
+struct RStack {
+	void* sp;
+	unsigned long idx;
+};
+
 struct Thread {
 	void* pc;
 	void* sp; // Store r0-r12,lr on stack
-	void* sp_base;
+	unsigned long sp_base;
 	void* mptr;
 	unsigned long pid;
 	unsigned char priority;

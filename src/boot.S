@@ -136,14 +136,25 @@ svc:
 	// TODO: Make supervisor mode return to a specific location
 	//  (rather than to a user location) such as the kernel loop
 	cmp r0, #0
-	bne 2f
+	bne 3f
 	cps #0x13
 	b   1f
-2:
+3:
 	cmp r0, #2
-	bne 1f
+	bne 2f
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
+2:
+	cmp r0, #3
+	bne 1f
+	ldr r3, =scheduler
+	ldr r2, [r3, #0]
+	ldr r1, [r2, #8] // sp_base
+	cmp r1, #-1
+	beq 1f
+	ldr r3, =stacks_table
+	mov r0, #0
+	strb r0, [r3, r1]
 1:
 	ldmfd sp!, {r0-r12,pc}^
 io_halt_prefetch:

@@ -219,11 +219,16 @@ unsigned long c_fiq_handler(void)
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
-		if (counter++ >= 0x10) {
+		counter++;
+		if (counter % 0x60 == 0) {
+			add_thread(localtest, 0, 0);
+		} else if (counter % 0x6000 == 0) {
 			counter = 0;
+		}
+		if (counter % 0x10 == 0) {
 			//uart_scheduler();
 			return 1;
-		}
+		} 
 		return 0;
 	}
 	return 0;
@@ -231,13 +236,4 @@ unsigned long c_fiq_handler(void)
 
 void localtest(void)
 {
-	//struct Thread* t = scheduler.rthread_ll->data;
-	uart_string("Running IRQ Task...\n");
-	//uart_scheduler();
-	//uart_10(t->data.pid);
-	//uart_char('\n');
-	uart_string("Finished!\n");
-	//uart_10(t->data.pid);
-	//uart_char('\n');
-	//sched_info();
 }
