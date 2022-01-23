@@ -161,7 +161,7 @@ svc:
 	bl free
 1:
 	ldmfd sp!, {r0-r12,pc}^
-io_halt_prefetch:
+prefetch:
 	stmfd sp!, {r0-r12,lr}
 	mov r4, lr
 	mov r0, #0
@@ -175,7 +175,7 @@ io_halt_prefetch:
 	bl draw_hex32
 	ldmfd sp!, {r0-r12,lr}
 	subs pc, lr, #4
-io_halt_data:
+data:
 	stmfd sp!, {r0-r12,lr}
 	mov r4, lr
 	mov r0, #0
@@ -225,8 +225,8 @@ vector:
 reset_handler:      .word reset
 undefined_handler:  .word undefined
 svc_handler:        .word svc
-prefetch_handler:   .word io_halt_prefetch
-data_handler:       .word io_halt_data
+prefetch_handler:   .word prefetch
+data_handler:       .word data
 unused_handler:     .word io_halt
 irq_handler:        .word irq
 fiq_handler:        .word fiq
