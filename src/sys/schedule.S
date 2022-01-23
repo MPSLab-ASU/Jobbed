@@ -6,8 +6,8 @@
 .macro preserve_ctx
 	cps #0x1f // Sys mode
 	// Store Usr regs
-	stmfd sp!, {r0-r12}
-	stmfd sp!, {lr}
+	push {r0-r12}
+	push {lr}
 	ldr r3, =scheduler // struct Scheduler
 	ldr r2, [r3, #0] // struct Thread* rthread
 	str lr, [r2, #0] // svc_lr -> void* pc
@@ -23,8 +23,8 @@
 	cps #0x1f // Sys mode
 	mov sp, r0 // Set stack pointer
 	// Restore Usr regs
-	ldmfd sp!, {lr}
-	ldmfd sp!, {r0-r12}
+	pop {lr}
+	pop {r0-r12}
 	cps #0x13 // Svc mode
 .endm
 

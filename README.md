@@ -23,7 +23,7 @@
 - FIX IRQ Stack LEAK
 - FIX IRQ Stack LEAK
 - FIX IRQ Stack LEAK
-- Implement Scheduler for IRQ
+- Implement Lock for accessing thread information
 - Fix mutex with scheduler
 - Implement handlers
 - Put threads in user mode

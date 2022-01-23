@@ -233,7 +233,7 @@ void localtest(void)
 {
 	//struct Thread* t = scheduler.rthread_ll->data;
 	uart_string("Running IRQ Task...\n");
-	uart_scheduler();
+	//uart_scheduler();
 	//uart_10(t->data.pid);
 	//uart_char('\n');
 	uart_string("Finished!\n");

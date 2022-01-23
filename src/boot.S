@@ -174,10 +174,10 @@ fiq:
 	bne 1f
 	ldmfd sp!, {r0-r12,lr}
 	sub lr, #4
-	stmfd sp!, {r0-r12,lr}
+	push {r3}
 	ldr r3, =irqlr
 	str lr, [r3, #0]
-	ldmfd sp!, {r0-r12,lr}
+	pop {r3}
 	cps #0x13
 	b schedule
 1:
