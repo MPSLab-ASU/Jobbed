@@ -168,7 +168,8 @@ io_halt_prefetch:
 	pop {lr}
 	mov r0, lr
 	bl uart_hexn
-	ldmfd sp!, {r0-r12,pc}^
+	ldmfd sp!, {r0-r12,lr}
+	subs pc, lr, #4
 io_halt_data:
 	stmfd sp!, {r0-r12,lr}
 	ldr r0, =data_msg
@@ -178,7 +179,8 @@ io_halt_data:
 	ldr r0, [r1, #-4]
 	sub r0, #8
 	bl uart_hexn
-	ldmfd sp!, {r0-r12,pc}^
+	ldmfd sp!, {r0-r12,lr}
+	subs pc, lr, #4 // Should be 8 once I can actually handle the abort
 fiq:
 	stmfd sp!, {r0-r12,lr}
 	//ldr r0, =fiq_msg
