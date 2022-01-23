@@ -41,6 +41,7 @@ void* calloca(unsigned char size, unsigned char amnt);
 void free(void* memloc);
 void* heap_base(void);
 void* heap_top(void);
+void vheap_info(void);
 void heap_info(void);
 void heap_info_u(void);
 

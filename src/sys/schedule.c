@@ -52,9 +52,7 @@ struct RStack get_stack(void)
 void draw_stacks(void)
 {
 	unsigned long ioff = 0;
-	unsigned long yoff = 320;
-#define STACK_DRAW_WIDTH 32
-#define STACK_DRAW_SIZE 3
+	unsigned long yoff = STACK_DRAW_YOFF;
 	for(int i = 0; i < MAX_THREADS; i++) {
 		if(stacks_table[i])
 			draw_cbox(ioff, yoff, STACK_DRAW_SIZE, STACK_DRAW_SIZE, 0xFFFFFF);

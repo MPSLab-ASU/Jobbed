@@ -1,6 +1,8 @@
 #include <drivers/uart.h>
 #include <globals.h>
+#include <graphics/lfb.h>
 #include <lib/mem.h>
+#include <sys/schedule.h>
 
 void memcpyrot(unsigned char* src, struct RotBuffer* rb, unsigned int n)
 {
@@ -246,6 +248,28 @@ void* heap_top(void)
 	return rpi_heap_top;
 }
 
+void vheap_info(void)
+{
+	unsigned char* base = rpi_heap;
+	unsigned long ioff = STACK_DRAW_WIDTH*STACK_DRAW_SIZE;
+	unsigned long yoff = STACK_DRAW_YOFF;
+	draw_cbox(ioff, yoff, STACK_DRAW_SIZE*STACK_DRAW_WIDTH, STACK_DRAW_SIZE * 8, 0x0);
+	while ((void*)base < rpi_heap_top) {
+		unsigned char size = base[MEM_SIZE_OFFSET];
+		if(base[MEM_USE_OFFSET] == 0) {
+			draw_cbox(ioff, yoff, STACK_DRAW_SIZE, STACK_DRAW_SIZE, 0x00FF00);
+		} else {
+			draw_cbox(ioff, yoff, STACK_DRAW_SIZE, STACK_DRAW_SIZE, 0xFF0000);
+		}
+		ioff += STACK_DRAW_SIZE;
+		if(ioff % STACK_DRAW_WIDTH == 0) {
+			yoff += STACK_DRAW_SIZE;
+			ioff = STACK_DRAW_WIDTH*STACK_DRAW_SIZE;
+		}
+		base += size + MEM_META_SIZE;
+	}
+}
+
 void heap_info(void)
 {
 	unsigned char* base = rpi_heap;
@@ -254,6 +278,7 @@ void heap_info(void)
 		if(base[MEM_USE_OFFSET] == 0) {
 			uart_char('F');
 			uart_char(' ');
+		} else {
 		}
 		uart_hex((unsigned long)(base + MEM_BASE_SIZE));
 		uart_string(" Size: ");

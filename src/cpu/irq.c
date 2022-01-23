@@ -11,6 +11,7 @@
 #include <util/status.h>
 #include <util/time.h>
 
+void testfxn(void);
 void handle_data(unsigned char);
 
 void c_irq_handler(void)
@@ -115,11 +116,10 @@ void handle_data(unsigned char data)
 			cmd[off] = (char) data;
 			off += 1;
 			release_mutex(&exe_cnt_m, SYS_PID);
-		// heap Info
-		} else if (data == 0x69) {
+		} else if (data == 0x61) {
 			cmd[off] = (char) data;
 			off += 1;
-			add_thread(heap_info, 0, 5);
+			add_thread(testfxn, 0, 3);
 		// Else output
 		} else {
 			cmd[off] = (char) data;
@@ -146,4 +146,8 @@ void handle_data(unsigned char data)
 	g_Drawer.y = 7;
 	write_string(&g_Drawer, "> ");
 	write_string(&g_Drawer, cmd);
+}
+
+void testfxn(void)
+{
 }
