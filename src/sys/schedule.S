@@ -61,6 +61,7 @@ cleanup:
 	// cleanup stack
 	svc #3
 	// usrloop -> rthread
+	ldr r3, =scheduler
 	ldr r2, =usrloopthread
 	str r2, [r3, #0]
 	ldr sp, [r2, #4]
