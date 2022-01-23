@@ -85,7 +85,7 @@ void c_irq_handler(void)
 						} else if (data == 0x62) {
 							cmd[off] = (char) data;
 							off += 1;
-							heap_info();
+							add_thread(heap_info, 0, 5);
 						// Else output
 						} else {
 							cmd[off] = (char) data;
