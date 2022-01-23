@@ -71,26 +71,17 @@ void sysinit(void)
 	add_thread(testlocal, 0, 3);
 	add_thread(testlocal, 0, 5);
 	add_thread(testnew, 0, 4);
-	uart_scheduler();
 }
 
 void testlocal(void)
 {
-	uart_string("Ran thread!\n");
-	if (scheduler.rthread->pid == 4) {
-		add_thread(testlocal, 0, 0);
-		//uart_scheduler();
-	}
-	uart_hexn((unsigned long)getsp());
-	uart_string("Exiting thread!\n");
+	draw_stacks();
 }
 
 void testnew(void)
 {
-	uart_string("Ran special\n");
 	add_thread(testlocal, 0, 0);
 	usr_schedule();
-	uart_string("Finish special!\n");
 }
 
 void __attribute__((naked)) usr_schedule(void)

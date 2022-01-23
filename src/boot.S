@@ -104,19 +104,26 @@ io_halt:
 
 undefined:
 	stmfd sp!, {r0-r12,lr}
-	ldr r0, [lr, #-4]
-	push {r0}
-	ldr r0, =undefined_msg
-	bl uart_string
-	pop {r0}
-	bl uart_hex
-	ldr r0, =undefined_at
-	bl uart_string
+	ldr r4, [lr, #-4]
+	mov r0, #0
+	mov r1, #17
+	ldr r2, =undefined_msg
+	bl draw_string
+	mov r0, #18
+	mov r1, #17
+	mov r2, r4
+	bl draw_hex32
+	mov r0, #27
+	mov r1, #17
+	ldr r2, =undefined_at
+	bl draw_string
 	// Output lr
 	mov r1, #0x1000
 	ldr r0, [r1, #-4]
-	sub r0, #4
-	bl uart_hexn
+	sub r2, r0, #4
+	mov r0, #31
+	mov r1, #17
+	bl draw_hex32
 	// Skip instruction for now
 	// In future, 
 	//  ldmfd sp!, {r0-r12,lr} // Note the lack of ^ since subs will handle it
@@ -126,12 +133,6 @@ svc:
 	stmfd sp!, {r0-r12,lr}
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
-	/// push {r0}
-	/// ldr r0, =svc_msg
-	/// bl uart_string
-	/// ldr r0, [sp]
-	/// bl uart_hexn
-	/// pop {r0}
 	// SVC #0 returns to supervisor mode
 	// TODO: Make supervisor mode return to a specific location
 	//  (rather than to a user location) such as the kernel loop
@@ -163,27 +164,38 @@ svc:
 io_halt_prefetch:
 	stmfd sp!, {r0-r12,lr}
 	mov r4, lr
-	ldr r0, =prefetch_msg
-	bl uart_string
-	mov r0, r4
-	bl uart_hexn
+	mov r0, #0
+	mov r1, #16
+	ldr r2, =prefetch_msg
+	bl draw_string
+	// Output return address
+	mov r0, #17
+	mov r1, #16
+	mov r2, r4
+	bl draw_hex32
 	ldmfd sp!, {r0-r12,lr}
 	subs pc, lr, #4
 io_halt_data:
 	stmfd sp!, {r0-r12,lr}
-	ldr r0, =data_msg
-	bl uart_string
+	mov r4, lr
+	mov r0, #0
+	mov r1, #15
+	ldr r2, =data_msg
+	bl draw_string
 	// Output return address
-	mov r1, #0x800
-	ldr r0, [r1, #-4]
-	sub r0, #8
-	bl uart_hexn
+	mov r0, #13
+	mov r1, #15
+	mov r2, r4
+	sub r2, #8
+	bl draw_hex32
+	mov r0, #22
+	mov r1, #15
+	ldr r2, [r4, #-8]
+	bl draw_hex32
 	ldmfd sp!, {r0-r12,lr}
 	subs pc, lr, #4 // Should be 8 once I can actually handle the abort
 fiq:
 	stmfd sp!, {r0-r12,lr}
-	//ldr r0, =fiq_msg
-	//bl uart_string
 	bl c_fiq_handler
 	cmp r0, #1
 	bne 1f
@@ -220,9 +232,9 @@ irq_handler:        .word irq
 fiq_handler:        .word fiq
 
 .section .data
-undefined_msg:	.asciz "Undefined Handler\nUNDEF "
-undefined_at:	.asciz " @ 0x"
+undefined_msg:	.asciz "Undefined Handler"
+undefined_at:	.asciz "@ 0x"
 svc_msg:	.asciz "SVC Handler #"
-prefetch_msg:	.asciz "Prefetch Handler\n"
-data_msg:	.asciz "Data Handler\n"
+prefetch_msg:	.asciz "Prefetch Handler"
+data_msg:	.asciz "Data Handler"
 fiq_msg:	.asciz "FIQ\n"

@@ -53,6 +53,7 @@ struct Scheduler {
 
 void init_scheduler(void);
 void add_thread(void* pc, void* arg, unsigned char priority);
+void draw_stacks(void);
 void uart_scheduler(void);
 struct Thread* next_thread(void);
 /// TODO: ENSURE IRQ/ FIQ entry switches 

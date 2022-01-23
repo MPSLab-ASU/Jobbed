@@ -1,4 +1,5 @@
 #include <globals.h>
+#include <graphics/lfb.h>
 #include <drivers/uart.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
@@ -46,6 +47,25 @@ struct RStack get_stack(void)
 		}
 	}
 	return r;
+}
+
+void draw_stacks(void)
+{
+	unsigned long ioff = 0;
+	unsigned long yoff = 320;
+#define STACK_DRAW_WIDTH 32
+#define STACK_DRAW_SIZE 3
+	for(int i = 0; i < MAX_THREADS; i++) {
+		if(stacks_table[i])
+			draw_cbox(ioff, yoff, STACK_DRAW_SIZE, STACK_DRAW_SIZE, 0xFFFFFF);
+		else
+			draw_cbox(ioff, yoff, STACK_DRAW_SIZE, STACK_DRAW_SIZE, 0x000000);
+		ioff += STACK_DRAW_SIZE;
+		if(ioff % STACK_DRAW_WIDTH == 0) {
+			yoff += STACK_DRAW_SIZE;
+			ioff = 0;
+		}
+	}
 }
 
 void add_thread(void* pc, void* arg, unsigned char priority)

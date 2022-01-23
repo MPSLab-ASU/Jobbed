@@ -4,6 +4,7 @@
 #include <graphics/lfb.h>
 #include <symbols.h>
 #include <sys/core.h>
+#include <sys/schedule.h>
 #include <sys/timer.h>
 #include <util/mutex.h>
 #include <util/status.h>
@@ -71,7 +72,7 @@ void status(void)
 	} */
 
 	// Commands
-	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T");
+	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T   Restart: Ctrl-R");
 
 	// GPU IRQ Statuses
 	write_string(&g_Drawer, "\n");
@@ -178,4 +179,6 @@ void status(void)
 
 	g_Drawer.x = x;
 	g_Drawer.y = y;
+
+	draw_stacks();
 }

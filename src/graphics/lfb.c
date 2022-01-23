@@ -107,6 +107,26 @@ void lfb_showpicture(void)
 	}
 }
 
+void draw_cpixel(unsigned long lx, unsigned long ly, unsigned int c)
+{
+	unsigned char* ptr = lfb;
+	ptr += (gpitch*ly+lx*4);
+	*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
+}
+
+void draw_cbox(unsigned long lx, unsigned long ly, unsigned char dx, unsigned char dy, unsigned int c)
+{
+	unsigned char* ptr = lfb;
+	ptr += (gpitch*ly+lx*4);
+	for(int y = 0; y < dy; y++) {
+		for(int x = 0; x < dx; x++) {
+			*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
+			ptr += 4;
+		}
+		ptr += gpitch - dx*4;
+	}
+}
+
 void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c)
 {
 	unsigned int x, y;

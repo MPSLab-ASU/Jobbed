@@ -20,7 +20,17 @@ void c_irq_handler(void)
 		if(load32(IRQ_PENDING2) & (1 << 25)) {
 			if(load32(UART0_MIS) & (1<<4)) {
 				unsigned long data = load32(UART0_DR);
-				// Ctrl+Tab to toggle timer
+				{
+					unsigned int x = g_Drawer.x;
+					unsigned int y = g_Drawer.y;
+					g_Drawer.x = 0;
+					g_Drawer.y = 14;
+					write_hex32(&g_Drawer, data);
+					g_Drawer.x = x;
+					g_Drawer.y = y;
+				}
+
+				// Ctrl+T to toggle timer
 				if(data == 0x14) {
 					unsigned long timer_status;
 					asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));
@@ -40,6 +50,9 @@ void c_irq_handler(void)
 					}
 					g_Drawer.x = x;
 					g_Drawer.y = y;
+				// Ctrl+R to reset
+				} else if(data == 0x12) {
+					_start();
 				} else {
 					unsigned long off = cmdidx;
 					if (off < 2048) {
@@ -68,22 +81,11 @@ void c_irq_handler(void)
 						} else if (data == 0x61) {
 							cmd[off] = (char) data;
 							off += 1;
-							//_start(); // Trigger reset
 							add_thread(localtest, 0, 0);
-							//heap_info_u();
 						} else if (data == 0x62) {
 							cmd[off] = (char) data;
 							off += 1;
-							//_start(); // Trigger reset
-							uart_scheduler();
-							//heap_info_u();
-						} else if (data == 0x63) {
-							cmd[off] = (char) data;
-							off += 1;
-							//_start(); // Trigger reset
-							//uart_scheduler();
 							heap_info();
-							//heap_info_u();
 						// Else output
 						} else {
 							cmd[off] = (char) data;
@@ -243,5 +245,4 @@ unsigned long c_fiq_handler(void)
 
 void localtest(void)
 {
-	uart_char('.');
 }
