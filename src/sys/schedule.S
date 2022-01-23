@@ -36,7 +36,9 @@ schedule:
 	cmp r0, #0
 	beq 1f
 	// Replace LR with IRQ's LR
-	mov lr, r0
+	ldr r3, =scheduler
+	ldr r2, [r3, #0] // struct Thread* rthread
+	str r0, [r2, #0] // svc_lr -> void* pc
 	// Clear IRQ's LR
 	mov r0, #0
 	str r0, [r1]
