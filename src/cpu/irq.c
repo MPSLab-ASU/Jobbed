@@ -12,6 +12,7 @@
 #include <util/time.h>
 
 void localtest(void);
+void uarttest(unsigned char);
 
 void c_irq_handler(void)
 {
@@ -90,6 +91,7 @@ void c_irq_handler(void)
 						} else {
 							cmd[off] = (char) data;
 							off += 1;
+							add_thread(uarttest, (void*)data, 2);
 						}
 					} else if (off == 2048) {
 						if (data == 0x0D) {
@@ -245,4 +247,9 @@ unsigned long c_fiq_handler(void)
 
 void localtest(void)
 {
+}
+
+void uarttest(unsigned char a)
+{
+	uart_char(a);
 }

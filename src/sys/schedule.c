@@ -77,9 +77,9 @@ void add_thread(void* pc, void* arg, unsigned char priority)
 	if (r.sp) {
 		thread->sp_base = r.idx;
 		unsigned long* argp = r.sp;
-		argp -= 1;
-		*argp = (unsigned long)arg; // Set r0 to the argument
 		argp -= 13;
+		*argp = (unsigned long)arg; // Set r0 to the argument
+		argp -= 1;
 		*(unsigned long**)argp = (unsigned long*)cleanup; // Set lr to the cleanup function
 		thread->sp = (void*)argp;
 		thread->status = THREAD_READY;
