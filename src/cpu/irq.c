@@ -11,8 +11,7 @@
 #include <util/status.h>
 #include <util/time.h>
 
-void localtest(void);
-void uarttest(unsigned char);
+void handle_data(unsigned char);
 
 void c_irq_handler(void)
 {
@@ -55,62 +54,8 @@ void c_irq_handler(void)
 				} else if(data == 0x12) {
 					_start();
 				} else {
-					unsigned long off = cmdidx;
-					if (off < 2048) {
-						// Newline Case
-						if (data == 0x0D) {
-							for(int i = off; i>=0;i--)
-								cmd[i] = 0x0;
-							off = 0;
-						// Backspace Case
-						} else if (data == 0x08 || data == 0x7F) {
-							if (off > 0) {
-								off -= 1;
-							}
-							cmd[off] = 0x0;
-						// Lock Case
-						} else if (data == 0x6C) {
-							cmd[off] = (char) data;
-							off += 1;
-							lock_mutex(&exe_cnt_m, SYS_PID);
-						// Release Case
-						} else if (data == 0x72) {
-							cmd[off] = (char) data;
-							off += 1;
-							release_mutex(&exe_cnt_m, SYS_PID);
-						// heap Info
-						} else if (data == 0x69) {
-							cmd[off] = (char) data;
-							off += 1;
-							add_thread(heap_info, 0, 5);
-						// Else output
-						} else {
-							cmd[off] = (char) data;
-							off += 1;
-							add_thread(uarttest, (void*)data, 2);
-						}
-					} else if (off == 2048) {
-						if (data == 0x0D) {
-							for(int i = off; i>=0;i--)
-								cmd[i] = 0x0;
-							off = 0;
-						} else if (data == 0x08 || data == 0x7F) {
-							if (off > 0) {
-								off -= 1;
-							}
-							cmd[off] = 0x0;
-						}
-					}
-					cmdidx = off;
+					add_thread(handle_data, (void*)data, 1);
 				}
-				g_Drawer.x = 0;
-				g_Drawer.y = 7;
-				for(int i = 0; i < 128; i++)
-					write_char(&g_Drawer, ' ');
-				g_Drawer.x = 0;
-				g_Drawer.y = 7;
-				write_string(&g_Drawer, "> ");
-				write_string(&g_Drawer, cmd);
 				return;
 			}
 		} else if (*(unsigned long*)SYS_TIMER_CS == SYS_TIMER_SC_M0) {
@@ -119,8 +64,6 @@ void c_irq_handler(void)
 			volatile unsigned long* nexttime = (unsigned long*)SYS_TIMER_C0;
 			*timer_cs = SYS_TIMER_SC_M0;
 			*nexttime = *timer_chi + 60000000;
-		} else {
-			uart_string("Pending?");
 		}
 	} else if (source & (1 << 3)) {
 		c_timer();
@@ -136,9 +79,7 @@ unsigned long c_fiq_handler(void)
 	if (source & (1 << 3)) {
 		c_timer();
 		counter++;
-		if (counter % 0x100 == 0) {
-			add_thread(localtest, 0, 0);
-		} else if (counter % 0x6000 == 0) {
+		if (counter % 0x6000 == 0) {
 			counter = 0;
 		}
 		if (counter % 0x30 == 0) {
@@ -149,11 +90,60 @@ unsigned long c_fiq_handler(void)
 	return 0;
 }
 
-void localtest(void)
+void handle_data(unsigned char data)
 {
-}
-
-void uarttest(unsigned char a)
-{
-	uart_char(a);
+	unsigned long off = cmdidx;
+	if (off < 2048) {
+		// Newline Case
+		if (data == 0x0D) {
+			for(int i = off; i>=0;i--)
+				cmd[i] = 0x0;
+			off = 0;
+		// Backspace Case
+		} else if (data == 0x08 || data == 0x7F) {
+			if (off > 0) {
+				off -= 1;
+			}
+			cmd[off] = 0x0;
+		// Lock Case
+		} else if (data == 0x6C) {
+			cmd[off] = (char) data;
+			off += 1;
+			lock_mutex(&exe_cnt_m, SYS_PID);
+		// Release Case
+		} else if (data == 0x72) {
+			cmd[off] = (char) data;
+			off += 1;
+			release_mutex(&exe_cnt_m, SYS_PID);
+		// heap Info
+		} else if (data == 0x69) {
+			cmd[off] = (char) data;
+			off += 1;
+			add_thread(heap_info, 0, 5);
+		// Else output
+		} else {
+			cmd[off] = (char) data;
+			off += 1;
+		}
+	} else if (off == 2048) {
+		if (data == 0x0D) {
+			for(int i = off; i>=0;i--)
+				cmd[i] = 0x0;
+			off = 0;
+		} else if (data == 0x08 || data == 0x7F) {
+			if (off > 0) {
+				off -= 1;
+			}
+			cmd[off] = 0x0;
+		}
+	}
+	cmdidx = off;
+	g_Drawer.x = 0;
+	g_Drawer.y = 7;
+	for(int i = 0; i < 128; i++)
+		write_char(&g_Drawer, ' ');
+	g_Drawer.x = 0;
+	g_Drawer.y = 7;
+	write_string(&g_Drawer, "> ");
+	write_string(&g_Drawer, cmd);
 }
