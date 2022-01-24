@@ -21,9 +21,6 @@ reset:
 	ldr r0, =vector
 	mcr p15, 0, r0, c12, c0, 0
 
-	// save cpsr.
-	mrs r0, cpsr
-
 	// Setup sp in IRQ mode.
 	cps #0x12
 	mov sp,#0x4000
