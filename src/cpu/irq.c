@@ -120,6 +120,10 @@ void handle_data(unsigned char data)
 			cmd[off] = (char) data;
 			off += 1;
 			add_thread(testfxn, 0, 3);
+		} else if (data == 0x62) {
+			cmd[off] = (char) data;
+			off += 1;
+			add_thread(uart_scheduler, 0, 2);
 		// Else output
 		} else {
 			cmd[off] = (char) data;
@@ -148,6 +152,31 @@ void handle_data(unsigned char data)
 	write_string(&g_Drawer, cmd);
 }
 
+void testfxn2(void)
+{
+	uart_string("Ran testfxn2\n");
+}
+
 void testfxn(void)
 {
+	unsigned int i = 0x69420;
+	void* a = malloc(5);
+	void* b = malloc(3);
+	void* c = malloc(4);
+	void* d = malloc(4);
+	uart_string("Start\n");
+	add_thread(testfxn2, 0, 0);
+	delay(0x20000000);
+	uart_string("Freeing B\n");
+	free(b);
+	uart_string("Freeing A\n");
+	free(a);
+	uart_string("Freeing C\n");
+	free(c);
+	delay(0x20000000);
+	uart_string("Freeing D\n");
+	free(d);
+	delay(0x20000000);
+	uart_hexn(i);
+	uart_string("End\n");
 }
