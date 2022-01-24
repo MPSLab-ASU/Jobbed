@@ -24,44 +24,23 @@ reset:
 	// save cpsr.
 	mrs r0, cpsr
 
-	// setup sp in IRQ mode.
-	///bic r1, r0, #0x1f
-	///orr r1, r1, #0x12
-	///msr cpsr_c,r1
+	// Setup sp in IRQ mode.
 	cps #0x12
 	mov sp,#0x4000
-	// setup sp in FIQ mode.
-	///bic r1, r0, #0x1f
-	///orr r1, r1, #0x11
-	///msr cpsr_c,r1
+	// Setup sp in FIQ mode.
 	cps #0x11
 	mov sp,#0x2000
-	// setup sp in UNDEF mode.
-	///bic r1, r0, #0x1f
-	///orr r1, r1, #0x1B
-	///msr cpsr_c,r1
+	// Setup sp in UNDEF mode.
 	cps #0x1B
 	mov sp,#0x1000
-	// setup sp in ABORT mode.
-	///bic r1, r0, #0x1f
-	///orr r1, r1, #0x17
-	///msr cpsr_c,r1
+	// Setup sp in ABORT mode.
 	cps #0x17
 	mov sp,#0x0800
 	// Setup sp in USR/SYS mode.
-	///bic r1, r0, #0x1f
-	///orr r1, r1, #0x1f
-	///msr cpsr_c,r1
 	cps #0x1f
 	mov sp,#0x6000
 
-	// restore to SVC (in the case of a reset)
-	///bic r1, r0, #0x1f
-	///orr r1, r1, #0x13
-	///msr cpsr_c, r1
-	//msr cpsr_c, r0
-
-	// setup the stack in SVC mode.
+	// Setup sp in SVC mode.
 	cps #0x13
 	mov sp, #0x8000
  
