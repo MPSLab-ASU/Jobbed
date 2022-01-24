@@ -18,16 +18,19 @@
 - // MODE REGISTERS: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
 
 ## Todo
-- FIX IRQ Stack LEAK
-- FIX IRQ Stack LEAK
-- FIX IRQ Stack LEAK
-- FIX IRQ Stack LEAK
-- FIX IRQ Stack LEAK
 - Implement Lock for accessing thread information
 - Fix mutex with scheduler
 - Implement handlers
-- Put threads in user mode
-- Clear stacks during cleanup
+
+## SVC Calls
+- Sysinfo
+- Reboot?
+- Mutex Create
+- Mutex Lock
+- Mutex Release
+- Schedule
+- Yield
+- Uart Write Buffer Add (Add reoccuring task to flush write buffer - RotatingBuffer)
 
 
 Note: SYS and USER share registers but differ in privilege
