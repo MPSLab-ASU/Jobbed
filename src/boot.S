@@ -106,6 +106,7 @@ undefined:
 	//  subs pc, lr, #4
 	ldmfd sp!, {r0-r12,pc}^
 svc:
+	cpsid f
 	stmfd sp!, {r0-r12,lr}
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
