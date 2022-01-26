@@ -222,10 +222,10 @@ void free(void* memloc)
 	unsigned char size = base[MEM_SIZE_OFFSET];
 	// TODO: Use Null PID
 	base[MEM_USE_OFFSET] = 0;
-	// Clear out old memory
-	for(unsigned int i = 0; i < size; i++) {
-		base[i + MEM_BASE_SIZE] = 0;
-	}
+	// // Clear out old memory
+	// for(unsigned int i = 0; i < size; i++) {
+	// 	base[i + MEM_BASE_SIZE] = 0;
+	// }
 	// If it is the last entry, clear it and move the heap top down
 	if (base + size + MEM_META_SIZE == rpi_heap_top) {
 		while(base[MEM_USE_OFFSET] == 0 && base >= rpi_heap) {

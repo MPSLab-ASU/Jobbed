@@ -47,5 +47,6 @@ struct Mutex* create_mutex(void* addr)
 	// Ensure aligned to word - Important for Atomic Swap
 	struct Mutex* m = (struct Mutex*)malloca(sizeof(struct Mutex), 4);
 	m->addr = addr;
+	m->pid = 0;
 	return m;
 }
