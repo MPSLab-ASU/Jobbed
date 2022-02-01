@@ -6,8 +6,6 @@
 #ifndef GLOBALS_C
 extern unsigned long irqlr;
 extern unsigned long cntfrq;
-extern unsigned long cmdidx;
-extern char cmd[2048];
 
 extern char* os_name;
 extern char* os_info_v;

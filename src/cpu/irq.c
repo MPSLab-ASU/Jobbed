@@ -93,30 +93,24 @@ unsigned long c_fiq_handler(void)
 
 void handle_data(unsigned char data)
 {
-	unsigned long off = cmdidx;
-	if (off < 2048) {
-		// Newline Case
-		if (data == 0x0D) {
-		// Backspace Case
-		} else if (data == 0x08 || data == 0x7F) {
-		// Lock Case
-		} else if (data == 0x6C) {
-			lock_mutex(&exe_cnt_m, SYS_PID);
-		// Release Case
-		} else if (data == 0x72) {
-			release_mutex(&exe_cnt_m, SYS_PID);
-		} else if (data == 0x61) {
-			add_thread(testfxn, 0, 3);
-		} else if (data == 0x62) {
-			add_thread(uart_scheduler, 0, 2);
-		} else if (data == 0x63) {
-			add_thread(heap_info, 0, 2);
-		// Else output
-		} else {
-		}
-	} else if (off == 2048) {
+	// Newline Case
+	if (data == 0x0D) {
+	// Backspace Case
+	} else if (data == 0x08 || data == 0x7F) {
+	// Lock Case
+	} else if (data == 0x6C) {
+		lock_mutex(&exe_cnt_m, SYS_PID);
+	// Release Case
+	} else if (data == 0x72) {
+		release_mutex(&exe_cnt_m, SYS_PID);
+	} else if (data == 0x61) {
+		add_thread(testfxn, 0, 3);
+	} else if (data == 0x62) {
+		add_thread(uart_scheduler, 0, 2);
+	} else if (data == 0x63) {
+		add_thread(heap_info, 0, 2);
+	} else {
 	}
-	cmdidx = off;
 	g_Drawer.x = 0;
 	g_Drawer.y = 7;
 	for(int i = 0; i < 128; i++)
@@ -124,7 +118,6 @@ void handle_data(unsigned char data)
 	g_Drawer.x = 0;
 	g_Drawer.y = 7;
 	write_string(&g_Drawer, "> ");
-	write_string(&g_Drawer, cmd);
 }
 
 void testfxn2(void)

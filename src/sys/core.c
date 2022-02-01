@@ -4,7 +4,6 @@
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
 #include <lib/mem.h>
-#include <lib/q.h>
 #include <lib/strings.h>
 #include <symbols.h>
 #include <sys/core.h>
@@ -22,7 +21,7 @@ void __attribute__((naked)) usr_schedule(void);
 // Initialize IRQs
 void sysinit(void)
 {
-	// Clear System Globals
+	// Initialize System Globals
 	exe_cnt_m.addr = &exe_cnt;
 	exe_cnt_m.pid = NULL_PID;
 	rpi_heap_top = &rpi_heap;
