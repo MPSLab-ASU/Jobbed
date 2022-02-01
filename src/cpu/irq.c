@@ -97,49 +97,24 @@ void handle_data(unsigned char data)
 	if (off < 2048) {
 		// Newline Case
 		if (data == 0x0D) {
-			for(int i = off; i>=0;i--)
-				cmd[i] = 0x0;
-			off = 0;
 		// Backspace Case
 		} else if (data == 0x08 || data == 0x7F) {
-			if (off > 0) {
-				off -= 1;
-			}
-			cmd[off] = 0x0;
 		// Lock Case
 		} else if (data == 0x6C) {
-			cmd[off] = (char) data;
-			off += 1;
 			lock_mutex(&exe_cnt_m, SYS_PID);
 		// Release Case
 		} else if (data == 0x72) {
-			cmd[off] = (char) data;
-			off += 1;
 			release_mutex(&exe_cnt_m, SYS_PID);
 		} else if (data == 0x61) {
-			cmd[off] = (char) data;
-			off += 1;
 			add_thread(testfxn, 0, 3);
 		} else if (data == 0x62) {
-			cmd[off] = (char) data;
-			off += 1;
 			add_thread(uart_scheduler, 0, 2);
+		} else if (data == 0x63) {
+			add_thread(heap_info, 0, 2);
 		// Else output
 		} else {
-			cmd[off] = (char) data;
-			off += 1;
 		}
 	} else if (off == 2048) {
-		if (data == 0x0D) {
-			for(int i = off; i>=0;i--)
-				cmd[i] = 0x0;
-			off = 0;
-		} else if (data == 0x08 || data == 0x7F) {
-			if (off > 0) {
-				off -= 1;
-			}
-			cmd[off] = 0x0;
-		}
 	}
 	cmdidx = off;
 	g_Drawer.x = 0;

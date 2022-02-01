@@ -9,6 +9,7 @@ SECTIONS
     .text :
     {
         KEEP(*(.text.boot))
+        KEEP(*(.text.exceptions))
         KEEP(*(.text.kernel))
         *(.text*)
     }

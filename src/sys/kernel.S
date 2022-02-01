@@ -17,7 +17,7 @@ kernel_main:
 	// svc #1
 	// mrs r0, cpsr
 	// bl uart_hexn
-	cps #0x10
+	cpsie aif, #0x10
 	svc #2 // Start scheduling!
 1:
 	wfe

@@ -61,9 +61,9 @@ void sysinit(void)
 	// Start Scheduler
 	init_scheduler();
 
-	// Enable IRQ & FIQ
-	enableirq();
-	enablefiq();
+	//// // Enable IRQ & FIQ
+	//// enableirq();
+	//// enablefiq();
 
 	add_thread(testlocal, 0, 0);
 	add_thread(testlocal, 0, 1);
