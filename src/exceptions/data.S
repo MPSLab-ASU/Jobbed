@@ -22,6 +22,10 @@ data:
 	mov r1, #15
 	mrs r2, spsr
 	bl draw_hex32
+	mov r0, #41
+	mov r1, #15
+	mrc p15, 0, r2, c5, c0, 0 //// https://developer.arm.com/documentation/ddi0464/d/System-Control/Register-descriptions/Data-Fault-Status-Register?lang=en
+	bl draw_hex32
 	ldmfd sp!, {r0-r12,lr}
 	subs pc, lr, #4 // Should be 8 once I can actually handle the abort
 

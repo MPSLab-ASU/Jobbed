@@ -21,25 +21,24 @@ reset:
 	ldr r0, =vector
 	mcr p15, 0, r0, c12, c0, 0
 
-	// Setup sp in IRQ mode.
-	cps #0x12
+	cps #0x12 // Setup sp in IRQ mode.
 	mov sp,#0x4000
-	// Setup sp in FIQ mode.
-	cps #0x11
+	ldr sp, =core0_irq_stack
+	cps #0x11 // Setup sp in FIQ mode.
 	mov sp,#0x2000
-	// Setup sp in UNDEF mode.
-	cps #0x1B
+	ldr sp, =core0_fiq_stack
+	cps #0x1B // Setup sp in UNDEF mode.
 	mov sp,#0x1000
-	// Setup sp in ABORT mode.
-	cps #0x17
+	ldr sp, =core0_undefined_stack
+	cps #0x17 // Setup sp in ABORT mode.
 	mov sp,#0x0800
-	// Setup sp in USR/SYS mode.
-	cps #0x1f
+	ldr sp, =core0_data_stack
+	cps #0x1f // Setup sp in USR/SYS mode.
 	mov sp,#0x6000
-
-	// Setup sp in SVC mode.
-	cps #0x13
+	ldr sp, =core0_sys_stack
+	cps #0x13 // Setup sp in SVC mode.
 	mov sp, #0x8000
+	ldr sp, =core0_svc_stack
  
 	// Clear out bss.
 	ldr r4, =__bss_start
@@ -57,14 +56,136 @@ reset:
 	cmp r4, r9
 	blo 1b
 
+	// Clear mailboxes
+	mov r4, #0
+	ldr r5, =core0_mbox
+	str r4, [r5]
+	ldr r5, =core1_mbox
+	str r4, [r5]
+	ldr r5, =core2_mbox
+	str r4, [r5]
+	ldr r5, =core3_mbox
+	str r4, [r5]
+
+	// Output Message and Signal Next Core to Continue
+	ldr r0, =core0_msg
+	bl uart_string
+	ldr r5, =core1_mbox
+	mov r4, #1
+	str r4, [r5]
+	ldr r5, =core0_mbox
+1:	ldr r4, [r5]
+	cmp r4, #0
+	beq 1b
+	mov r4, #0
+	str r4, [r5]
+
 	// Call kernel_main
 	ldr r3, =kernel_main
 	blx r3
 
-// TODO: Each core needs to set up their stacks
 core1run:
+	cps #0x12 // Setup sp in IRQ mode.
+	mov sp,#0x4000
+	ldr sp, =core1_irq_stack
+	cps #0x11 // Setup sp in FIQ mode.
+	mov sp,#0x2000
+	ldr sp, =core1_fiq_stack
+	cps #0x1B // Setup sp in UNDEF mode.
+	mov sp,#0x1000
+	ldr sp, =core1_undefined_stack
+	cps #0x17 // Setup sp in ABORT mode.
+	mov sp,#0x0800
+	ldr sp, =core1_data_stack
+	cps #0x1f // Setup sp in USR/SYS mode.
+	mov sp,#0x6000
+	ldr sp, =core1_sys_stack
+	cps #0x13 // Setup sp in SVC mode.
+	mov sp, #0x8000
+	ldr sp, =core1_svc_stack
+
+	// Output Message and Signal Next Core to Continue
+	ldr r5, =core1_mbox
+1:
+	ldr r4, [r5]
+	cmp r4, #0
+	beq 1b
+	mov r4, #0
+	str r4, [r5]
+	ldr r0, =core1_msg
+	bl uart_string
+	ldr r5, =core2_mbox
+	mov r4, #1
+	str r4, [r5]
+	b io_halt
 core2run:
+	cps #0x12 // Setup sp in IRQ mode.
+	mov sp,#0x4000
+	ldr sp, =core2_irq_stack
+	cps #0x11 // Setup sp in FIQ mode.
+	mov sp,#0x2000
+	ldr sp, =core2_fiq_stack
+	cps #0x1B // Setup sp in UNDEF mode.
+	mov sp,#0x1000
+	ldr sp, =core2_undefined_stack
+	cps #0x17 // Setup sp in ABORT mode.
+	mov sp,#0x0800
+	ldr sp, =core2_data_stack
+	cps #0x1f // Setup sp in USR/SYS mode.
+	mov sp,#0x6000
+	ldr sp, =core2_sys_stack
+	cps #0x13 // Setup sp in SVC mode.
+	mov sp, #0x8000
+	ldr sp, =core2_svc_stack
+
+	// Output Message and Signal Next Core to Continue
+	ldr r5, =core2_mbox
+1:
+	ldr r4, [r5]
+	cmp r4, #0
+	beq 1b
+	mov r4, #0
+	str r4, [r5]
+	ldr r0, =core2_msg
+	bl uart_string
+	ldr r5, =core3_mbox
+	mov r4, #1
+	str r4, [r5]
+	b io_halt
 core3run:
+	cps #0x12 // Setup sp in IRQ mode.
+	mov sp,#0x4000
+	ldr sp, =core3_irq_stack
+	cps #0x11 // Setup sp in FIQ mode.
+	mov sp,#0x2000
+	ldr sp, =core3_fiq_stack
+	cps #0x1B // Setup sp in UNDEF mode.
+	mov sp,#0x1000
+	ldr sp, =core3_undefined_stack
+	cps #0x17 // Setup sp in ABORT mode.
+	mov sp,#0x0800
+	ldr sp, =core3_data_stack
+	cps #0x1f // Setup sp in USR/SYS mode.
+	mov sp,#0x6000
+	ldr sp, =core3_sys_stack
+	cps #0x13 // Setup sp in SVC mode.
+	mov sp, #0x8000
+	ldr sp, =core3_svc_stack
+
+	// Output Message and Signal Next Core to Continue
+	ldr r5, =core3_mbox
+1:
+	ldr r4, [r5]
+	cmp r4, #0
+	beq 1b
+	mov r4, #0
+	str r4, [r5]
+	ldr r0, =core3_msg
+	bl uart_string
+	ldr r5, =core0_mbox
+	mov r4, #1
+	str r4, [r5]
+	b io_halt
 .globl io_halt
 io_halt:
 	wfi
@@ -89,3 +210,64 @@ data_handler:       .word data
 unused_handler:     .word io_halt
 irq_handler:        .word irq
 fiq_handler:        .word fiq
+
+.section .data
+core0_mbox: .word 0
+core1_mbox: .word 0
+core2_mbox: .word 0
+core3_mbox: .word 0
+core0_msg: .asciz "Powering up, Core 0 Online!\n"
+core1_msg: .asciz "Powering up, Core 1 Online!\n"
+core2_msg: .asciz "Powering up, Core 2 Online!\n"
+core3_msg: .asciz "Powering up, Core 3 Online!\n"
+
+.section .bss.estacks
+.align 4
+	.space 4096
+core0_undefined_stack:
+	.space 4096
+core0_svc_stack:
+	.space 4096
+core0_data_stack:
+	.space 4096
+core0_irq_stack:
+	.space 4096
+core0_fiq_stack:
+	.space 4096
+core0_sys_stack:
+	.space 4096
+core1_undefined_stack:
+	.space 4096
+core1_svc_stack:
+	.space 4096
+core1_data_stack:
+	.space 4096
+core1_irq_stack:
+	.space 4096
+core1_fiq_stack:
+	.space 4096
+core1_sys_stack:
+	.space 4096
+core2_undefined_stack:
+	.space 4096
+core2_svc_stack:
+	.space 4096
+core2_data_stack:
+	.space 4096
+core2_irq_stack:
+	.space 4096
+core2_fiq_stack:
+	.space 4096
+core2_sys_stack:
+	.space 4096
+core3_undefined_stack:
+	.space 4096
+core3_svc_stack:
+	.space 4096
+core3_data_stack:
+	.space 4096
+core3_irq_stack:
+	.space 4096
+core3_fiq_stack:
+	.space 4096
+core3_sys_stack:

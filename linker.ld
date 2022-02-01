@@ -30,9 +30,13 @@ SECTIONS
     .bss :
     {
         bss = .;
+	. = ALIGN(4096);
+	KEEP(*(.bss.estacks))
+	. = ALIGN(4096);
+        *(.bss)
         *(.bss.*)
-	*(.bss.mmheap)
-	*(.bss.mmheap.base)
+	KEEP(*(.bss.mmheap))
+	KEEP(*(.bss.mmheap.base))
     }
     . = ALIGN(4096); /* align to page size */
     __bss_end = .;
