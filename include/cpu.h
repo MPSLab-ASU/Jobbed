@@ -79,7 +79,8 @@ static inline void* getirqstack(void)
 #define syscall_h_quote(text)	#text
 #define syscall_h_expand_and_quote(text)	syscall_h_quote(text)
 
-#define sys0(sys_n) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::: "r0", "r1", "r2", "r3", "lr");
+#define sys0(sys_n) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::: "r0", "r1", "r2", "r3");
+#define sys1(sys_n,arg0) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::[r0]"r"(arg0): "r0", "r1", "r2", "r3");
 
 #define SYS_SCHED 2
 
