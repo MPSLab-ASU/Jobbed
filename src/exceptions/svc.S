@@ -12,12 +12,13 @@ svc:
 	beq svc_000002
 	cmp r0, #1
 	beq svc_000001
-	cmp r0, #1
+	cmp r0, #0
 	beq svc_000000
 svc_000000:
-	cps #0x13
-	b svc_exit
-svc_000001:
+	bl yield
+	ldmfd sp!, {r0-r12,lr}
+	b schedule
+svc_000001: // Get time
 	mov r2, #0x3004
 	movt r2, #0x3F00
 	ldr r0, [r2, #4] // <- SYS_TIMER_CLO
@@ -25,10 +26,10 @@ svc_000001:
 	str r0, [sp]	 // Return value
 	str r1, [sp, #4] // Return value hi
 	b svc_exit
-svc_000002:
+svc_000002: // Run Schedule
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-svc_000003:
+svc_000003: // Clean task stack
 	ldr r3, =scheduler
 	ldr r2, [r3, #0] // struct Thread* rthread
 	ldr r1, [r2, #8] // sp_base

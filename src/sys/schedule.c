@@ -156,3 +156,16 @@ void* get_rthread_roffset(void)
 {
 	return &scheduler.thread_queues[scheduler.rthread->priority].ready.roffset;
 }
+
+void yield(void)
+{
+	struct Thread* rthread = scheduler.rthread;
+	if (rthread == &usrloopthread)
+		return;
+	unsigned char priority = rthread->priority;
+	struct ThreadRotBuffer* trb = &scheduler.thread_queues[priority].ready;
+	trb->roffset += 1;
+	trb->roffset %= TQUEUE_MAX;
+	trb->queue[trb->woffset++] = rthread;
+	trb->roffset %= TQUEUE_MAX;
+}

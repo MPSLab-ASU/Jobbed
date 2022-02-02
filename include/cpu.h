@@ -91,11 +91,12 @@ __attribute__((always_inline)) static inline unsigned long long get_sys_time(voi
 		}s;
 		unsigned long long llv;
 	}t;
-	asm volatile("svc #1\nmov %0, r0\nmov %0, r1" : "=r"(t.s.lo), "=r"(t.s.hi));
+	asm volatile("svc #1\nmov %0, r1\nmov %1, r0" : "=r"(t.s.lo), "=r"(t.s.hi));
 	return t.llv;
 }
 
-#define SYS_SCHED 2
+#define SYS_YIELD 0
 #define SYS_TIME  1
+#define SYS_SCHED 2
 
 #endif

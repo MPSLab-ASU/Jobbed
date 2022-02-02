@@ -64,6 +64,6 @@ struct Thread* next_thread(void);
 ///  to user mode then calls the SVC call
 extern void schedule(void);
 extern void cleanup(void);
-// void yield(void);
+void yield(void);
 
 #endif

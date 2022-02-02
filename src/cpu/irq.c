@@ -140,14 +140,15 @@ void testfxn2(void)
 
 void testfxn(void)
 {
-	unsigned int i = 0x69420;
+	unsigned long long ti = get_sys_time();
+	unsigned int i = 0xDEADBEEF;
 	void* a = malloc(5);
 	void* b = malloc(3);
 	void* c = malloc(4);
 	void* d = malloc(4);
 	uart_string("Start\n");
 	add_thread(testfxn2, 0, 0);
-	delay(0x20000000);
+	sys0(SYS_YIELD);
 	uart_string("Freeing B\n");
 	free(b);
 	uart_string("Freeing A\n");
@@ -160,4 +161,11 @@ void testfxn(void)
 	delay(0x20000000);
 	uart_hexn(i);
 	uart_string("End\n");
+	unsigned long long tf = get_sys_time();
+	unsigned long long dt = tf-ti;
+	unsigned long thi, tlo;
+	thi = dt >> 32;
+	tlo = dt;
+	uart_hex(thi);
+	uart_hexn(tlo);
 }
