@@ -63,6 +63,10 @@ cleanup:
 	bl get_rthread_roffset
 	ldr r1, [r0, #0]
 	add r1, #1
+	cmp r1, #0x100 /* TQUEUE_MAX */
+	blo 1f
+	mov r1, #0
+1:
 	str r1, [r0, #0]
 	// cleanup stack
 	svc #3

@@ -1,3 +1,4 @@
+#include <cpu.h>
 #include <globals.h>
 #include <graphics/lfb.h>
 #include <drivers/uart.h>
