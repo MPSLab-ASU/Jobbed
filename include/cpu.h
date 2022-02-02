@@ -95,8 +95,9 @@ __attribute__((always_inline)) static inline unsigned long long get_sys_time(voi
 	return t.llv;
 }
 
-#define SYS_YIELD 0
-#define SYS_TIME  1
-#define SYS_SCHED 2
+#define SYS_YIELD       0
+#define SYS_TIME        1
+#define SYS_SCHED       2
+#define SYS_FREE_STACK  3
 
 #endif
