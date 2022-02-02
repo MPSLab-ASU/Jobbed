@@ -5,9 +5,6 @@ svc:
 	stmfd sp!, {r0-r12,lr}
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
-	// SVC #0 returns to supervisor mode
-	// TODO: Make supervisor mode return to a specific location
-	//  (rather than to a user location) such as the kernel loop
 	cmp r0, #3
 	bgt svc_exit
 	beq svc_000003
@@ -27,7 +24,7 @@ svc_000002:
 	b schedule
 svc_000003:
 	ldr r3, =scheduler
-	ldr r2, [r3, #0]
+	ldr r2, [r3, #0] // struct Thread* rthread
 	ldr r1, [r2, #8] // sp_base
 	cmp r1, #-1
 	beq svc_exit

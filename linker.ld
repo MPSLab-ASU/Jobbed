@@ -13,7 +13,7 @@ SECTIONS
         KEEP(*(.text.kernel))
         *(.text*)
     }
-    . = ALIGN(4096); /* align to page size */
+    . = 0x208000; /* 2MiB Kernel/ Boot */
     __text_end = .;
  
     __data_start = .;

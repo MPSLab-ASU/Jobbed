@@ -13,7 +13,8 @@ static inline void atm_lock(unsigned long pid, unsigned long* addr)
 {
 	unsigned long tmp, current_lock_value;
 	asm volatile(
-"1:	ldrex	%0, [%3]\n"
+"1:	clrex\n"
+"	ldrex	%0, [%3]\n"
 "	cmp	%0, #0\n"
 "	wfene\n"
 "	strexeq	%1, %2, [%3]\n"
