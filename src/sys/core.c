@@ -1,4 +1,5 @@
 #include <cpu/irq.h>
+#include <cpu.h>
 #include <drivers/uart.h>
 #include <globals.h>
 #include <graphics/drawer.h>
@@ -16,7 +17,6 @@
 
 void testlocal(void);
 void testnew(void);
-void __attribute__((naked)) usr_schedule(void);
 
 // Initialize IRQs
 void sysinit(void)
@@ -80,10 +80,5 @@ void testlocal(void)
 void testnew(void)
 {
 	add_thread(testlocal, 0, 0);
-	usr_schedule();
-}
-
-void __attribute__((naked)) usr_schedule(void)
-{
-	asm volatile ("svc #2");
+	sys0(SYS_SCHED);
 }
