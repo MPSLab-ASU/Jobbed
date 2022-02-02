@@ -10,9 +10,11 @@
 	push {lr}
 	ldr r3, =scheduler // struct Scheduler
 	ldr r2, [r3, #0] // struct Thread* rthread
-	str lr, [r2, #0] // svc_lr -> void* pc
 	str sp, [r2, #4] // svc_lr -> void* sp
+	mrs r1, cpsr
+	str r1, [r2, #0xc] // preserve cpsr
 	cps #0x13 // Svc mode
+	str lr, [r2, #0] // svc_lr -> void* pc
 .endm
 
 .macro restore_ctx
@@ -20,7 +22,9 @@
 	ldr r2, [r3, #0] // struct Thread* rthread
 	ldr lr, [r2, #0] // void* pc -> lr_svc
 	ldr r0, [r2, #4] // void* sp -> r0
+	ldr r1, [r2, #0xc] // restore cpsr
 	cps #0x1f // Sys mode
+	msr cpsr, r1
 	mov sp, r0 // Set stack pointer
 	// Restore Usr regs
 	pop {lr}

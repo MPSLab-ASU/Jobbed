@@ -32,6 +32,7 @@ struct Thread {
 	unsigned char priority;
 	unsigned char preempt;
 	unsigned short status;
+	unsigned long cpsr;
 };
 
 struct ThreadRotBuffer {
