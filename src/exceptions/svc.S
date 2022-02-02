@@ -18,6 +18,12 @@ svc_000000:
 	cps #0x13
 	b svc_exit
 svc_000001:
+	mov r2, #0x3004
+	movt r2, #0x3F00
+	ldr r0, [r2, #4] // <- SYS_TIMER_CLO
+	ldr r1, [r2, #0] // <- SYS_TIMER_CHI
+	str r0, [sp]	 // Return value
+	str r1, [sp, #4] // Return value hi
 	b svc_exit
 svc_000002:
 	ldmfd sp!, {r0-r12,lr}

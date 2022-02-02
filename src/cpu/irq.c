@@ -11,6 +11,7 @@
 #include <util/status.h>
 #include <util/time.h>
 
+void utime(void);
 void testfxn(void);
 void handle_data(unsigned char);
 
@@ -109,6 +110,8 @@ void handle_data(unsigned char data)
 		add_thread(uart_scheduler, 0, 2);
 	} else if (data == 0x63) {
 		add_thread(heap_info, 0, 2);
+	} else if (data == 0x64) {
+		add_thread(utime, 0, 2);
 	} else {
 	}
 	g_Drawer.x = 0;
@@ -118,6 +121,16 @@ void handle_data(unsigned char data)
 	g_Drawer.x = 0;
 	g_Drawer.y = 7;
 	write_string(&g_Drawer, "> ");
+}
+
+void utime(void)
+{
+	unsigned long thi, tlo;
+	unsigned long long t = get_sys_time();
+	thi = t >> 32;
+	tlo = t;
+	uart_hex(thi);
+	uart_hexn(tlo);
 }
 
 void testfxn2(void)
