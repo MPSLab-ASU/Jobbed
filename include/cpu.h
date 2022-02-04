@@ -80,20 +80,8 @@ static inline void* getirqstack(void)
 #define syscall_h_expand_and_quote(text)	syscall_h_quote(text)
 
 #define sys0(sys_n) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::: "r0", "r1", "r2", "r3");
+#define sys0_64(sys_n,addr) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) "\nmov r2, %0\nstr r1, [r2]\nstr r0, [r2, #4]" ::"r"(addr): "r0", "r1", "r2", "r3", "memory");
 #define sys1(sys_n,arg0) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::[r0]"r"(arg0): "r0", "r1", "r2", "r3");
-
-__attribute__((always_inline)) static inline unsigned long long get_sys_time(void)
-{
-	union {
-		struct {
-			unsigned long lo;
-			unsigned long hi;
-		}s;
-		unsigned long long llv;
-	}t;
-	asm volatile("svc #1\nmov %0, r1\nmov %1, r0" : "=r"(t.s.lo), "=r"(t.s.hi));
-	return t.llv;
-}
 
 #define SYS_YIELD       0
 #define SYS_TIME        1

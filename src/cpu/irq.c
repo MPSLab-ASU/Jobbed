@@ -7,12 +7,10 @@
 #include <sys/core.h>
 #include <sys/schedule.h>
 #include <sys/timer.h>
+#include <tests/test.h>
 #include <util/mutex.h>
-#include <util/status.h>
 #include <util/time.h>
 
-void utime(void);
-void testfxn(void);
 void handle_data(unsigned char);
 
 void c_irq_handler(void)
@@ -52,9 +50,6 @@ void c_irq_handler(void)
 					}
 					g_Drawer.x = x;
 					g_Drawer.y = y;
-				// Ctrl+R to reset
-				} else if(data == 0x12) {
-					_start();
 				} else {
 					add_thread(handle_data, (void*)data, 1);
 				}
@@ -84,9 +79,6 @@ unsigned long c_fiq_handler(void)
 		if (counter % 0x6000 == 0) {
 			counter = 0;
 		}
-		if (counter % 0x8 == 0) {
-			add_thread(uart_flush, 0, 5);
-		}
 		if (counter % 0x30 == 0) {
 			return 1;
 		} 
@@ -108,13 +100,9 @@ void handle_data(unsigned char data)
 	} else if (data == 0x72) {
 		release_mutex(&exe_cnt_m, SYS_PID);
 	} else if (data == 0x61) {
-		add_thread(testfxn, 0, 3);
-	} else if (data == 0x62) {
 		add_thread(uart_scheduler, 0, 2);
-	} else if (data == 0x63) {
+	} else if (data == 0x62) {
 		add_thread(heap_info, 0, 2);
-	} else if (data == 0x64) {
-		add_thread(utime, 0, 2);
 	} else {
 	}
 	g_Drawer.x = 0;
@@ -124,51 +112,4 @@ void handle_data(unsigned char data)
 	g_Drawer.x = 0;
 	g_Drawer.y = 7;
 	write_string(&g_Drawer, "> ");
-}
-
-void utime(void)
-{
-	unsigned long thi, tlo;
-	unsigned long long t = get_sys_time();
-	thi = t >> 32;
-	tlo = t;
-	uart_hex(thi);
-	uart_hexn(tlo);
-}
-
-void testfxn2(void)
-{
-	uart_string("Ran testfxn2\n");
-}
-
-void testfxn(void)
-{
-	unsigned long long ti = get_sys_time();
-	unsigned int i = 0xDEADBEEF;
-	void* a = malloc(5);
-	void* b = malloc(3);
-	void* c = malloc(4);
-	void* d = malloc(4);
-	uart_string("Start\n");
-	add_thread(testfxn2, 0, 0);
-	sys0(SYS_YIELD);
-	uart_string("Freeing B\n");
-	free(b);
-	uart_string("Freeing A\n");
-	free(a);
-	uart_string("Freeing C\n");
-	free(c);
-	delay(0x20000000);
-	uart_string("Freeing D\n");
-	free(d);
-	delay(0x20000000);
-	uart_hexn(i);
-	uart_string("End\n");
-	unsigned long long tf = get_sys_time();
-	unsigned long long dt = tf-ti;
-	unsigned long thi, tlo;
-	thi = dt >> 32;
-	tlo = dt;
-	uart_hex(thi);
-	uart_hexn(tlo);
 }

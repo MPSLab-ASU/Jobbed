@@ -12,11 +12,7 @@
 #include <sys/schedule.h>
 #include <sys/timer.h>
 #include <util/mutex.h>
-#include <util/status.h>
 #include <util/time.h>
-
-void testlocal(void);
-void testnew(void);
 
 // Initialize IRQs
 void sysinit(void)
@@ -60,21 +56,4 @@ void sysinit(void)
 
 	// Start Scheduler
 	init_scheduler();
-
-	add_thread(testlocal, 0, 0);
-	add_thread(testlocal, 0, 1);
-	add_thread(testlocal, 0, 1);
-	add_thread(testlocal, 0, 3);
-	add_thread(testlocal, 0, 5);
-	add_thread(testnew, 0, 4);
-}
-
-void testlocal(void)
-{
-}
-
-void testnew(void)
-{
-	add_thread(testlocal, 0, 0);
-	sys0(SYS_SCHED);
 }

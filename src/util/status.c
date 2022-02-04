@@ -73,7 +73,7 @@ void status(void)
 	} */
 
 	// Commands
-	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T   Restart: Ctrl-R");
+	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T");
 
 	// GPU IRQ Statuses
 	write_string(&g_Drawer, "\n");

@@ -1,6 +1,8 @@
 #include <symbols.h>
 #include <sys/core.h>
 
+// CCNT - Cycle Timer (Close to ns resolution)
+
 void routing_core0cntv_to_core0fiq(void)
 {
 	store32(0x80, CORE0_TIMER_IRQCNTL);

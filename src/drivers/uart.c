@@ -1,4 +1,5 @@
 #include <drivers/uart.h>
+#include <sys/schedule.h>
 
 #define UART_BUFFER_SIZE 0x100
 struct UartBuffer {
@@ -27,6 +28,7 @@ void* uart_print(char* s)
 		ubuffer.woffset %= UART_BUFFER_SIZE;
 		ptr += 1;
 	}
+	add_thread(uart_flush, 0, 5);
 	return 0;
 }
 
