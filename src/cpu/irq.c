@@ -84,6 +84,9 @@ unsigned long c_fiq_handler(void)
 		if (counter % 0x6000 == 0) {
 			counter = 0;
 		}
+		if (counter % 0x8 == 0) {
+			add_thread(uart_flush, 0, 5);
+		}
 		if (counter % 0x30 == 0) {
 			return 1;
 		} 

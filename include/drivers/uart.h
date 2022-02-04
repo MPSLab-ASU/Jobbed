@@ -9,6 +9,9 @@ extern void uart_char(unsigned char c);
 extern void uart_string(char* message);
 extern void uart_hex(unsigned long data);
 
+void uart_init();
+void* uart_print(char*);
+void uart_flush(void);
 void uart_10(unsigned long);
 void uart_hexn(unsigned long);
 

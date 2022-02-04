@@ -28,6 +28,7 @@ void sysinit(void)
 	stimeh = *(unsigned long*)SYS_TIMER_CHI;
 	stimel = *(unsigned long*)SYS_TIMER_CLO;
 	*(unsigned long*) SYS_TIMER_C0 = 60000000 + stimeh; // 60 second trigger
+	uart_init();
 	///...
 
 	// Route GPU interrupts to Core 0
