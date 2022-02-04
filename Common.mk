@@ -42,11 +42,12 @@ build/kernel.list: build/kernel-g.elf
 
 build/kernel-g.elf: ${A_OBJECTD} ${C_OBJECTD}
 	@mkdir -p $(@D)
-	${CC} -T linker.ld -o $@ ${CFLAGS} $^ -lgcc
+	${CC} -T linker.ld -o $@ ${CFLAGS} $^
 
 build/kernel.elf: ${A_OBJECTD} ${C_OBJECTD}
+	@tput setaf 6 2> /dev/null || true; echo Linking Kernel; tput sgr0 2> /dev/null || true
 	@mkdir -p $(@D)
-	${CC} -T linker.ld -o $@ -ffreestanding -O3 -nostdlib $^ -lgcc
+	${CC} -T linker.ld -o $@ -ffreestanding -O3 -nostdlib $^
 
 export: build/kernel.list
 	cp build/kernel-g.elf /mnt/c/Local/
@@ -60,7 +61,7 @@ obj/%.ao: src/%.S
 	${AS} ${AFLAGS} -c $< -o $@
 
 run: build/kernel.elf
-	@echo Starting QEMU
+	@tput setaf 6 2> /dev/null || true; echo Starting QEMU; tput sgr0 2> /dev/null || true
 	@${QEMU} -kernel $< ${QFLAGS}
 
 run-debug: build/kernel-g.elf
