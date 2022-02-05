@@ -2,7 +2,6 @@
 #include <globals.h>
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
-#include <lib/mem.h>
 #include <symbols.h>
 #include <sys/core.h>
 #include <sys/schedule.h>
@@ -180,7 +179,4 @@ void status(void)
 
 	g_Drawer.x = x;
 	g_Drawer.y = y;
-
-	draw_stacks();
-	vheap_info();
 }

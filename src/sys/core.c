@@ -5,7 +5,6 @@
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
 #include <lib/kmem.h>
-#include <lib/mem.h>
 #include <lib/strings.h>
 #include <symbols.h>
 #include <sys/core.h>
@@ -21,7 +20,6 @@ void sysinit(void)
 	// Initialize System Globals
 	exe_cnt_m.addr = &exe_cnt;
 	exe_cnt_m.pid = NULL_PID;
-	rpi_heap_top = &rpi_heap;
 	stimeh = *(unsigned long*)SYS_TIMER_CHI;
 	stimel = *(unsigned long*)SYS_TIMER_CLO;
 	*(unsigned long*) SYS_TIMER_C0 = 60000000 + stimeh; // 60 second trigger

@@ -1,5 +1,4 @@
 #define GLOBALS_C
-//#include <lib/mem.h>
 #include <lib/kmem.h>
 #include <util/mutex.h>
 #include <graphics/drawer.h>
@@ -25,6 +24,4 @@ __attribute__((section(".bss"))) unsigned int gwidth;
 __attribute__((section(".bss"))) unsigned int gheight;
 __attribute__((section(".bss"))) unsigned int gpitch;
 __attribute__((section(".bss"))) unsigned int gisrgb;
-__attribute__((section(".bss.mmheap"))) unsigned char rpi_heap[MAX_MM];
-__attribute__((section(".bss.mmheap.base"))) void* rpi_heap_top;
 __attribute__((section(".bss"))) unsigned char stacks_table[MAX_THREADS];

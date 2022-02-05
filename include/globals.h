@@ -1,6 +1,5 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
-#include <lib/mem.h>
 #include <sys/schedule.h>
 
 #ifndef GLOBALS_C
@@ -13,8 +12,6 @@ unsigned char kmem_begin[0x2000000];
 unsigned char kmem_lookup[0xD000];
 extern unsigned long exe_cnt;
 extern struct Mutex exe_cnt_m;
-extern unsigned char rpi_heap[MAX_MM];
-extern void* rpi_heap_top;
 extern unsigned long nextpid;
 extern unsigned long stimel;
 extern unsigned long stimeh;
