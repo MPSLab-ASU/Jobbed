@@ -3,6 +3,9 @@
 #include <graphics/lfb.h>
 #include <lib/kmem.h>
 #include <sys/core.h>
+#include <sys/schedule.h>
+
+extern void atest(void);
 
 void test_entry(void)
 {
@@ -15,4 +18,7 @@ void test_entry(void)
 	}
 	DRAW64(0, 19, dt/64);
 	DRAW64(17, 19, dt%64);
+
+	// atest
+	add_thread(atest, 0, 0);
 }

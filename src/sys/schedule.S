@@ -8,9 +8,9 @@
 	ldr r3, =scheduler // struct Scheduler
 	ldr r2, [r3, #0] // struct Thread* rthread
 	str sp, [r2, #4] // svc_lr -> void* sp
-	mrs r1, cpsr
-	str r1, [r2, #0xc] // preserve cpsr
 	cps #0x13 // Svc mode
+	mrs r1, spsr
+	str r1, [r2, #0xc] // preserve cpsr
 	str lr, [r2, #0] // svc_lr -> void* pc
 .endm
 
@@ -20,8 +20,8 @@
 	ldr lr, [r2, #0] // void* pc -> lr_svc
 	ldr r0, [r2, #4] // void* sp -> r0
 	ldr r1, [r2, #0xc] // restore cpsr
+	msr spsr_f, r1
 	cps #0x1f // Sys mode
-	msr cpsr, r1
 	mov sp, r0 // Set stack pointer
 	// Restore Usr regs
 	pop {lr}
