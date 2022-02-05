@@ -36,7 +36,7 @@ void* kcalloc(unsigned int size)
 
 void* krealloc(void* old, unsigned int size)
 {
-	if (!(kmem_begin <= old && old < kmem_begin + 0x200000))
+	if (!((unsigned long)kmem_begin <= (unsigned long)old && (unsigned long)old < (unsigned long)kmem_begin + 0x200000))
 		return 0;
 	unsigned long old_size = 1;
 	while (!((unsigned long)kmem_begin + 0x1000*(old_size/2) <= (unsigned long)old && (unsigned long)old < (unsigned long)kmem_begin + 0x1000*old_size))
@@ -61,6 +61,8 @@ void* krealloc(void* old, unsigned int size)
 
 void  kfree(void* ptr)
 {
+	if (!((unsigned long)kmem_begin <= (unsigned long)ptr && (unsigned long)ptr < (unsigned long)kmem_begin + 0x200000))
+		return 0;
 	unsigned long size = 1;
 	while (!((unsigned long)kmem_begin + 0x1000*(size/2) <= (unsigned long)ptr && (unsigned long)ptr < (unsigned long)kmem_begin + 0x1000*size)) {
 		size *= 2;
