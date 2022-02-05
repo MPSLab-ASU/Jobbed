@@ -40,7 +40,7 @@ svc_000003: // Clean task stack
 	strb r0, [r3, r1]
 	// Free the thread after freeing the stack
 	mov r0, r2
-	bl free
+	bl kfree
 	b svc_exit
 svc_exit:
 	ldmfd sp!, {r0-r12,pc}^

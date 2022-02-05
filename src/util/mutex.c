@@ -1,6 +1,6 @@
 #include <cpu/atomic/swap.h>
 #include <globals.h>
-#include <lib/mem.h>
+#include <lib/kmem.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
 
@@ -45,7 +45,7 @@ unsigned char release_mutex(struct Mutex* m, unsigned long pid)
 struct Mutex* create_mutex(void* addr)
 {
 	// Ensure aligned to word - Important for Atomic Swap
-	struct Mutex* m = (struct Mutex*)malloca(sizeof(struct Mutex), 4);
+	struct Mutex* m = (struct Mutex*)kmalloc(sizeof(struct Mutex));
 	m->addr = addr;
 	m->pid = 0;
 	return m;

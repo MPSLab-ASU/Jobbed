@@ -2,6 +2,7 @@
 #include <globals.h>
 #include <graphics/lfb.h>
 #include <drivers/uart.h>
+#include <lib/kmem.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
 
@@ -71,7 +72,8 @@ void add_thread(void* pc, void* arg, unsigned char priority)
 {
 	//void* sp = get_stack();
 	struct RStack r = get_stack();
-	struct Thread* thread = (struct Thread*)malloca(sizeof(struct Thread), 4);
+	//struct Thread* thread = (struct Thread*)malloca(sizeof(struct Thread), 4);
+	struct Thread* thread = (struct Thread*)kmalloc(sizeof(struct Thread));
 	thread->pc = pc;
 	if (r.sp) {
 		thread->sp_base = r.idx;
