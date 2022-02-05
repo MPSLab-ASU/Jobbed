@@ -1,4 +1,6 @@
 #include <drivers/uart.h>
+#include <lib/kmem.h>
+#include <lib/strings.h>
 #include <sys/schedule.h>
 
 #define UART_BUFFER_SIZE 0x100
@@ -42,19 +44,9 @@ void uart_flush(void)
 
 void uart_10(unsigned long val)
 {
-	unsigned long t = val;
-	unsigned long c;
-	static char buffer[11] = "0000000000\0";
-	char* dptr = buffer + 9;
-	for(int i = 0; i <= 10; i++) {
-		c = t%10;
-		*dptr = 0x30 + (c&0xF);
-		t /= 10;
-		if (t==0)
-			break;
-		dptr -= 1;
-	}
+	char* dptr = u32_to_str(val);
 	uart_string(dptr);
+	kfree(dptr);
 }
 
 void uart_hexn(unsigned long c_val)
