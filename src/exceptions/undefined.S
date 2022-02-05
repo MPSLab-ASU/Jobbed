@@ -17,8 +17,7 @@ undefined:
 	ldr r2, =undefined_at
 	bl draw_string
 	// Output lr
-	mov r1, #0x1000
-	ldr r0, [r1, #-4]
+	ldr r0, [sp, #0x34]
 	sub r2, r0, #4
 	mov r0, #31
 	mov r1, #17
