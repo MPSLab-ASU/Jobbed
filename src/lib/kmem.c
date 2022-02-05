@@ -36,6 +36,8 @@ void* kcalloc(unsigned int size)
 
 void* krealloc(void* old, unsigned int size)
 {
+	if (!(kmem_begin <= old && old < kmem_begin + 0x200000))
+		return 0;
 	unsigned long old_size = 1;
 	while (!((unsigned long)kmem_begin + 0x1000*(old_size/2) <= (unsigned long)old && (unsigned long)old < (unsigned long)kmem_begin + 0x1000*old_size))
 		old_size *= 2;
