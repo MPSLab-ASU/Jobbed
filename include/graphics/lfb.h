@@ -4,6 +4,8 @@
 #define GG_MAX_X 128
 #define GG_MAX_Y  46
 
+#define DRAW64(x,y,v) draw_hex32(x,y,v>>32);draw_hex32(x+8,y,v);
+
 void lfb_init(void);
 void lfb_showpicture(void);
 

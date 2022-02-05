@@ -1,6 +1,5 @@
 #include <cpu.h>
 #include <cpu/irq.h>
-#include <drivers/uart.h>
 #include <globals.h>
 #include <graphics/drawer.h>
 #include <symbols.h>
@@ -101,5 +100,7 @@ void handle_data(unsigned char data)
 		release_mutex(&exe_cnt_m, SYS_PID);
 	} else if (data == 0x61) {
 		add_thread(uart_scheduler, 0, 2);
+	} else if (data == 0x62) {
+		add_thread(test_entry, 0, 2);
 	}
 }
