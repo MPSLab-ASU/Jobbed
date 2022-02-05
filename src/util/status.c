@@ -179,4 +179,6 @@ void status(void)
 
 	g_Drawer.x = x;
 	g_Drawer.y = y;
+
+	draw_stacks();
 }
