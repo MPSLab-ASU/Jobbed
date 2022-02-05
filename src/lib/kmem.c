@@ -34,31 +34,6 @@ void* kcalloc(unsigned int size)
 	return ptr;
 }
 
-void* krealloc(void* old, unsigned int size)
-{
-	if (!((unsigned long)kmem_begin <= (unsigned long)old && (unsigned long)old < (unsigned long)kmem_begin + 0x200000))
-		return 0;
-	unsigned long old_size = 1;
-	while (!((unsigned long)kmem_begin + 0x1000*(old_size/2) <= (unsigned long)old && (unsigned long)old < (unsigned long)kmem_begin + 0x1000*old_size))
-		old_size *= 2;
-	if (size <= old_size)
-		return old;
-	void* new = kmalloc(size);
-	if (new == 0)
-		return 0;
-	void* base = (void*)((unsigned long)old - ((unsigned long)old % old_size));
-	void* block_base = kmem_begin + 0x1000*(old_size/2);
-	unsigned int lookup_offset = (base - block_base)/old_size;
-	unsigned int exp = 0;
-	unsigned int tmp = old_size;
-	while (tmp != 0) {
-		exp++;
-		tmp = tmp >> 1;
-	}
-	kmem_lookup[0x1000*exp + lookup_offset] = 0;
-	return new;
-}
-
 void  kfree(void* ptr)
 {
 	if (!((unsigned long)kmem_begin <= (unsigned long)ptr && (unsigned long)ptr < (unsigned long)kmem_begin + 0x200000))

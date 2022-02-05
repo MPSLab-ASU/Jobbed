@@ -3,7 +3,6 @@
 
 void* kmalloc(unsigned int size);
 void* kcalloc(unsigned int size);
-void* krealloc(void* old, unsigned int size);
 void  kfree(void* ptr);
 
 #endif
