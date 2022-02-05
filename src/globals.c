@@ -1,5 +1,6 @@
 #define GLOBALS_C
-#include <lib/mem.h>
+//#include <lib/mem.h>
+#include <lib/kmem.h>
 #include <util/mutex.h>
 #include <graphics/drawer.h>
 #include <sys/schedule.h>
