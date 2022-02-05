@@ -103,13 +103,5 @@ void handle_data(unsigned char data)
 		add_thread(uart_scheduler, 0, 2);
 	} else if (data == 0x62) {
 		add_thread(heap_info, 0, 2);
-	} else {
 	}
-	g_Drawer.x = 0;
-	g_Drawer.y = 7;
-	for(int i = 0; i < 128; i++)
-		write_char(&g_Drawer, ' ');
-	g_Drawer.x = 0;
-	g_Drawer.y = 7;
-	write_string(&g_Drawer, "> ");
 }

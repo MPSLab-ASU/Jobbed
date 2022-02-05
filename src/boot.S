@@ -137,10 +137,6 @@ core0_mbox: .word 0
 core1_mbox: .word 0
 core2_mbox: .word 0
 core3_mbox: .word 0
-core0_msg: .asciz "Powering up, Core 0 Online!\n"
-core1_msg: .asciz "Powering up, Core 1 Online!\n"
-core2_msg: .asciz "Powering up, Core 2 Online!\n"
-core3_msg: .asciz "Powering up, Core 3 Online!\n"
 
 .section .bss.estacks
 .align 4

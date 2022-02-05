@@ -9,6 +9,8 @@ extern unsigned long cntfrq;
 
 extern char* os_name;
 extern char* os_info_v;
+unsigned char kmem_begin[0x2000000];
+unsigned char kmem_lookup[0xD000];
 extern unsigned long exe_cnt;
 extern struct Mutex exe_cnt_m;
 extern unsigned char rpi_heap[MAX_MM];

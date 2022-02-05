@@ -4,6 +4,7 @@
 #include <globals.h>
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
+#include <lib/kmem.h>
 #include <lib/mem.h>
 #include <lib/strings.h>
 #include <symbols.h>
