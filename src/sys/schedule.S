@@ -1,6 +1,3 @@
-// TODO: - Scheduler info function
-//       - Get next thread
-//       - Yield supervisor call
 .section ".text"
 .globl schedule
 .macro preserve_ctx

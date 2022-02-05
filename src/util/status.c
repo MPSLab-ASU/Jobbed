@@ -147,21 +147,10 @@ void status(void)
 	sp = (unsigned long)getsysstack();
 	write_hex32(&g_Drawer, sp);
 	write_char(&g_Drawer, '\n');
-	/* WRITE Stack Values
-	for(unsigned long i = 1; i <= 14; i++) {
-		write_hex32(&g_Drawer, *(unsigned long*)(0x2000 - i*4));
-		if(i % 6 == 0) {
-			write_char(&g_Drawer, '\n');
-		} else {
-			write_char(&g_Drawer, ' ');
-		}
-	}
-	write_char(&g_Drawer, '\n');
-	*/
 	unsigned long coren;
 	asm volatile (
-	"mrc p15, #0, %0, c0, c0, #5\n"
-	"and %0, %0, #3" : "=r"(coren) :: "cc");
+		"mrc p15, #0, %0, c0, c0, #5\n"
+		"and %0, %0, #3" : "=r"(coren) :: "cc");
 	write_string(&g_Drawer, "Status Updated by Core #");
 	write_10(&g_Drawer, coren);
 	write_string(&g_Drawer, "\nSys Timer Status ");
