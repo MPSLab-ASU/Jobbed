@@ -40,8 +40,6 @@ void sysinit(void)
 	cntfrq = read_cntfrq();
 	// Clear cntv interrupt and set next 1 second timer
 	write_cntv_tval(cntfrq);
-	//// Route timer to core0 irq
-	//routing_core0cntv_to_core0irq();
 	// Route timer to core0 fiq
 	routing_core0cntv_to_core0fiq();
 	// Enable timer

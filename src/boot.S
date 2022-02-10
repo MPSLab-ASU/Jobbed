@@ -20,7 +20,6 @@ reset:
 	// set vector address.
 	ldr r0, =vector
 	mcr p15, 0, r0, c12, c0, 0
-
 	cps #0x12 // Setup sp in IRQ mode.
 	ldr sp, =core0_irq_stack
 	cps #0x11 // Setup sp in FIQ mode.
@@ -66,6 +65,9 @@ reset:
 	blx r3
 
 core1run:
+	// set vector address.
+	ldr r0, =vector
+	mcr p15, 0, r0, c12, c0, 0
 	cps #0x12 // Setup sp in IRQ mode.
 	ldr sp, =core1_irq_stack
 	cps #0x11 // Setup sp in FIQ mode.
@@ -80,6 +82,9 @@ core1run:
 	ldr sp, =core1_svc_stack
 	b io_halt
 core2run:
+	// set vector address.
+	ldr r0, =vector
+	mcr p15, 0, r0, c12, c0, 0
 	cps #0x12 // Setup sp in IRQ mode.
 	ldr sp, =core2_irq_stack
 	cps #0x11 // Setup sp in FIQ mode.
@@ -94,6 +99,9 @@ core2run:
 	ldr sp, =core2_svc_stack
 	b io_halt
 core3run:
+	// set vector address.
+	ldr r0, =vector
+	mcr p15, 0, r0, c12, c0, 0
 	cps #0x12 // Setup sp in IRQ mode.
 	ldr sp, =core3_irq_stack
 	cps #0x11 // Setup sp in FIQ mode.
