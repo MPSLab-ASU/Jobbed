@@ -15,7 +15,10 @@ QEMU = qemu-system-arm
 GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O3 -Wall -Wextra -nostdlib -Iinclude -g
 AFLAGS = -mcpu=cortex-a7 -Iinclude -g
-QFLAGS = -M raspi2 -cpu arm1176 -m 1G -chardev stdio,id=char0,mux=on,logfile=serial.log,signal=off -serial chardev:char0 -mon chardev=char0 -device usb-kbd
+QFLAGS = -M raspi2 -cpu arm1176 -m 1G
+QFLAGS += -chardev stdio,id=char0,mux=on,logfile=serial.log,signal=off -serial chardev:char0 -mon chardev=char0
+#QFLAGS += -serial pipe:/tmp/guest
+QFLAGS += -device usb-kbd
 #QFLAGS += -trace events=events 
 #QFLAGS += -nographic
 
