@@ -1,7 +1,9 @@
 #include <drivers/uart.h>
 #include <lib/kmem.h>
 #include <lib/strings.h>
+#include <sys/core.h>
 #include <sys/schedule.h>
+#include <symbols.h>
 
 #define UART_BUFFER_SIZE 0x100
 struct UartBuffer {
@@ -14,6 +16,26 @@ void uart_init(void)
 {
 	ubuffer.roffset = 0;
 	ubuffer.woffset = 0;
+
+	// Disable UART0
+	store32(0x0, UART0_CR);
+	// Setup GPIO on pin 14 and 15
+	store32(0x0, GPPUD);
+	delay(150);
+	store32((1 << 14) | (1 << 15), GPPUDCLK0);
+	delay(150);
+	store32(0x0, GPPUDCLK0);
+	// Clear pending interrupts
+	store32(0x7FF, UART0_ICR);
+	// Set to 3Mhz
+	store32(1, UART0_IBRD);
+	store32(40, UART0_FBRD);
+	// Enable FIFO and 8 bit transmission
+	store32((1<<4)|(1<<5)|(1<<6), UART0_LCRH);
+	// Mask all interrupts
+	store32((1<<1)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9)|(1<<10), UART0_IMSC);
+	// Enable UART0
+	store32((1<<0)|(1<<8)|(1<<9), UART0_CR);
 }
 
 // s = zero-terminated string
