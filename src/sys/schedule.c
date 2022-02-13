@@ -169,5 +169,50 @@ void yield(void)
 	trb->roffset += 1;
 	trb->roffset %= TQUEUE_MAX;
 	trb->queue[trb->woffset++] = rthread;
+	trb->woffset %= TQUEUE_MAX;
+}
+
+void sched_mutex_yield(void* m)
+{
+	struct Thread* rthread = scheduler.rthread;
+	if (rthread == &usrloopthread)
+		return;
+	unsigned char priority = rthread->priority;
+	rthread->mptr = m;
+	struct ThreadRotBuffer* trb = &scheduler.thread_queues[priority].ready;
+	struct ThreadRotBuffer* trbm = &scheduler.thread_queues[priority].mwait;
+	trb->roffset += 1;
 	trb->roffset %= TQUEUE_MAX;
+	trbm->queue[trbm->woffset++] = rthread;
+	trbm->woffset %= TQUEUE_MAX;
+}
+
+void sched_mutex_resurrect(void* m)
+{
+	for (int p = 0; p < PRIORITIES; p++) {
+		struct ThreadRotBuffer* trbm = &scheduler.thread_queues[p].mwait;
+		unsigned long roffset = trbm->roffset;
+		while (roffset != trbm->woffset) {
+			if (trbm->queue[roffset]->mptr == m) {
+				trbm->queue[roffset]->mptr = 0;
+				struct ThreadRotBuffer* trb = &scheduler.thread_queues[p].ready;
+				trb->queue[trb->woffset++] = trbm->queue[roffset];
+				trb->woffset %= TQUEUE_MAX;
+				// Copy all next backward to fill space
+				unsigned long coffset = roffset;
+				while (coffset != trbm->woffset) {
+					trbm->queue[coffset] = trbm->queue[(coffset+1)%TQUEUE_MAX];
+					coffset++;
+					coffset %= TQUEUE_MAX;
+				}
+				if(trbm->woffset == 0)
+					trbm->woffset = TQUEUE_MAX-1;
+				else
+					trbm->woffset--;
+				return;
+			}
+			roffset++;
+			roffset %= TQUEUE_MAX;
+		}
+	}
 }

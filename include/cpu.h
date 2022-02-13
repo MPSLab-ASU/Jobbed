@@ -81,7 +81,11 @@ static inline void* getirqstack(void)
 
 #define sys0(sys_n) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::: "r0", "r1", "r2", "r3");
 #define sys0_64(sys_n,addr) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) "\nmov r2, %0\nstr r1, [r2]\nstr r0, [r2, #4]" ::"r"(addr): "r0", "r1", "r2", "r3", "memory");
-#define sys1(sys_n,arg0) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::[r0]"r"(arg0): "r0", "r1", "r2", "r3");
+//#define sys1(sys_n,arg0) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::[r0]"r"(arg0): "r0", "r1", "r2", "r3");
+#define sys1(sys_n,arg0) {\
+		register long r0 asm ("r0") = (long) (arg0); \
+		asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::"r"(r0): "memory"); \
+		}
 
 #define SYS_YIELD       0
 #define SYS_TIME        1

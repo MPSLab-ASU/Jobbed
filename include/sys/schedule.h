@@ -27,12 +27,12 @@ struct Thread {
 	void* pc;
 	void* sp; // Store r0-r12,lr on stack
 	unsigned long sp_base;
-	void* mptr;
+	unsigned long cpsr;
 	unsigned long pid;
 	unsigned char priority;
 	unsigned char preempt;
 	unsigned short status;
-	unsigned long cpsr;
+	void* mptr;
 };
 
 struct ThreadRotBuffer {
@@ -60,10 +60,12 @@ void add_thread(void* pc, void* arg, unsigned char priority);
 void draw_stacks(void);
 void uart_scheduler(void);
 struct Thread* next_thread(void);
-/// TODO: ENSURE IRQ/ FIQ entry switches 
+/// TODO: ENSURE IRQ/ FIQ entry switches
 ///  to user mode then calls the SVC call
 extern void schedule(void);
 extern void cleanup(void);
 void yield(void);
+void sched_mutex_yield(void* m);
+void sched_mutex_resurrect(void* m);
 
 #endif

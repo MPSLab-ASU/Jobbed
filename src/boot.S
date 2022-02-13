@@ -1,9 +1,9 @@
 // To keep this in the first portion of the binary.
 .section ".text.boot"
- 
+
 // Make _start global.
 .globl _start
- 
+
 _start:
 reset:
 	cpsid aif
@@ -32,7 +32,7 @@ reset:
 	ldr sp, =core0_sys_stack
 	cps #0x13 // Setup sp in SVC mode.
 	ldr sp, =core0_svc_stack
- 
+
 	// Clear out bss.
 	ldr r4, =__bss_start
 	ldr r9, =__bss_end
@@ -41,10 +41,10 @@ reset:
 	mov r7, #0
 	mov r8, #0
 	b       2f
- 
+
 1:	// store multiple at r4.
 	stmia r4!, {r5-r8}
- 
+
 2:	// If we are still below bss_end, loop.
 	cmp r4, r9
 	blo 1b
