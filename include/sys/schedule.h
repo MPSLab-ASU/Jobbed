@@ -3,7 +3,7 @@
 
 #define TQUEUE_MAX 0x100
 #define STACK_SIZE 0x4000
-#define TQUEUE_CNT 5
+#define TQUEUE_CNT 4
 #define PRIORITIES 6
 #define MAX_THREADS TQUEUE_MAX*PRIORITIES*TQUEUE_CNT
 #define STACK_DRAW_YOFF 320
@@ -14,8 +14,8 @@ enum ThreadStatus {
 	THREAD_READY  = 0,
 	THREAD_MWAIT  = 1,
 	THREAD_SWAIT  = 2,
-	THREAD_FINISH = 3, // Need to clean up
-	THREAD_SERROR = 4, // Stack Error
+	THREAD_SERROR = 3, // Stack Error
+	THREAD_FINISH = 4, // Need to clean up
 };
 
 struct RStack {
@@ -45,7 +45,6 @@ struct ThreadQueues {
 	struct ThreadRotBuffer ready;
 	struct ThreadRotBuffer mwait;
 	struct ThreadRotBuffer swait;
-	struct ThreadRotBuffer finish;
 	struct ThreadRotBuffer serror;
 };
 
