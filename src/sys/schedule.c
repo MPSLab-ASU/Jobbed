@@ -34,7 +34,7 @@ void init_scheduler(void)
 		}
 	}
 	// Initialize nextpid
-	nextpid = SCHED_PID + 1;
+	nextpid = FIRST_AVAIL_PID;
 }
 
 struct RStack get_stack(void)

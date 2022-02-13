@@ -10,8 +10,6 @@ extern char* os_name;
 extern char* os_info_v;
 extern unsigned char kmem_begin[0x2000000];
 extern unsigned char kmem_lookup[0xD000];
-extern unsigned long exe_cnt;
-extern struct Mutex exe_cnt_m;
 extern unsigned long nextpid;
 extern unsigned long stimel;
 extern unsigned long stimeh;

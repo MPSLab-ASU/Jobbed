@@ -75,7 +75,6 @@ svc_000005: // Release Mutex
 	str r1, [r0, #0]
 	dsb
 	sev
-	// TODO: Branch to scheduler to awake threads awaiting mutex
 	sub r0, #4
 	bl sched_mutex_resurrect
 	ldmfd sp!, {r0-r12,lr}

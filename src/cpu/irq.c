@@ -80,7 +80,7 @@ unsigned long c_fiq_handler(void)
 		}
 		if (counter % 0x30 == 0) {
 			return 1;
-		} 
+		}
 		return 0;
 	}
 	return 0;
@@ -92,12 +92,6 @@ void handle_data(unsigned char data)
 	if (data == 0x0D) {
 	// Backspace Case
 	} else if (data == 0x08 || data == 0x7F) {
-	// Lock Case
-	} else if (data == 0x6C) {
-		lock_mutex(&exe_cnt_m, SYS_PID);
-	// Release Case
-	} else if (data == 0x72) {
-		release_mutex(&exe_cnt_m, SYS_PID);
 	} else if (data == 0x61) {
 		add_thread(uart_scheduler, 0, 2);
 	} else if (data == 0x62) {
