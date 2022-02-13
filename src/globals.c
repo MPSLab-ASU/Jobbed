@@ -13,6 +13,7 @@ char* os_info_v = VERSION;
 __attribute__((section(".bss.kmem"))) unsigned char kmem_begin[0x2000000];
 __attribute__((section(".bss"))) unsigned char kmem_lookup[0xD000];
 __attribute__((section(".bss"))) unsigned long nextpid;
+__attribute__((section(".bss"))) unsigned long sched_stack_count;
 __attribute__((section(".bss"))) unsigned long stimel;
 __attribute__((section(".bss"))) unsigned long stimeh;
 __attribute__((section(".bss"))) struct Drawer g_Drawer;

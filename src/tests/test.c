@@ -29,11 +29,10 @@ void test_entry(void)
 	dt += tf - ti;
 	DRAW64(34, 19, dt/64);
 	DRAW64(34+17, 19, dt%64);
-	btest();
+	add_thread(btest, 0, 4);
 }
 
 static struct Mutex testm = {.addr = 0, .pid = 0};
-static int testi = 0;
 
 void ctest1(void)
 {
@@ -59,16 +58,7 @@ void ctest3(void)
 
 void btest(void)
 {
-	if (testi % 3 == 0) {
-		testi++;
-		add_thread(ctest1, 0, 1);
-	}
-	else if (testi % 3 == 1) {
-		testi++;
-		add_thread(ctest2, 0, 0);
-	}
-	else if (testi % 3 == 2) {
-		testi++;
-		add_thread(ctest3, 0, 1);
-	}
+	add_thread(ctest1, 0, 1);
+	add_thread(ctest2, 0, 2);
+	add_thread(ctest3, 0, 3);
 }

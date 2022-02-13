@@ -45,6 +45,10 @@ svc_000003: // Clean task stack
 	// Free the thread after freeing the stack
 	mov r0, r2
 	bl kfree
+	ldr r3, =sched_stack_count
+	ldr r2, [r3]
+	sub r2, #1
+	str r2, [r3]
 	b svc_exit
 svc_000004: // Lock Mutex (usr_r0 = struct Mutex*)
 	ldr r3, =scheduler

@@ -137,6 +137,10 @@ void status(void)
 	write_char(&g_Drawer, '\n');
 	write_10(&g_Drawer, ((unsigned long)tval)/1000000);
 
+	g_Drawer.x = 0;
+	g_Drawer.y = 7;
+	write_string(&g_Drawer, "Task Stack #");
+	write_hex32(&g_Drawer, sched_stack_count);
 	g_Drawer.x = x;
 	g_Drawer.y = y;
 

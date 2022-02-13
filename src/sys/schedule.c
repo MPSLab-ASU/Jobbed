@@ -33,6 +33,7 @@ void init_scheduler(void)
 			trb += 1;
 		}
 	}
+	sched_stack_count = 0;
 	// Initialize nextpid
 	nextpid = FIRST_AVAIL_PID;
 }
@@ -84,6 +85,7 @@ void add_thread(void* pc, void* arg, unsigned char priority)
 		*(unsigned long**)argp = (unsigned long*)cleanup; // Set lr to the cleanup function
 		thread->sp = (void*)argp;
 		thread->status = THREAD_READY;
+		sched_stack_count++;
 	} else {
 		thread->sp_base = r.idx;
 		thread->sp = r.sp;
