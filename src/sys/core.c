@@ -32,8 +32,6 @@ void sysinit(void)
 	// Enable UART GPU IRQ
 	store32(1<<25, IRQ_ENABLE2);
 	// Enable Timer
-	// As an IRQ
-	store32(1<<0, IRQ_BASIC_ENABLE);
 	// Get the frequency
 	cntfrq = read_cntfrq();
 	// Clear cntv interrupt and set next 1 second timer

@@ -23,8 +23,8 @@ void c_irq_handler(void)
 					unsigned int x = g_Drawer.x;
 					unsigned int y = g_Drawer.y;
 					g_Drawer.x = 0;
-					g_Drawer.y = 14;
-					write_hex32(&g_Drawer, data);
+					g_Drawer.y = 9;
+					write_chex32(&g_Drawer, data, 0xAA00FF);
 					g_Drawer.x = x;
 					g_Drawer.y = y;
 				}
@@ -36,16 +36,17 @@ void c_irq_handler(void)
 					unsigned int x = g_Drawer.x;
 					unsigned int y = g_Drawer.y;
 					g_Drawer.x = 0;
-					g_Drawer.y = 5;
-					write_string(&g_Drawer, "TIMER: ");
+					g_Drawer.y = 3;
 					if(timer_status == 0) {
 						cntfrq = read_cntfrq();
 						write_cntv_tval(cntfrq/CPS);
 						enablecntv();
-						write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
+						write_cstring(&g_Drawer, "TIMER", 0x00FF00);
+						write_string(&g_Drawer, ": ");
 					} else {
 						disablecntv();
-						write_cstring(&g_Drawer, "Disabled", 0xFF0000);
+						write_cstring(&g_Drawer, "TIMER", 0xFF0000);
+						write_string(&g_Drawer, ": ");
 					}
 					g_Drawer.x = x;
 					g_Drawer.y = y;

@@ -19,7 +19,7 @@ QFLAGS = -M raspi2 -cpu arm1176 -m 1G
 QFLAGS += -chardev stdio,id=char0,mux=on,logfile=serial.log,signal=off -serial chardev:char0 -mon chardev=char0
 #QFLAGS += -serial pipe:/tmp/guest
 QFLAGS += -device usb-kbd
-#QFLAGS += -trace events=events 
+#QFLAGS += -trace events=events
 #QFLAGS += -nographic
 
 BSP ?= 2
@@ -29,7 +29,7 @@ ifeq ($(BSP),2)
 	CFLAGS += -DBSP23
 endif
 
-CFLAGS += -DVERSION="\"0.1a\""
+CFLAGS += -DVERSION="\"0.1b\""
 
 .PHONY: clean run run-debug debug export tree
 

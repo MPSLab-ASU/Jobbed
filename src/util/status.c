@@ -23,34 +23,38 @@ void output_irq_status(void)
 
 	// Check GPU Interrupt Routing
 	unsigned long g_val = load32(GPU_INTERRUPTS_ROUTING);
-	write_string(&g_Drawer, "GPU IRQ: Core ");
-	write_10(&g_Drawer, g_val & 0b11);
-	write_string(&g_Drawer, " | GPU FIQ: Core ");
-	write_10(&g_Drawer, (g_val >> 2) & 0b11);
+	write_c10(&g_Drawer, g_val & 0b11, 0x1EA1A1);
+	write_c10(&g_Drawer, (g_val >> 2) & 0b11, 0x1EA1A1);
 
-	write_string(&g_Drawer, "\n");
-	write_hex32(&g_Drawer, ib_val);
 	write_string(&g_Drawer, " ");
-	write_hex32(&g_Drawer, i1_val);
-	write_string(&g_Drawer, " ");
-	write_hex32(&g_Drawer, i2_val);
-	write_string(&g_Drawer, " ");
-	write_hex32(&g_Drawer,  f_val);
+	write_chex32(&g_Drawer, ib_val, 0x1EA1A1);
+	write_chex32(&g_Drawer, i1_val, 0x1EA1A1);
+	write_chex32(&g_Drawer, i2_val, 0x1EA1A1);
+	write_chex32(&g_Drawer,  f_val, 0x1EA1A1);
+	write_char(&g_Drawer, '\n');
 
 	// Check UART IRQ
-	write_string(&g_Drawer, "\nUART: ");
 	if (i2_val & (1<<25)) {
-		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
+		write_cstring(&g_Drawer, "UART ", 0x00FF00);
+	} else if (f_val == 57) {
+		write_cstring(&g_Drawer, "UART ", 0xFFA500);
 	} else {
-		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
+		write_cstring(&g_Drawer, "UART ", 0xFF0000);
 	}
 
-	// Check TIMER IRQ
-	write_string(&g_Drawer, "   TIMER: ");
-	if (ib_val & (1<<0)) {
-		write_cstring(&g_Drawer, "Enabled", 0x00FF00);
+	// Check UART IRQ
+	if (i1_val & (1<<0)) {
+		write_cstring(&g_Drawer, "STIMERCMP ", 0x00FF00);
 	} else {
-		write_cstring(&g_Drawer, "Disabled", 0xFF0000);
+		write_cstring(&g_Drawer, "STIMERCMP ", 0xFF0000);
+	}
+
+	if (load32(CORE0_TIMER_IRQCNTL) & 0xF) {
+		write_cstring(&g_Drawer, "LTIMER ", 0x00FF00);
+	} else if (load32(CORE0_TIMER_IRQCNTL) & 0xF0) {
+		write_cstring(&g_Drawer, "LTIMER ", 0xFFA500);
+	} else {
+		write_cstring(&g_Drawer, "LTIMER ", 0xFF0000);
 	}
 }
 
@@ -64,17 +68,16 @@ void status(void)
 	write_cstring(&g_Drawer, os_name, 0xFF0000);
 	write_cstring(&g_Drawer, " v", 0x00FFFF);
 	write_cstring(&g_Drawer, os_info_v, 0x00FFFF);
-
-	// Commands
-	write_string(&g_Drawer, "\nMonitor: Ctrl-A m  Exit: Ctrl-A x  Timer: Ctrl-T");
+	write_cstring(&g_Drawer, "    # TStacks: ", 0xFFDF00);
+	draw_string(g_Drawer.x, g_Drawer.y, "           ");
+	write_c10(&g_Drawer, sched_stack_count, 0xFFDF00);
 
 	// GPU IRQ Statuses
 	write_string(&g_Drawer, "\n");
 	output_irq_status();
 
 	// Timer Status
-	write_string(&g_Drawer, "\nTIMER: ");
-	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
+	write_cstring(&g_Drawer, "\nTIMER", 0x00FF00);
 	// Output the frequency
 	write_string(&g_Drawer, " @ ");
 	unsigned long frq = read_cntfrq()/1000;
@@ -87,8 +90,7 @@ void status(void)
 	write_hex32(&g_Drawer, v);
 
 	// Video Status
-	write_string(&g_Drawer, "\nVIDEO: ");
-	write_cstring(&g_Drawer, "Enabled ", 0x00FF00);
+	write_cstring(&g_Drawer, "\nVIDEO ", 0x00FF00);
 	write_10(&g_Drawer, gwidth);
 	write_string(&g_Drawer, "x");
 	write_10(&g_Drawer, gheight);
@@ -99,12 +101,12 @@ void status(void)
 	}
 
 	g_Drawer.x = 0;
-	g_Drawer.y = 9;
+	g_Drawer.y = 5;
 	write_string(&g_Drawer, "SVC      IRQ      FIQ      User/SYS\n");
 	for(int i = 0; i < 128; i++)
 		write_char(&g_Drawer, ' ');
 	g_Drawer.x = 0;
-	g_Drawer.y = 10;
+	g_Drawer.y = 6;
 
 	unsigned long sp = (unsigned long)getsvcstack();
 	write_hex32(&g_Drawer, sp);
@@ -134,13 +136,10 @@ void status(void)
 	write_string(&g_Drawer, ":");
 	coren = *(volatile unsigned long*)SYS_TIMER_C0;
 	write_10(&g_Drawer, coren);
-	write_char(&g_Drawer, '\n');
+	write_string(&g_Drawer, " | ");
+	draw_string(g_Drawer.x, g_Drawer.y, "           ");
 	write_10(&g_Drawer, ((unsigned long)tval)/1000000);
 
-	g_Drawer.x = 0;
-	g_Drawer.y = 7;
-	write_string(&g_Drawer, "Task Stack #");
-	write_hex32(&g_Drawer, sched_stack_count);
 	g_Drawer.x = x;
 	g_Drawer.y = y;
 
