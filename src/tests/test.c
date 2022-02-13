@@ -61,15 +61,14 @@ void btest(void)
 {
 	if (testi % 3 == 0) {
 		testi++;
-		ctest1();
+		add_thread(ctest1, 0, 1);
 	}
 	else if (testi % 3 == 1) {
 		testi++;
-		ctest2();
+		add_thread(ctest2, 0, 0);
 	}
 	else if (testi % 3 == 2) {
 		testi++;
-		ctest3();
+		add_thread(ctest3, 0, 1);
 	}
-	uart_hexn(&testm);
 }
