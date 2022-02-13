@@ -110,7 +110,7 @@ void uart_scheduler(void)
 	uart_string("Scheduler Info\n==============\nCurrent\n");
 	uart_hex((unsigned long)scheduler.rthread);
 	uart_char(' ');
-	kmemshow32((void*)scheduler.rthread, 6);
+	kmemshow32((void*)scheduler.rthread, 7);
 	struct ThreadQueues* tq;
 	for(int p = 0; p < PRIORITIES; p++) {
 		uart_string("Priority ");
@@ -132,7 +132,7 @@ void uart_scheduler(void)
 				uart_hex((unsigned long)trb->queue[roffset]);
 				uart_char(' ');
 				//kmemshow((void*)trb->queue[roffset], 4*6);
-				kmemshow32((void*)trb->queue[roffset], 6);
+				kmemshow32((void*)trb->queue[roffset], 7);
 				roffset++;
 				roffset %= TQUEUE_MAX;
 			}
