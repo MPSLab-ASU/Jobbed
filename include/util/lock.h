@@ -7,6 +7,8 @@ struct Lock {
 	unsigned long pid;
 } __attribute__((packed, aligned(4)));
 
+void lock(struct Lock* l);
+void unlock(struct Lock* l);
 struct Lock* create_lock(void);
 
 #endif

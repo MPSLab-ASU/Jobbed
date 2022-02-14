@@ -33,28 +33,28 @@ void test_entry(void)
 	add_thread(btest, 0, 4);
 }
 
-static struct Mutex testm = {.addr = 0, .pid = 0};
-//static struct Lock testm = {.pid = 0};
+//static struct Mutex testm = {.addr = 0, .pid = 0};
+static struct Lock testm = {.pid = 0};
 
 void ctest1(void)
 {
 	uart_string("1 Started\n");
-	sys1(SYS_LOCK, &testm);
+	lock(&testm);
 	uart_string("1 Finished\n");
 }
 
 void ctest2(void)
 {
 	uart_string("2 Started\n");
-	sys1(SYS_LOCK, &testm);
+	lock(&testm);
 	uart_string("2 Finished\n");
-	sys1(SYS_UNLOCK, &testm);
+	unlock(&testm);
 }
 
 void ctest3(void)
 {
 	uart_string("3 Started\n");
-	sys1(SYS_UNLOCK, &testm);
+	unlock(&testm);
 	uart_string("3 Finished\n");
 }
 
