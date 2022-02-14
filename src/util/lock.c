@@ -3,6 +3,9 @@
 #include <lib/kmem.h>
 #include <util/lock.h>
 
+// TODO: Improve locking for system
+//  1. Return code rather than hang?
+//  2. Specific core PID rather than CORE0
 void lock(struct Lock* l)
 {
 	unsigned long mode = getmode() & 0x1F;
