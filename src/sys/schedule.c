@@ -105,6 +105,10 @@ void add_thread(void* pc, void* arg, unsigned char priority)
 	}
 	trb->queue[trb->woffset++] = thread;
 	trb->woffset %= TQUEUE_MAX;
+	unsigned long mode = getmode() & 0x1F;
+	if (mode == 0x10) {
+		sys0(SYS_YIELD_HIGH);
+	}
 }
 
 void uart_scheduler(void)
@@ -187,6 +191,30 @@ void sched_mutex_yield(void* m)
 	trb->roffset %= TQUEUE_MAX;
 	trbm->queue[trbm->woffset++] = rthread;
 	trbm->woffset %= TQUEUE_MAX;
+	for (int p = 0; p < PRIORITIES; p++) {
+		struct ThreadRotBuffer* trbm = &scheduler.thread_queues[p].mwait;
+		unsigned long roffset = trbm->roffset;
+		while (roffset != trbm->woffset) {
+			if (trbm->queue[roffset]->mptr == m && trbm->queue[roffset] != rthread) {
+				trb->queue[trb->woffset++] = trbm->queue[roffset];
+				trb->woffset %= TQUEUE_MAX;
+				// Copy all next backward to fill space
+				unsigned long coffset = roffset;
+				while (coffset != trbm->woffset) {
+					trbm->queue[coffset] = trbm->queue[(coffset+1)%TQUEUE_MAX];
+					coffset++;
+					coffset %= TQUEUE_MAX;
+				}
+				if(trbm->woffset == 0)
+					trbm->woffset = TQUEUE_MAX-1;
+				else
+					trbm->woffset--;
+				return;
+			}
+			roffset++;
+			roffset %= TQUEUE_MAX;
+		}
+	}
 }
 
 void sched_mutex_resurrect(void* m)
@@ -197,7 +225,7 @@ void sched_mutex_resurrect(void* m)
 		while (roffset != trbm->woffset) {
 			if (trbm->queue[roffset]->mptr == m) {
 				trbm->queue[roffset]->mptr = 0;
-				struct ThreadRotBuffer* trb = &scheduler.thread_queues[p].ready;
+				struct ThreadRotBuffer* trb = &scheduler.thread_queues[trbm->queue[roffset]->priority].ready;
 				trb->queue[trb->woffset++] = trbm->queue[roffset];
 				trb->woffset %= TQUEUE_MAX;
 				// Copy all next backward to fill space

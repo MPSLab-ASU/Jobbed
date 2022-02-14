@@ -36,31 +36,47 @@ void test_entry(void)
 //static struct Mutex testm = {.addr = 0, .pid = 0};
 static struct Lock testm = {.pid = 0};
 
+void ctest1(void);
+void ctest2(void);
+void ctest3(void);
+void ctest4(void);
+
 void ctest1(void)
 {
 	uart_string("1 Started\n");
+	uart_string("1 Locking\n");
 	lock(&testm);
+	add_thread(ctest3, 0, 3);
+	add_thread(ctest2, 0, 2);
+	uart_string("1 Unlocking\n");
+	unlock(&testm);
 	uart_string("1 Finished\n");
 }
 
 void ctest2(void)
 {
 	uart_string("2 Started\n");
+	add_thread(ctest4, 0, 3);
+	uart_string("2 Locking\n");
 	lock(&testm);
-	uart_string("2 Finished\n");
+	uart_string("2 Unlocking\n");
 	unlock(&testm);
+	uart_string("2 Finished\n");
 }
 
 void ctest3(void)
 {
 	uart_string("3 Started\n");
-	unlock(&testm);
 	uart_string("3 Finished\n");
+}
+
+void ctest4(void)
+{
+	uart_string("4 Started\n");
+	uart_string("4 Finished\n");
 }
 
 void btest(void)
 {
-	add_thread(ctest1, 0, 1);
-	add_thread(ctest2, 0, 2);
-	add_thread(ctest3, 0, 3);
+	add_thread(ctest1, 0, 3);
 }
