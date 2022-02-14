@@ -27,7 +27,7 @@ void test_entry(void)
 	sys0_64(SYS_TIME, &ti);
 	sys0(SYS_YIELD);
 	sys0_64(SYS_TIME, &tf);
-	dt += tf - ti;
+	dt = tf - ti;
 	DRAW64(34, 19, dt/64);
 	DRAW64(34+17, 19, dt%64);
 	add_thread(btest, 0, 4);
