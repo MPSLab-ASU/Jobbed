@@ -5,6 +5,7 @@
 #include <sys/core.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
+#include <util/lock.h>
 
 extern void atest(void);
 void btest(void);
@@ -33,26 +34,27 @@ void test_entry(void)
 }
 
 static struct Mutex testm = {.addr = 0, .pid = 0};
+//static struct Lock testm = {.pid = 0};
 
 void ctest1(void)
 {
 	uart_string("1 Started\n");
-	sys1(4, &testm);
+	sys1(SYS_LOCK, &testm);
 	uart_string("1 Finished\n");
 }
 
 void ctest2(void)
 {
 	uart_string("2 Started\n");
-	sys1(4, &testm);
+	sys1(SYS_LOCK, &testm);
 	uart_string("2 Finished\n");
-	sys1(5, &testm);
+	sys1(SYS_UNLOCK, &testm);
 }
 
 void ctest3(void)
 {
 	uart_string("3 Started\n");
-	sys1(5, &testm);
+	sys1(SYS_UNLOCK, &testm);
 	uart_string("3 Finished\n");
 }
 

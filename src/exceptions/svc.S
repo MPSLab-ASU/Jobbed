@@ -50,12 +50,11 @@ svc_000003: // Clean task stack
 	sub r2, #1
 	str r2, [r3]
 	b svc_exit
-svc_000004: // Lock Mutex (usr_r0 = struct Mutex*)
+svc_000004: // Lock Lock (usr_r0 = struct Lock*)
 	ldr r3, =scheduler
 	ldr r2, [r3, #0] // struct Thread* rthread
 	ldr r1, [r2, #0x10] // unsigned long pid
-	ldr r0, [sp, #0] // struct Mutex* m
-	add r0, #4 // Point to pid
+	ldr r0, [sp, #0] // struct Lock* m
 1:	clrex
 	ldrex r2, [r0, #0]
 	cmp r2, #0
@@ -66,20 +65,17 @@ svc_000004: // Lock Mutex (usr_r0 = struct Mutex*)
 	dmb
 	b svc_exit
 svc_000004_delay_mutex:
-	// r0 = struct Mutex* m
-	sub r0, #4
+	// r0 = struct Lock* m
 	bl sched_mutex_yield
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-svc_000005: // Release Mutex
-	ldr r0, [sp, #0] // struct Mutex* m
-	add r0, #4
+svc_000005: // Release Lock
+	ldr r0, [sp, #0] // struct Lock* m
 	mov r1, #0
 	dmb
 	str r1, [r0, #0]
 	dsb
 	sev
-	sub r0, #4
 	bl sched_mutex_resurrect
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
