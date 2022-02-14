@@ -1,9 +1,12 @@
 #ifndef GRAPHICS_DRAWER_H
 #define GRAPHICS_DRAWER_H
 
+#include <util/lock.h>
+
 struct Drawer {
 	unsigned int x;
 	unsigned int y;
+	struct Lock  l;
 };
 
 void write_cchar(struct Drawer* d, char s, unsigned int c);
