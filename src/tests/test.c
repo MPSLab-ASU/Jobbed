@@ -46,8 +46,7 @@ void ctest1(void)
 	uart_string("1 Started\n");
 	uart_string("1 Locking\n");
 	lock(&testm);
-	add_thread(ctest3, 0, 3);
-	add_thread(ctest2, 0, 2);
+	add_thread(ctest3, 0, 2);
 	uart_string("1 Unlocking\n");
 	unlock(&testm);
 	uart_string("1 Finished\n");
@@ -67,6 +66,7 @@ void ctest2(void)
 void ctest3(void)
 {
 	uart_string("3 Started\n");
+	add_thread(ctest2, 0, 1);
 	uart_string("3 Finished\n");
 }
 

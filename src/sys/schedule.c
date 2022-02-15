@@ -18,6 +18,7 @@ void init_scheduler(void)
 	usrloopthread.mptr = 0;
 	usrloopthread.pid = -1;
 	usrloopthread.priority = -1;
+	usrloopthread.old_priority = -1;
 	usrloopthread.status = THREAD_READY;
 	scheduler.rthread = &usrloopthread;
 	// Initialize Rotating Buffers
@@ -94,6 +95,7 @@ void add_thread(void* pc, void* arg, unsigned char priority)
 	thread->mptr = (void*)0;
 	thread->pid = nextpid++;
 	thread->priority = priority % PRIORITIES;
+	thread->old_priority = -1;
 	thread->preempt = 0;
 	// Add Thread* to scheduler's appropriate buffer
 	struct ThreadQueues* tq = &scheduler.thread_queues[thread->priority];
@@ -185,34 +187,47 @@ void sched_mutex_yield(void* m)
 		return;
 	unsigned char priority = rthread->priority;
 	rthread->mptr = m;
-	struct ThreadRotBuffer* trb = &scheduler.thread_queues[priority].ready;
+	struct ThreadRotBuffer* trbb = &scheduler.thread_queues[priority].ready;
 	struct ThreadRotBuffer* trbm = &scheduler.thread_queues[priority].mwait;
-	trb->roffset += 1;
-	trb->roffset %= TQUEUE_MAX;
+	trbb->roffset += 1;
+	trbb->roffset %= TQUEUE_MAX;
 	trbm->queue[trbm->woffset++] = rthread;
 	trbm->woffset %= TQUEUE_MAX;
-	for (int p = 0; p < PRIORITIES; p++) {
-		struct ThreadRotBuffer* trbm = &scheduler.thread_queues[p].mwait;
-		unsigned long roffset = trbm->roffset;
-		while (roffset != trbm->woffset) {
-			if (trbm->queue[roffset]->mptr == m && trbm->queue[roffset] != rthread) {
-				trb->queue[trb->woffset++] = trbm->queue[roffset];
-				trb->woffset %= TQUEUE_MAX;
-				// Copy all next backward to fill space
-				unsigned long coffset = roffset;
-				while (coffset != trbm->woffset) {
-					trbm->queue[coffset] = trbm->queue[(coffset+1)%TQUEUE_MAX];
-					coffset++;
-					coffset %= TQUEUE_MAX;
+	// Find the thread with the mutex
+	struct ThreadQueues* tq;
+	for (int i = 0; i < PRIORITIES; i++) {
+		tq = &scheduler.thread_queues[i];
+		struct ThreadRotBuffer* trb = &tq->ready;
+		for (int i = 0; i < TQUEUE_CNT; i++) {
+			unsigned long roffset = trb->roffset;
+			unsigned long woffset = trb->woffset;
+			while(roffset != woffset) {
+				// Found thread
+				if (trb->queue[roffset]->pid == ((struct Mutex*)m)->pid) {
+					// Promote the thread to the new priority
+					if (trb->queue[roffset]->priority > priority) {
+						trbb->queue[trbb->woffset++] = trb->queue[roffset];
+						if(trb->queue[roffset]->old_priority == 0xFF)
+							trb->queue[roffset]->old_priority = trb->queue[roffset]->priority;
+						trb->queue[roffset]->priority = priority;
+						trbb->woffset %= TQUEUE_MAX;
+						unsigned long coffset = roffset;
+						while (coffset != woffset) {
+							trb->queue[coffset] = trb->queue[(coffset+1)%TQUEUE_MAX];
+							coffset++;
+							coffset %= TQUEUE_MAX;
+						}
+						if (trb->woffset == 0)
+							trb->woffset = TQUEUE_MAX-1;
+						else
+							trb->woffset--;
+					}
+					return;
 				}
-				if(trbm->woffset == 0)
-					trbm->woffset = TQUEUE_MAX-1;
-				else
-					trbm->woffset--;
-				return;
+				roffset++;
+				roffset %= TQUEUE_MAX;
 			}
-			roffset++;
-			roffset %= TQUEUE_MAX;
+			trb += 1;
 		}
 	}
 }
@@ -239,6 +254,21 @@ void sched_mutex_resurrect(void* m)
 					trbm->woffset = TQUEUE_MAX-1;
 				else
 					trbm->woffset--;
+				// Move the read pointer ahead
+				struct Thread* rthread = scheduler.rthread;
+				if (rthread->old_priority != 0xFF) {
+					struct ThreadRotBuffer* rtrb = &scheduler.thread_queues[rthread->priority].ready;
+					struct ThreadRotBuffer* ntrb = &scheduler.thread_queues[rthread->old_priority].ready;
+					rtrb->roffset++;
+					rtrb->roffset %= TQUEUE_MAX;
+					if (ntrb->roffset == 0)
+						ntrb->roffset = TQUEUE_MAX-1;
+					else
+						ntrb->roffset--;
+					ntrb->queue[ntrb->roffset] = rthread;
+					rthread->priority = rthread->old_priority;
+					rthread->old_priority = -1;
+				}
 				return;
 			}
 			roffset++;
@@ -246,3 +276,5 @@ void sched_mutex_resurrect(void* m)
 		}
 	}
 }
+
+// TODO: Check offsets

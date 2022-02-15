@@ -33,6 +33,7 @@ struct Thread {
 	unsigned char preempt;
 	unsigned short status;
 	void* mptr;
+	unsigned char old_priority;
 };
 
 struct ThreadRotBuffer {
