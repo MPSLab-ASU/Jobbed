@@ -108,20 +108,6 @@ enum
 	SYS_TIMER_SC_M1 = (1 << 1),
 	SYS_TIMER_SC_M2 = (1 << 2),
 	SYS_TIMER_SC_M3 = (1 << 3),
-
-	/* Power Management, Reset controller and Watchdog registers */
-	//BCM2835_PERI_BASE        = 0x3F000000,
-	BCM2835_PERI_BASE        = 0x20000000,
-	PM_BASE                  = (BCM2835_PERI_BASE + 0x100000), 
-	PM_RSTC                  = (PM_BASE+0x1c),
-	PM_WDOG                  = (PM_BASE+0x24),
-	PM_WDOG_RESET            = 0x00000000,
-	PM_PASSWORD              = 0x5a000000,
-	PM_WDOG_TIME_SET         = 0x000fffff,
-	PM_RSTC_WRCFG_CLR        = 0xffffffcf,
-	PM_RSTC_WRCFG_SET        = 0x00000030,
-	PM_RSTC_WRCFG_FULL_RESET = 0x00000020,
-	PM_RSTC_RESET            = 0x00000102,
 };
 
 #endif
