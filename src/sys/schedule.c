@@ -139,7 +139,6 @@ void uart_scheduler(void)
 			while (roffset != trb->woffset) {
 				uart_hex((unsigned long)trb->queue[roffset]);
 				uart_char(' ');
-				//kmemshow((void*)trb->queue[roffset], 4*6);
 				kmemshow32((void*)trb->queue[roffset], 7);
 				roffset++;
 				roffset %= TQUEUE_MAX;
