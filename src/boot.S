@@ -4,6 +4,8 @@
 // Make _start global.
 .globl _start
 
+.include "../include/macros.inc"
+
 _start:
 reset:
 	cpsid aif
@@ -17,21 +19,7 @@ reset:
 	cmp r1, #3
 	bge core3run
 
-	// set vector address.
-	ldr r0, =vector
-	mcr p15, 0, r0, c12, c0, 0
-	cps #0x12 // Setup sp in IRQ mode.
-	ldr sp, =core0_irq_stack
-	cps #0x11 // Setup sp in FIQ mode.
-	ldr sp, =core0_fiq_stack
-	cps #0x1B // Setup sp in UNDEF mode.
-	ldr sp, =core0_undefined_stack
-	cps #0x17 // Setup sp in ABORT mode.
-	ldr sp, =core0_data_stack
-	cps #0x1f // Setup sp in USR/SYS mode.
-	ldr sp, =core0_sys_stack
-	cps #0x13 // Setup sp in SVC mode.
-	ldr sp, =core0_svc_stack
+	init_core 0
 
 	// Clear out bss.
 	ldr r4, =__bss_start
@@ -51,13 +39,13 @@ reset:
 
 	// Clear mailboxes
 	mov r4, #0
-	ldr r5, =core0_mbox
+	ldr r5, =mbox_core0
 	str r4, [r5]
-	ldr r5, =core1_mbox
+	ldr r5, =mbox_core1
 	str r4, [r5]
-	ldr r5, =core2_mbox
+	ldr r5, =mbox_core2
 	str r4, [r5]
-	ldr r5, =core3_mbox
+	ldr r5, =mbox_core3
 	str r4, [r5]
 
 	// Call kernel_main
@@ -65,55 +53,13 @@ reset:
 	blx r3
 
 core1run:
-	// set vector address.
-	ldr r0, =vector
-	mcr p15, 0, r0, c12, c0, 0
-	cps #0x12 // Setup sp in IRQ mode.
-	ldr sp, =core1_irq_stack
-	cps #0x11 // Setup sp in FIQ mode.
-	ldr sp, =core1_fiq_stack
-	cps #0x1B // Setup sp in UNDEF mode.
-	ldr sp, =core1_undefined_stack
-	cps #0x17 // Setup sp in ABORT mode.
-	ldr sp, =core1_data_stack
-	cps #0x1f // Setup sp in USR/SYS mode.
-	ldr sp, =core1_sys_stack
-	cps #0x13 // Setup sp in SVC mode.
-	ldr sp, =core1_svc_stack
+	init_core 1
 	b io_halt
 core2run:
-	// set vector address.
-	ldr r0, =vector
-	mcr p15, 0, r0, c12, c0, 0
-	cps #0x12 // Setup sp in IRQ mode.
-	ldr sp, =core2_irq_stack
-	cps #0x11 // Setup sp in FIQ mode.
-	ldr sp, =core2_fiq_stack
-	cps #0x1B // Setup sp in UNDEF mode.
-	ldr sp, =core2_undefined_stack
-	cps #0x17 // Setup sp in ABORT mode.
-	ldr sp, =core2_data_stack
-	cps #0x1f // Setup sp in USR/SYS mode.
-	ldr sp, =core2_sys_stack
-	cps #0x13 // Setup sp in SVC mode.
-	ldr sp, =core2_svc_stack
+	init_core 2
 	b io_halt
 core3run:
-	// set vector address.
-	ldr r0, =vector
-	mcr p15, 0, r0, c12, c0, 0
-	cps #0x12 // Setup sp in IRQ mode.
-	ldr sp, =core3_irq_stack
-	cps #0x11 // Setup sp in FIQ mode.
-	ldr sp, =core3_fiq_stack
-	cps #0x1B // Setup sp in UNDEF mode.
-	ldr sp, =core3_undefined_stack
-	cps #0x17 // Setup sp in ABORT mode.
-	ldr sp, =core3_data_stack
-	cps #0x1f // Setup sp in USR/SYS mode.
-	ldr sp, =core3_sys_stack
-	cps #0x13 // Setup sp in SVC mode.
-	ldr sp, =core3_svc_stack
+	init_core 3
 	b io_halt
 .globl io_halt
 io_halt:
@@ -141,58 +87,58 @@ irq_handler:        .word irq
 fiq_handler:        .word fiq
 
 .section .data
-core0_mbox: .word 0
-core1_mbox: .word 0
-core2_mbox: .word 0
-core3_mbox: .word 0
+mbox_core0: .word 0
+mbox_core1: .word 0
+mbox_core2: .word 0
+mbox_core3: .word 0
 
 .section .bss.estacks
 .align 4
 	.space 4096
-core0_undefined_stack:
+undefined_stack_core0:
 	.space 4096
-core0_svc_stack:
+svc_stack_core0:
 	.space 4096
-core0_data_stack:
+data_stack_core0:
 	.space 4096
-core0_irq_stack:
+irq_stack_core0:
 	.space 4096
-core0_fiq_stack:
+fiq_stack_core0:
 	.space 4096
-core0_sys_stack:
+sys_stack_core0:
 	.space 4096
-core1_undefined_stack:
+undefined_stack_core1:
 	.space 4096
-core1_svc_stack:
+svc_stack_core1:
 	.space 4096
-core1_data_stack:
+data_stack_core1:
 	.space 4096
-core1_irq_stack:
+irq_stack_core1:
 	.space 4096
-core1_fiq_stack:
+fiq_stack_core1:
 	.space 4096
-core1_sys_stack:
+sys_stack_core1:
 	.space 4096
-core2_undefined_stack:
+undefined_stack_core2:
 	.space 4096
-core2_svc_stack:
+svc_stack_core2:
 	.space 4096
-core2_data_stack:
+data_stack_core2:
 	.space 4096
-core2_irq_stack:
+irq_stack_core2:
 	.space 4096
-core2_fiq_stack:
+fiq_stack_core2:
 	.space 4096
-core2_sys_stack:
+sys_stack_core2:
 	.space 4096
-core3_undefined_stack:
+undefined_stack_core3:
 	.space 4096
-core3_svc_stack:
+svc_stack_core3:
 	.space 4096
-core3_data_stack:
+data_stack_core3:
 	.space 4096
-core3_irq_stack:
+irq_stack_core3:
 	.space 4096
-core3_fiq_stack:
+fiq_stack_core3:
 	.space 4096
-core3_sys_stack:
+sys_stack_core3:
