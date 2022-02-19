@@ -4,7 +4,7 @@
 // Make _start global.
 .globl _start
 
-.include "../include/macros.inc"
+.include "macros.inc"
 
 _start:
 reset:
