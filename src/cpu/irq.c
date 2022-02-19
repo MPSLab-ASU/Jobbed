@@ -15,10 +15,15 @@ void handle_data(unsigned char);
 void c_irq_handler(void)
 {
 	unsigned long source = load32(CORE0_IRQ_SOURCE);
+	// Check if GPU Interrupt
 	if (source & (1 << 8)) {
+		// Check if UART Interrupt
 		if(load32(IRQ_PENDING2) & (1 << 25)) {
+			// Check if UART Interrupt is Masked
 			if(load32(UART0_MIS) & (1<<4)) {
+				// Get the UART data
 				unsigned long data = load32(UART0_DR);
+				// Draw it on the screen
 				{
 					unsigned int x = g_Drawer.x;
 					unsigned int y = g_Drawer.y;
@@ -29,6 +34,7 @@ void c_irq_handler(void)
 					g_Drawer.y = y;
 				}
 
+				// Handle the recieved data
 				// Ctrl+T to toggle timer
 				if(data == 0x14) {
 					unsigned long timer_status;
@@ -50,19 +56,25 @@ void c_irq_handler(void)
 					}
 					g_Drawer.x = x;
 					g_Drawer.y = y;
-				} else {
+				}
+				// Add task to handle the data
+				else {
 					add_thread(handle_data, (void*)data, 1);
 				}
 				return;
 			}
-		} else if (*(unsigned long*)SYS_TIMER_CS == SYS_TIMER_SC_M0) {
+		}
+		// Check if System Time Compare 0 Triggered the Interrupt
+		else if (*(unsigned long*)SYS_TIMER_CS == SYS_TIMER_SC_M0) {
 			volatile unsigned long* timer_cs = (unsigned long*)SYS_TIMER_CS;
 			volatile unsigned long* timer_chi = (unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (unsigned long*)SYS_TIMER_C0;
 			*timer_cs = SYS_TIMER_SC_M0;
 			*nexttime = *timer_chi + 60000000;
 		}
-	} else if (source & (1 << 3)) {
+	}
+	// Check if CNTV triggered the interrupt
+	else if (source & (1 << 3)) {
 		c_timer();
 		return;
 	}
@@ -73,6 +85,7 @@ static unsigned long counter = 0;
 unsigned long c_fiq_handler(void)
 {
 	unsigned long source = load32(CORE0_FIQ_SOURCE);
+	// Check if CNTV triggered the interrupt
 	if (source & (1 << 3)) {
 		c_timer();
 		counter++;

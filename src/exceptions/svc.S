@@ -82,6 +82,3 @@ svc_000005: // Release Lock
 	b svc_exit
 svc_exit:
 	ldmfd sp!, {r0-r12,pc}^
-
-.section .data
-svc_msg:	.asciz "SVC Handler #"

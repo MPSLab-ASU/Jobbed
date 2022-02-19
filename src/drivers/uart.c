@@ -5,7 +5,7 @@
 #include <sys/schedule.h>
 #include <symbols.h>
 
-#define UART_BUFFER_SIZE 0x100
+#define UART_BUFFER_SIZE 0x400
 struct UartBuffer {
 	char buffer[UART_BUFFER_SIZE];
 	unsigned long roffset;
@@ -52,7 +52,8 @@ void* uart_print(char* s)
 		ubuffer.woffset %= UART_BUFFER_SIZE;
 		ptr += 1;
 	}
-	add_thread(uart_flush, 0, 5);
+	// Low priority flush run whenever
+	add_thread(uart_flush, 0, PRIORITIES-1);
 	return 0;
 }
 

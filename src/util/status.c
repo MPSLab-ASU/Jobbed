@@ -100,6 +100,7 @@ void status(void)
 		write_string(&g_Drawer, " BGR");
 	}
 
+	// Core Stacks
 	g_Drawer.x = 0;
 	g_Drawer.y = 5;
 	write_string(&g_Drawer, "SVC      IRQ      FIQ      User/SYS\n");
@@ -107,7 +108,6 @@ void status(void)
 		write_char(&g_Drawer, ' ');
 	g_Drawer.x = 0;
 	g_Drawer.y = 6;
-
 	unsigned long sp = (unsigned long)getsvcstack();
 	write_hex32(&g_Drawer, sp);
 	write_char(&g_Drawer, ' ');
@@ -120,12 +120,16 @@ void status(void)
 	sp = (unsigned long)getsysstack();
 	write_hex32(&g_Drawer, sp);
 	write_char(&g_Drawer, '\n');
+
+	// Report Core that updated status
 	unsigned long coren;
 	asm volatile (
 		"mrc p15, #0, %0, c0, c0, #5\n"
 		"and %0, %0, #3" : "=r"(coren) :: "cc");
 	write_string(&g_Drawer, "Status Updated by Core #");
 	write_10(&g_Drawer, coren);
+
+	// Report Sys Timer Stataus
 	write_string(&g_Drawer, "\nSys Timer Status ");
 	coren = *(volatile unsigned long*)SYS_TIMER_CS;
 	write_10(&g_Drawer, coren);
@@ -142,6 +146,4 @@ void status(void)
 
 	g_Drawer.x = x;
 	g_Drawer.y = y;
-
-	draw_stacks();
 }

@@ -42,8 +42,10 @@ void init_scheduler(void)
 struct RStack get_stack(void)
 {
 	struct RStack r = {.sp = 0, .idx = -1};
+	// Find an available stack
 	for (int i = 0; i < MAX_THREADS; i++) {
 		if (stacks_table[i] == 0) {
+			// Mark unavailable
 			stacks_table[i] = 1;
 			r.idx = i;
 			r.sp = (void*)0x20000000 - STACK_SIZE*i;
