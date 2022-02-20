@@ -61,6 +61,7 @@ core2run:
 core3run:
 	init_core 3
 	b io_halt
+
 .globl io_halt
 io_halt:
 	wfi
@@ -93,52 +94,7 @@ mbox_core2: .word 0
 mbox_core3: .word 0
 
 .section .bss.estacks
-.align 4
-	.space 4096
-undefined_stack_core0:
-	.space 4096
-svc_stack_core0:
-	.space 4096
-data_stack_core0:
-	.space 4096
-irq_stack_core0:
-	.space 4096
-fiq_stack_core0:
-	.space 4096
-sys_stack_core0:
-	.space 4096
-undefined_stack_core1:
-	.space 4096
-svc_stack_core1:
-	.space 4096
-data_stack_core1:
-	.space 4096
-irq_stack_core1:
-	.space 4096
-fiq_stack_core1:
-	.space 4096
-sys_stack_core1:
-	.space 4096
-undefined_stack_core2:
-	.space 4096
-svc_stack_core2:
-	.space 4096
-data_stack_core2:
-	.space 4096
-irq_stack_core2:
-	.space 4096
-fiq_stack_core2:
-	.space 4096
-sys_stack_core2:
-	.space 4096
-undefined_stack_core3:
-	.space 4096
-svc_stack_core3:
-	.space 4096
-data_stack_core3:
-	.space 4096
-irq_stack_core3:
-	.space 4096
-fiq_stack_core3:
-	.space 4096
-sys_stack_core3:
+core_stacks 0
+core_stacks 1
+core_stacks 2
+core_stacks 3

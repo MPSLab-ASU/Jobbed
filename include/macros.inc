@@ -44,3 +44,18 @@
 	pop {r0-r12}
 	cps #0x13 // Svc mode
 .endm
+
+.macro core_stacks coreid
+	.space 4096
+undefined_stack_core\coreid:
+	.space 4096
+svc_stack_core\coreid:
+	.space 4096
+data_stack_core\coreid:
+	.space 4096
+irq_stack_core\coreid:
+	.space 4096
+fiq_stack_core\coreid:
+	.space 4096
+sys_stack_core\coreid:
+.endm
