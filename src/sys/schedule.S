@@ -20,11 +20,7 @@ schedule:
 1:
 	bl next_thread // Thread* next -> r0
 	ldr r3, =scheduler
-	ldr r2, [r3, #0] // Thread* current
-	cmp r0, r2 // current = next?
-	beq 2f
 	str r0, [r3, #0] // next -> rthread
-2:
 	restore_ctx
 	subs pc, lr, #0
 
@@ -54,5 +50,4 @@ cleanup:
 .globl kernel_usr_task_loop
 kernel_usr_task_loop:
 	wfe
-	//svc #2
 	b kernel_usr_task_loop
