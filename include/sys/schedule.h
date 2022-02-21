@@ -1,6 +1,7 @@
 #ifndef SYS_SCHEDULE_H
 #define SYS_SCHEDULE_H
 
+// If TQUEUE_MAX is changed, ensure sys/schedule.S's value gets changed
 #define TQUEUE_MAX 0x100
 #define STACK_SIZE 0x4000
 #define TQUEUE_CNT 4
@@ -59,8 +60,6 @@ void init_scheduler(void);
 void add_thread(void* pc, void* arg, unsigned char priority);
 void uart_scheduler(void);
 struct Thread* next_thread(void);
-/// TODO: ENSURE IRQ/ FIQ entry switches
-///  to user mode then calls the SVC call
 extern void schedule(void);
 extern void cleanup(void);
 void yield(void);
