@@ -4,3 +4,4 @@ mk.old
 Makefile
 serial.log
 *.swp
+*.hda

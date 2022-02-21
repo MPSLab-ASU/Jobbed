@@ -13,13 +13,7 @@ enum
 	// The offsets for reach register.
 	GPIO_BASE = (MMIO_BASE + 0x200000),
 
-	// Controls actuation of pull up/down to ALL GPIO pins.
-	GPPUD = (GPIO_BASE + 0x94),
-
-	// Controls actuation of pull up/down for specific GPIO pin.
-	GPPUDCLK0 = (GPIO_BASE + 0x98),
-
-	// The base address for UART.
+	//// The base address for UART.
 	UART0_BASE = (GPIO_BASE + 0x1000), // for raspi4 0xFE201000, raspi2 & 3 0x3F201000, and 0x20201000 for raspi1
 
 	// The offsets for reach register for the UART.
@@ -109,5 +103,26 @@ enum
 	SYS_TIMER_SC_M2 = (1 << 2),
 	SYS_TIMER_SC_M3 = (1 << 3),
 };
+
+#define GPFSEL0         ((volatile unsigned int*)(MMIO_BASE+0x00200000))
+#define GPFSEL1         ((volatile unsigned int*)(MMIO_BASE+0x00200004))
+#define GPFSEL2         ((volatile unsigned int*)(MMIO_BASE+0x00200008))
+#define GPFSEL3         ((volatile unsigned int*)(MMIO_BASE+0x0020000C))
+#define GPFSEL4         ((volatile unsigned int*)(MMIO_BASE+0x00200010))
+#define GPFSEL5         ((volatile unsigned int*)(MMIO_BASE+0x00200014))
+#define GPSET0          ((volatile unsigned int*)(MMIO_BASE+0x0020001C))
+#define GPSET1          ((volatile unsigned int*)(MMIO_BASE+0x00200020))
+#define GPCLR0          ((volatile unsigned int*)(MMIO_BASE+0x00200028))
+#define GPLEV0          ((volatile unsigned int*)(MMIO_BASE+0x00200034))
+#define GPLEV1          ((volatile unsigned int*)(MMIO_BASE+0x00200038))
+#define GPEDS0          ((volatile unsigned int*)(MMIO_BASE+0x00200040))
+#define GPEDS1          ((volatile unsigned int*)(MMIO_BASE+0x00200044))
+#define GPHEN0          ((volatile unsigned int*)(MMIO_BASE+0x00200064))
+#define GPHEN1          ((volatile unsigned int*)(MMIO_BASE+0x00200068))
+// Controls actuation of pull up/down to ALL GPIO pins.
+#define GPPUD           ((volatile unsigned int*)(MMIO_BASE+0x00200094))
+//// Controls actuation of pull up/down for specific GPIO pin.
+#define GPPUDCLK0       ((volatile unsigned int*)(MMIO_BASE+0x00200098))
+#define GPPUDCLK1       ((volatile unsigned int*)(MMIO_BASE+0x0020009C))
 
 #endif

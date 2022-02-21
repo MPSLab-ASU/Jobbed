@@ -19,8 +19,7 @@
 
 ## Todo
  - Implement Lock for accessing thread information
- - Fix mutex with scheduler
- - Implement handlers
+ - SD Reading
 
 ## SVC Calls
  - Sysinfo

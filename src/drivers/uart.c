@@ -20,11 +20,11 @@ void uart_init(void)
 	// Disable UART0
 	store32(0x0, UART0_CR);
 	// Setup GPIO on pin 14 and 15
-	store32(0x0, GPPUD);
+	store32(0x0, (unsigned long)GPPUD);
 	delay(150);
-	store32((1 << 14) | (1 << 15), GPPUDCLK0);
+	store32((1 << 14) | (1 << 15), (unsigned long)GPPUDCLK0);
 	delay(150);
-	store32(0x0, GPPUDCLK0);
+	store32(0x0, (unsigned long)GPPUDCLK0);
 	// Clear pending interrupts
 	store32(0x7FF, UART0_ICR);
 	// Set to 3Mhz
