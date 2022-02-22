@@ -34,7 +34,7 @@ endif
 
 CFLAGS += -DVERSION="\"0.1b\""
 
-.PHONY: clean run run-debug debug export tree disk
+.PHONY: clean run run-silent run-debug debug export tree disk test
 
 default: clean build/kernel7.img
 
@@ -70,6 +70,10 @@ run: build/kernel.elf
 	@tput setaf 6 2> /dev/null || true; echo Starting QEMU; tput sgr0 2> /dev/null || true
 	@${QEMU} -kernel $< ${QFLAGS}
 
+run-silent: build/kernel.elf
+	@tput setaf 6 2> /dev/null || true; echo Starting QEMU; tput sgr0 2> /dev/null || true
+	@${QEMU} -kernel $< -nographic ${QFLAGS}
+
 run-debug: build/kernel-g.elf
 	@echo Starting QEMU in Debug Mode
 	@${QEMU} -kernel $< -s -S ${QFLAGS}
@@ -88,3 +92,7 @@ clean:
 
 tree:
 	@tree -a -I obj\|build\|.git\|.gitignore
+
+test: clean build/kernel.elf
+	@tput setaf 6 2> /dev/null || true; echo Running Tests; tput sgr0 2> /dev/null || true
+	@./tests/run.sh
