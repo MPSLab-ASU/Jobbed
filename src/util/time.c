@@ -67,3 +67,10 @@ unsigned long long get_time(void)
 	t.tvalb.high = *(unsigned long*)SYS_TIMER_CHI;
 	return t.tval;
 }
+
+void wait_msec(unsigned int n)
+{
+	unsigned long start = *(volatile unsigned long*)SYS_TIMER_CHI;
+	while (*(volatile unsigned long*)SYS_TIMER_CHI - start < n)
+		asm volatile("nop");
+}

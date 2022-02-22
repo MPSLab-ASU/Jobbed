@@ -10,6 +10,7 @@ unsigned long read_cntv_tval(void);
 void write_cntv_tval(unsigned long val);
 unsigned long read_cntfrq(void);
 unsigned long long get_time(void);
+void wait_msec(unsigned int n);
 
 static inline void enablecntv(void)
 {

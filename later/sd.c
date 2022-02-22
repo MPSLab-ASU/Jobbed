@@ -1,7 +1,9 @@
+// Adapted from bztsrc
 #include <drivers/uart.h>
 #include <drivers/sd.h>
 #include <symbols.h>
 #include <sys/core.h>
+#include <util/time.h>
 
 #define EMMC_ARG2           ((volatile unsigned int*)(MMIO_BASE+0x00300000))
 #define EMMC_BLKSIZECNT     ((volatile unsigned int*)(MMIO_BASE+0x00300004))
@@ -90,12 +92,6 @@
 #define ACMD41_ARG_HC       0x51ff8000
 
 unsigned long sd_scr[2], sd_ocr, sd_rca, sd_err, sd_hv;
-
-void wait_msec(unsigned int n)
-{
-	for(unsigned long i = 0; i < n*100; i++)
-		asm volatile("nop");
-}
 
 /**
  * Wait for data or command ready
