@@ -13,11 +13,11 @@ reset:
 	mrc p15, #0, r1, c0, c0, #5
 	and r1, r1, #3
 	cmp r1, #1
-	beq core1run
+	beq runcore1
 	cmp r1, #2
-	beq core2run
+	beq runcore2
 	cmp r1, #3
-	bge core3run
+	bge runcore3
 
 	init_core 0
 
@@ -52,14 +52,17 @@ reset:
 	ldr r3, =kernel_main
 	blx r3
 
-core1run:
+runcore1:
 	init_core 1
+	core_task 1
 	b io_halt
-core2run:
+runcore2:
 	init_core 2
+	core_task 2
 	b io_halt
-core3run:
+runcore3:
 	init_core 3
+	core_task 3
 	b io_halt
 
 .globl io_halt
@@ -88,9 +91,13 @@ irq_handler:        .word irq
 fiq_handler:        .word fiq
 
 .section .data
+.globl mbox_core0
 mbox_core0: .word 0
+.globl mbox_core1
 mbox_core1: .word 0
+.globl mbox_core2
 mbox_core2: .word 0
+.globl mbox_core3
 mbox_core3: .word 0
 
 .section .bss.estacks

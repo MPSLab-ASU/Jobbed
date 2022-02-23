@@ -59,3 +59,29 @@ fiq_stack_core\coreid:
 	.space 4096
 sys_stack_core\coreid:
 .endm
+
+.macro core_task coreid
+__l_\@:	clrex
+	ldr r0, =mbox_core\coreid
+	ldrex r1, [r0]
+	cmp r1, #0
+	wfeeq
+	beq __l_\@
+	clrex
+	mov r0, #\coreid
+	blx r1
+	ldr r0, =mbox_core\coreid
+	mov r1, #0
+	str r1, [r0]
+	b __l_\@
+.endm
+
+.macro assign_ctask label, coreid
+	ldr r0, =mbox_core\coreid
+	ldr r1, =\label
+__l_\@:	ldr r2, [r0]
+	cmp r2, #0
+	bne __l_\@
+	str r1, [r0]
+	sev
+.endm
