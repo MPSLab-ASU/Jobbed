@@ -4,18 +4,21 @@
 #include <sys/core.h>
 #include <sys/schedule.h>
 #include <symbols.h>
+#include <util/lock.h>
 
 #define UART_BUFFER_SIZE 0x400
 struct UartBuffer {
 	char buffer[UART_BUFFER_SIZE];
 	unsigned long roffset;
 	unsigned long woffset;
+	struct Lock l;
 } ubuffer;
 
 void uart_init(void)
 {
 	ubuffer.roffset = 0;
 	ubuffer.woffset = 0;
+	ubuffer.l.pid = 0;
 
 	// Disable UART0
 	store32(0x0, UART0_CR);
@@ -41,6 +44,7 @@ void uart_init(void)
 // s = zero-terminated string
 void* uart_print(char* s)
 {
+	lock(&ubuffer.l);
 	char* ptr = s;
 	while (1) {
 		if (*ptr == 0)
@@ -54,6 +58,7 @@ void* uart_print(char* s)
 	}
 	// Low priority flush run whenever
 	add_thread(uart_flush, 0, PRIORITIES-1);
+	unlock(&ubuffer.l);
 	return 0;
 }
 
