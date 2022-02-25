@@ -9,6 +9,13 @@
 _start:
 reset:
 	cpsid aif
+	mrs r0, cpsr
+	bic r0, r0, #0x1f
+	orr r0, r0, #0x13
+	msr spsr_cxsf, r0
+	add r0, pc, #4
+	msr ELR_hyp, r0
+	eret
 	// disable core0,1,2.
 	mrc p15, #0, r1, c0, c0, #5
 	and r1, r1, #3
@@ -54,15 +61,12 @@ reset:
 
 runcore1:
 	init_core 1
-	core_task 1
 	b io_halt
 runcore2:
 	init_core 2
-	core_task 2
 	b io_halt
 runcore3:
 	init_core 3
-	core_task 3
 	b io_halt
 
 .globl io_halt
