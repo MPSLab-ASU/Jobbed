@@ -108,3 +108,6 @@ tree:
 test: clean build/kernel.elf
 	@tput setaf 6 2> /dev/null || true; echo Running Tests; tput sgr0 2> /dev/null || true
 	@./tests/run.sh
+
+copy: clean build/kernel7.img
+	sudo cp build/kernel7.img /mnt/sd0

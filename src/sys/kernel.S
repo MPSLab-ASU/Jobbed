@@ -10,7 +10,7 @@ kernel_main:
 	bl sysinit
 
 	// Intentional undefined instruction
-	//.word 0xf7f0a000
+	// .word 0xf7f0a000
 	cpsie aif, #0x10
 	svc #2 // Start scheduling!
 1:

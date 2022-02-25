@@ -9,13 +9,20 @@
 _start:
 reset:
 	cpsid aif
+
+	// Exit Hypervisor Mode
 	mrs r0, cpsr
+	and r1, r0, #0x1F
+	cmp r1, #0x1A
+	bne 1f
 	bic r0, r0, #0x1f
 	orr r0, r0, #0x13
 	msr spsr_cxsf, r0
 	add r0, pc, #4
 	msr ELR_hyp, r0
 	eret
+
+1:
 	// disable core0,1,2.
 	mrc p15, #0, r1, c0, c0, #5
 	and r1, r1, #3
