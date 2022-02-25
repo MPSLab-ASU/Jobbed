@@ -5,7 +5,6 @@
 #include <symbols.h>
 #include <sys/core.h>
 #include <sys/schedule.h>
-#include <sys/timer.h>
 #include <util/mutex.h>
 #include <util/status.h>
 #include <util/time.h>
@@ -104,8 +103,6 @@ void status(void)
 	g_Drawer.x = 0;
 	g_Drawer.y = 5;
 	write_string(&g_Drawer, "SVC      IRQ      FIQ      User/SYS\n");
-	for(int i = 0; i < 128; i++)
-		write_char(&g_Drawer, ' ');
 	g_Drawer.x = 0;
 	g_Drawer.y = 6;
 	unsigned long sp = (unsigned long)getsvcstack();

@@ -5,12 +5,12 @@
 #include <graphics/drawer.h>
 #include <graphics/lfb.h>
 #include <lib/kmem.h>
+#include <lib/mmu.h>
 #include <lib/strings.h>
 #include <symbols.h>
 #include <sys/core.h>
 #include <sys/power.h>
 #include <sys/schedule.h>
-#include <sys/timer.h>
 #include <util/mutex.h>
 #include <util/time.h>
 
@@ -35,7 +35,7 @@ void sysinit(void)
 	// Get the frequency
 	cntfrq = read_cntfrq();
 	// Clear cntv interrupt and set next 1 second timer
-	write_cntv_tval(cntfrq);
+	write_cntv_tval(cntfrq/100);
 	// Route timer to core0 fiq
 	routing_core0cntv_to_core0fiq();
 	// Enable timer
@@ -46,6 +46,8 @@ void sysinit(void)
 	// Graphics Initialize
 	lfb_init();
 	lfb_showpicture();
+
+	mmu_init();
 
 	// Start Scheduler
 	init_scheduler();

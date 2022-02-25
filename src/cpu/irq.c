@@ -5,10 +5,12 @@
 #include <symbols.h>
 #include <sys/core.h>
 #include <sys/schedule.h>
-#include <sys/timer.h>
 #include <tests/test.h>
 #include <util/mutex.h>
+#include <util/status.h>
 #include <util/time.h>
+
+#define CPS 1000
 
 void handle_data(unsigned char);
 
@@ -59,7 +61,7 @@ void c_irq_handler(void)
 				}
 				// Add task to handle the data
 				else {
-					add_thread(handle_data, (void*)data, 1);
+					//add_thread(handle_data, (void*)data, 1);
 				}
 				return;
 			}
@@ -75,7 +77,6 @@ void c_irq_handler(void)
 	}
 	// Check if CNTV triggered the interrupt
 	else if (source & (1 << 3)) {
-		c_timer();
 		return;
 	}
 	return;
@@ -87,14 +88,15 @@ unsigned long c_fiq_handler(void)
 	unsigned long source = load32(CORE0_FIQ_SOURCE);
 	// Check if CNTV triggered the interrupt
 	if (source & (1 << 3)) {
-		c_timer();
+		// Reset the counter
+		write_cntv_tval(cntfrq/CPS);
 		counter++;
-		if (counter % 0x6000 == 0) {
+		if (counter % 0x6000 == 0)
 			counter = 0;
-		}
-		if (counter % 0x30 == 0) {
+		if (counter % 0x10 == 0)
+			status();
+		if (counter % 0x40 == 0)
 			return 1;
-		}
 		return 0;
 	}
 	return 0;

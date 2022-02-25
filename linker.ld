@@ -13,7 +13,6 @@ SECTIONS
         KEEP(*(.text.kernel))
         *(.text*)
     }
-    . = 0x208000; /* 2MiB Kernel/ Boot */
     __text_end = .;
  
     __data_start = .;

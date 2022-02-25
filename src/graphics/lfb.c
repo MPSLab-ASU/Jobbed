@@ -7,8 +7,10 @@
 
 unsigned char *lfb;                         /* raw frame buffer address */
 
-#define SCR_WIDTH  1024
-#define SCR_HEIGHT 768
+//#define SCR_WIDTH  1024
+//#define SCR_HEIGHT 768
+#define SCR_WIDTH  1920
+#define SCR_HEIGHT 1080
 
 /**
  * Set screen resolution to 1024x768
