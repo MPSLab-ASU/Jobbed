@@ -1,7 +1,6 @@
 #define GLOBALS_C
 #include <lib/kmem.h>
 #include <util/mutex.h>
-#include <graphics/drawer.h>
 #include <sys/schedule.h>
 char* os_name = "Jobbed";
 #ifndef VERSION
@@ -16,7 +15,6 @@ __attribute__((section(".bss"))) unsigned long nextpid;
 __attribute__((section(".bss"))) unsigned long sched_stack_count;
 __attribute__((section(".bss"))) unsigned long stimel;
 __attribute__((section(".bss"))) unsigned long stimeh;
-__attribute__((section(".bss"))) struct Drawer g_Drawer;
 __attribute__((section(".bss"))) struct Scheduler scheduler;
 __attribute__((section(".bss"))) struct Thread usrloopthread;
 __attribute__((section(".bss"))) unsigned int gwidth;

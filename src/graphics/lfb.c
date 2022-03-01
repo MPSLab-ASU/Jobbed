@@ -116,12 +116,12 @@ void draw_cpixel(unsigned long lx, unsigned long ly, unsigned int c)
 	*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 }
 
-void draw_cbox(unsigned long lx, unsigned long ly, unsigned char dx, unsigned char dy, unsigned int c)
+void draw_cbox(unsigned long lx, unsigned long ly, unsigned int dx, unsigned int dy, unsigned int c)
 {
 	unsigned char* ptr = lfb;
 	ptr += (gpitch*ly+lx*4);
-	for(int y = 0; y < dy; y++) {
-		for(int x = 0; x < dx; x++) {
+	for(unsigned int y = 0; y < dy; y++) {
+		for(unsigned int x = 0; x < dx; x++) {
 			*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 			ptr += 4;
 		}

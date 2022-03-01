@@ -2,7 +2,6 @@
 #include <cpu.h>
 #include <drivers/uart.h>
 #include <globals.h>
-#include <graphics/drawer.h>
 #include <graphics/lfb.h>
 #include <lib/kmem.h>
 #include <lib/mmu.h>

@@ -12,7 +12,7 @@ void lfb_showpicture(void);
 void clear_screen(void);
 
 void draw_cpixel(unsigned long lx, unsigned long ly, unsigned int c);
-void draw_cbox(unsigned long lx, unsigned long ly, unsigned char dx, unsigned char dy, unsigned int c);
+void draw_cbox(unsigned long lx, unsigned long ly, unsigned int dx, unsigned int dy, unsigned int c);
 
 void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c);
 void draw_byte(unsigned char lx, unsigned char ly, unsigned char letter);

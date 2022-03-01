@@ -1,7 +1,7 @@
 #include <cpu.h>
 #include <cpu/irq.h>
 #include <globals.h>
-#include <graphics/drawer.h>
+#include <graphics/lfb.h>
 #include <symbols.h>
 #include <sys/core.h>
 #include <sys/schedule.h>
@@ -27,13 +27,7 @@ void c_irq_handler(void)
 				unsigned long data = load32(UART0_DR);
 				// Draw it on the screen
 				{
-					unsigned int x = g_Drawer.x;
-					unsigned int y = g_Drawer.y;
-					g_Drawer.x = 0;
-					g_Drawer.y = 9;
-					write_chex32(&g_Drawer, data, 0xAA00FF);
-					g_Drawer.x = x;
-					g_Drawer.y = y;
+					draw_chex32(0, 9, data, 0xAA00FF);
 				}
 
 				// Handle the recieved data
@@ -41,23 +35,17 @@ void c_irq_handler(void)
 				if(data == 0x14) {
 					unsigned long timer_status;
 					asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));
-					unsigned int x = g_Drawer.x;
-					unsigned int y = g_Drawer.y;
-					g_Drawer.x = 0;
-					g_Drawer.y = 3;
 					if(timer_status == 0) {
 						cntfrq = read_cntfrq();
 						write_cntv_tval(cntfrq/CPS);
 						enablecntv();
-						write_cstring(&g_Drawer, "TIMER", 0x00FF00);
-						write_string(&g_Drawer, ": ");
+						draw_cstring(0, 3, "TIMER", 0x00FF00);
+						draw_string(0, 3, ": ");
 					} else {
 						disablecntv();
-						write_cstring(&g_Drawer, "TIMER", 0xFF0000);
-						write_string(&g_Drawer, ": ");
+						draw_cstring(0, 3, "TIMER", 0xFF0000);
+						draw_string(0, 3, ": ");
 					}
-					g_Drawer.x = x;
-					g_Drawer.y = y;
 				}
 				// Add task to handle the data
 				else {
