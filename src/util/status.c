@@ -43,6 +43,8 @@ void output_irq_status(void)
 	// Check UART IRQ
 	if (i1_val & (1<<0)) {
 		draw_cstring(5, 2, "STIMERCMP", 0x00FF00);
+	} else if (f_val == 1) {
+		draw_cstring(5, 2, "STIMERCMP", 0xFFA500);
 	} else {
 		draw_cstring(5, 2, "STIMERCMP", 0xFF0000);
 	}
@@ -59,7 +61,7 @@ void output_irq_status(void)
 void status(void)
 {
 	// OS Info
-	draw_cstring(0, 0, "         v      ", 0x00FFFF);
+	draw_cstring(9, 0, "v", 0x00FFFF);
 	draw_cstring(0, 0, os_name, 0xFF0000);
 	draw_cstring(10, 0, os_info_v, 0x00FFFF);
 	draw_cstring(16, 0, "# TStacks:", 0xFFDF00);

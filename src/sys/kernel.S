@@ -10,8 +10,8 @@ kernel_main:
 	bl sysinit
 	bl status
 	ldr r2, =ttbr_msg
-	mov r0, #0
-	mov r1, #0
+	mov r0, #41
+	mov r1, #1
 	mov r3, #0xFF00
 	bl draw_cstring
 
