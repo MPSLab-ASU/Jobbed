@@ -3,12 +3,9 @@
 #include <graphics/glyphs.h>
 #include <graphics/lfb.h>
 #include <graphics/mbox.h>
-#include <graphics/philosopher_toad.h>
 
 unsigned char *lfb;                         /* raw frame buffer address */
 
-//#define SCR_WIDTH  1024
-//#define SCR_HEIGHT 768
 #define SCR_WIDTH  1920
 #define SCR_HEIGHT 1080
 
@@ -92,21 +89,10 @@ void clear_screen(void)
 void lfb_showpicture(void)
 {
 	clear_screen();
-	unsigned int x,y;
-	unsigned char *ptr=lfb;
-	char *data=toad_data, pixel[4];
-
-	ptr = lfb + (gheight-toad_height)*gpitch + (gwidth-toad_width)*4;
-	for(y=0;y<toad_height;y++) {
-		for(x=0;x<toad_width;x++) {
-			HEADER_PIXEL(data, pixel);
-			// the image is in RGB. So if we have an RGB framebuffer, we can copy the pixels
-			// directly, but for BGR we must swap R (pixel[0]) and B (pixel[2]) channels.
-			*((unsigned int*)ptr)=gisrgb ? *((unsigned int *)&pixel) : (unsigned int)(pixel[0]<<16 | pixel[1]<<8 | pixel[2]);
-			ptr+=4;
-		}
-		ptr+=gpitch-toad_width*4;
-	}
+#define FWIDTH 240
+#define FHEIGHT 80
+	draw_cbox(SCR_WIDTH-FWIDTH, SCR_HEIGHT-FHEIGHT*2, FWIDTH, FHEIGHT, 0x0057b7);
+	draw_cbox(SCR_WIDTH-FWIDTH, SCR_HEIGHT-FHEIGHT, FWIDTH, FHEIGHT, 0xffd700);
 }
 
 void draw_cpixel(unsigned long lx, unsigned long ly, unsigned int c)

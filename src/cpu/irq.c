@@ -55,12 +55,18 @@ void c_irq_handler(void)
 			}
 		}
 		// Check if System Time Compare 0 Triggered the Interrupt
-		else if (*(unsigned long*)SYS_TIMER_CS == SYS_TIMER_SC_M0) {
-			volatile unsigned long* timer_cs = (unsigned long*)SYS_TIMER_CS;
-			volatile unsigned long* timer_chi = (unsigned long*)SYS_TIMER_CHI;
-			volatile unsigned long* nexttime = (unsigned long*)SYS_TIMER_C0;
+		else if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M0) {
+			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
+			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
+			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
+			static char timer_lock = 0;
+			if (!timer_lock) {
+				timer_lock = 1;
+				add_thread(test_entry, 0, 2);
+				timer_lock = 0;
+			}
+			*nexttime = *timer_chi + 30000000;
 			*timer_cs = SYS_TIMER_SC_M0;
-			*nexttime = *timer_chi + 60000000;
 		}
 	}
 	// Check if CNTV triggered the interrupt

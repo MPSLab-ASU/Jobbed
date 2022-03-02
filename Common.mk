@@ -10,6 +10,7 @@ AUTO ?= 0
 BSP ?= 2
 DEBUG ?= 0
 SILENT ?= 0
+DISK ?= /dev/sdc1
 
 CROSS = arm-none-eabi
 CC = ${CROSS}-gcc
@@ -110,4 +111,6 @@ test: clean build/kernel.elf
 	@./tests/run.sh
 
 copy: clean build/kernel7.img
+	sudo mount -o umask=0 $(DISK) /mnt/sd0
 	sudo cp build/kernel7.img /mnt/sd0
+	sudo umount /mnt/sd0
