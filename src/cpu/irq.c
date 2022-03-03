@@ -40,11 +40,9 @@ void c_irq_handler(void)
 						write_cntv_tval(cntfrq/CPS);
 						enablecntv();
 						draw_cstring(0, 3, "TIMER", 0x00FF00);
-						draw_string(0, 3, ": ");
 					} else {
 						disablecntv();
 						draw_cstring(0, 3, "TIMER", 0xFF0000);
-						draw_string(0, 3, ": ");
 					}
 				}
 				// Add task to handle the data
