@@ -1,6 +1,6 @@
 .section .text
 
-btest:
+a.btest:
 	push {lr}
 	pop {pc}
 

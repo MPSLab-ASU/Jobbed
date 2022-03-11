@@ -15,6 +15,4 @@ struct Mutex {
 	void* addr;
 } __attribute__((packed, aligned(4)));
 
-struct Mutex* create_mutex(void* addr);
-
 #endif

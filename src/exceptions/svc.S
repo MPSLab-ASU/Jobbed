@@ -33,22 +33,14 @@ svc_000001: // Get time
 svc_000002: // Run Schedule
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-svc_000003: // Clean task stack
+svc_000003: // Free Thread in Table
 	ldr r3, =scheduler
 	ldr r2, [r3, #0] // struct Thread* rthread
-	ldr r1, [r2, #8] // sp_base
-	cmp r1, #-1
-	beq svc_exit
-	ldr r3, =stacks_table
+	ldr r1, [r2, #0x1c] // thread offset
 	mov r0, #0
-	strb r0, [r3, r1]
-	// Free the thread after freeing the stack
-	mov r0, r2
-	bl kfree
-	ldr r3, =sched_stack_count
-	ldr r2, [r3]
-	sub r2, #1
-	str r2, [r3]
+	ldr r2, =thread_table
+	add r2, r1
+	str r0, [r2]
 	b svc_exit
 svc_000004: // Lock Lock (usr_r0 = struct Lock*)
 	ldr r3, =scheduler

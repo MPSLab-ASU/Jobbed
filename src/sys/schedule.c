@@ -34,71 +34,54 @@ void init_scheduler(void)
 			trb += 1;
 		}
 	}
-	sched_stack_count = 0;
 	// Initialize nextpid
 	nextpid = FIRST_AVAIL_PID;
+
+	for (unsigned long i = 0; i < MAX_THREADS; i++) {
+		struct Thread* t = &threads[i];
+		t->offset = i;
+		t->sp_base = 0x20000000 - STACK_SIZE*i;
+	}
 }
 
-struct RStack get_stack(void)
+struct Thread* get_available_thread(void)
 {
-	struct RStack r = {.sp = 0, .idx = -1};
-	// Find an available stack
-	for (int i = 0; i < MAX_THREADS; i++) {
-		if (stacks_table[i] == 0) {
-			// Mark unavailable
-			stacks_table[i] = 1;
-			r.idx = i;
-			r.sp = (void*)0x20000000 - STACK_SIZE*i;
-			return r;
-		}
+	for(unsigned long i = 0; i < MAX_THREADS; i++) {
+		if (thread_table[i] == 0)
+			return &threads[i];
 	}
-	return r;
+	return 0;
 }
 
 void add_thread(void* pc, void* arg, unsigned char priority)
 {
-	//void* sp = get_stack();
-	struct RStack r = get_stack();
-	//struct Thread* thread = (struct Thread*)malloca(sizeof(struct Thread), 4);
-	struct Thread* thread = (struct Thread*)kmalloc(sizeof(struct Thread));
+	struct Thread* thread = get_available_thread();
+	thread_table[thread->offset] = 1;
 	thread->pc = pc;
-	// Valid stack has been obtained for this thread
-	if (r.sp) {
-		thread->sp_base = r.idx;
-		unsigned long* argp = r.sp;
-		argp -= 13;
-		*argp = (unsigned long)arg; // Set r0 to the argument
-		argp -= 1;
-		*(unsigned long**)argp = (unsigned long*)cleanup; // Set lr to the cleanup function
-		thread->sp = (void*)argp;
-		thread->status = THREAD_READY;
-		sched_stack_count++;
-	}
-	// Couldn't allocate a proper stack
-	else {
-		thread->sp_base = r.idx;
-		thread->sp = r.sp;
-		thread->status = THREAD_SERROR;
-	}
+	unsigned long* argp = (void*)thread->sp_base;
+	argp -= 13;
+	*argp = (unsigned long)arg; // Set r0 to the argument
+	argp -= 1;
+	*(unsigned long**)argp = (unsigned long*)cleanup; // Set lr to the cleanup function
+	thread->sp = argp;
+	thread->status = THREAD_READY;
 	thread->mptr = (void*)0;
 	thread->pid = nextpid++;
 	// Reset next pid on overflow
 	if (nextpid < FIRST_AVAIL_PID) {
 		nextpid = FIRST_AVAIL_PID;
 	}
-	thread->priority = priority % PRIORITIES;
+	if (priority >= PRIORITIES)
+		thread->priority = PRIORITIES - 1;
+	else
+		thread->priority = priority;
 	thread->old_priority = -1;
 	thread->preempt = 0;
 	// Add Thread* to scheduler's appropriate buffer
 	struct ThreadQueues* tq = &scheduler.thread_queues[thread->priority];
 	struct ThreadRotBuffer* trb;
 	// Add to stack error queue if stack was not obtained
-	if (thread->status == THREAD_SERROR) {
-		trb = &tq->serror;
-	}
-	else {
-		trb = &tq->ready;
-	}
+	trb = &tq->ready;
 	trb->queue[trb->woffset++] = thread;
 	trb->woffset %= TQUEUE_MAX;
 	// Schedule if this was called in usermode

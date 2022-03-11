@@ -64,11 +64,6 @@ void status(void)
 	draw_cstring(9, 0, "v", 0x00FFFF);
 	draw_cstring(0, 0, os_name, 0xFF0000);
 	draw_cstring(10, 0, os_info_v, 0x00FFFF);
-	draw_cstring(16, 0, "# TStacks:", 0xFFDF00);
-	draw_string(27, 0, "           ");
-	char* st_str = u32_to_str(sched_stack_count);
-	draw_cstring(27, 0, st_str, 0xFFDF00);
-	kfree(st_str);
 
 	// GPU IRQ Statuses
 	output_irq_status();
@@ -81,7 +76,6 @@ void status(void)
 	char* frq_str = u32_to_str(frq);
 	unsigned long fs_len = strlen(frq_str)+1;
 	draw_string(8, 3, frq_str);
-	kfree(frq_str);
 	draw_string(8+fs_len, 3, "kHz");
 	// Output the value
 	unsigned long v = read_cntv_tval();
@@ -89,7 +83,6 @@ void status(void)
 	unsigned long vs_len = strlen(v_str) + 1;
 	draw_string(8+fs_len+4, 3, v_str);
 	draw_string(8+fs_len+4 +vs_len, 3, "                           ");
-	kfree(v_str);
 	draw_letter(8+fs_len+4 +vs_len+1, 3, '|');
 	draw_hex32(8+fs_len+7+vs_len, 3, v);
 
@@ -99,12 +92,10 @@ void status(void)
 	gwidth_str = u32_to_str(gwidth);
 	unsigned long gs_len = strlen(gwidth_str) + 1;
 	draw_string(6, 4, gwidth_str);
-	kfree(gwidth_str);
 	draw_letter(6+gs_len-1, 4, 'x');
 	gwidth_str = u32_to_str(gheight);
 	unsigned long gs_len1 = strlen(gwidth_str) + 1;
 	draw_string(6+gs_len, 4, gwidth_str);
-	kfree(gwidth_str);
 	if(gisrgb)
 		draw_string(6+gs_len+gs_len1, 4, "RGB");
 	else
@@ -143,5 +134,4 @@ void status(void)
 	draw_string(19+14+18, 8, "           ");
 	char* t_str = u32_to_str(((unsigned long)tval)/1000000);
 	draw_string(19+14+18, 8, t_str);
-	kfree(t_str);
 }

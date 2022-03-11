@@ -35,7 +35,7 @@ cleanup:
 	mov r1, #0
 1:
 	str r1, [r0, #0]
-	// cleanup stack
+	// Free thread in table
 	svc #3
 	// usrloop -> rthread
 	ldr r3, =scheduler

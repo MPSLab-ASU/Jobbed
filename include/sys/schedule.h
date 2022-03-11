@@ -4,7 +4,7 @@
 // If TQUEUE_MAX is changed, ensure sys/schedule.S's value gets changed
 #define TQUEUE_MAX 0x100
 #define STACK_SIZE 0x4000
-#define TQUEUE_CNT 4
+#define TQUEUE_CNT 3
 #define PRIORITIES 8
 #define MAX_THREADS TQUEUE_MAX*PRIORITIES*TQUEUE_CNT
 
@@ -12,13 +12,6 @@ enum ThreadStatus {
 	THREAD_READY  = 0,
 	THREAD_MWAIT  = 1,
 	THREAD_SWAIT  = 2,
-	THREAD_SERROR = 3, // Stack Error
-	THREAD_FINISH = 4, // Need to clean up
-};
-
-struct RStack {
-	void* sp;
-	unsigned long idx;
 };
 
 struct Thread {
@@ -31,7 +24,10 @@ struct Thread {
 	unsigned char preempt;
 	unsigned short status;
 	void* mptr;
+	unsigned long offset;
 	unsigned char old_priority;
+	unsigned char c_reserved;
+	unsigned short s_reserved;
 };
 
 struct ThreadRotBuffer {
@@ -44,7 +40,6 @@ struct ThreadQueues {
 	struct ThreadRotBuffer ready;
 	struct ThreadRotBuffer mwait;
 	struct ThreadRotBuffer swait;
-	struct ThreadRotBuffer serror;
 };
 
 struct Scheduler {

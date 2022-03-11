@@ -1,6 +1,5 @@
 #include <cpu.h>
 #include <cpu/atomic/swap.h>
-#include <lib/kmem.h>
 #include <util/lock.h>
 
 // TODO: Improve locking for system
@@ -24,11 +23,4 @@ void unlock(struct Lock* l)
 	} else {
 		atm_release((unsigned long*)l);
 	}
-}
-
-struct Lock* create_lock(void)
-{
-	struct Lock* l = (struct Lock*)kmalloc(sizeof(struct Lock));
-	l->pid = 0;
-	return l;
 }

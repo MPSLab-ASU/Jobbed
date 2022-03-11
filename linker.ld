@@ -34,6 +34,10 @@ SECTIONS
 	. = ALIGN(4096);
 	KEEP(*(.bss.kmem))
 	. = ALIGN(4096);
+	KEEP(*(.bss.threadl"))
+	. = ALIGN(4096);
+	KEEP(*(.bss.threads"))
+	. = ALIGN(4096);
         *(.bss)
         *(.bss.*)
 	KEEP(*(.bss.mmheap))

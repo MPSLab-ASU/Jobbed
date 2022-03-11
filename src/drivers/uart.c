@@ -74,7 +74,6 @@ void uart_10(unsigned long val)
 {
 	char* dptr = u32_to_str(val);
 	uart_string(dptr);
-	kfree(dptr);
 }
 
 void uart_hexn(unsigned long c_val)

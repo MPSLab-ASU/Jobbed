@@ -36,7 +36,7 @@ unsigned char strcmpn(string_t a, string_t b, unsigned int n)
 
 char* zhex32_to_str(unsigned long value)
 {
-	char* data = kcalloc(9);
+	static char data[10];
 	char tmp = 0;
 	char isz = -1;
 	for (int i = 0; i < 8; i++) {
@@ -53,7 +53,7 @@ char* zhex32_to_str(unsigned long value)
 
 char* hex32_to_str(unsigned long value)
 {
-	char* data = kcalloc(9);
+	static char data[10];
 	char tmp = 0;
 	for (int i = 0; i < 8; i++) {
 		tmp = (value >> 4*(8-i-1))&0xF;
@@ -69,7 +69,7 @@ char* u32_to_str(unsigned long value)
 {
 	unsigned long t = value;
 	unsigned long c;
-	char* data = kcalloc(11);
+	static char data[12];
 	char* dptr = data + 9;
 	for (int i = 0; i <= 10; i++) {
 		c = t%10;
@@ -91,7 +91,7 @@ char* s32_to_str(unsigned long value)
 		t = -t;
 		is_neg = 1;
 	}
-	char* data = kcalloc(12);
+	static char data[13];
 	char* dptr = data + 10;
 	for (int i = 0; i <= 10; i++) {
 		c = t%10;

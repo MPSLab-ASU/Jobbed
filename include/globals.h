@@ -8,17 +8,14 @@ extern unsigned long cntfrq;
 
 extern char* os_name;
 extern char* os_info_v;
-extern unsigned char kmem_begin[0x2000000];
-extern unsigned char kmem_lookup[0xD000];
 extern unsigned long nextpid;
-extern unsigned long sched_stack_count;
 extern unsigned long stimel;
 extern unsigned long stimeh;
-extern struct Drawer g_Drawer;
 extern struct Scheduler scheduler;
 extern struct Thread usrloopthread;
 extern unsigned int gwidth, gheight, gpitch, gisrgb;
-extern unsigned char stacks_table[MAX_THREADS];
+extern unsigned char thread_table[MAX_THREADS];
+extern struct Thread threads[MAX_THREADS];
 #endif
 
 #endif

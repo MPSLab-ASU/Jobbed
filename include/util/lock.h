@@ -9,6 +9,5 @@ struct Lock {
 
 void lock(struct Lock* l);
 void unlock(struct Lock* l);
-struct Lock* create_lock(void);
 
 #endif
