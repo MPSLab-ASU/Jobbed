@@ -61,9 +61,9 @@ void output_irq_status(void)
 void status(void)
 {
 	// OS Info
-	draw_cstring(9, 0, "v", 0x00FFFF);
+	draw_cstring(7, 0, "v", 0x00FFFF);
 	draw_cstring(0, 0, os_name, 0xFF0000);
-	draw_cstring(10, 0, os_info_v, 0x00FFFF);
+	draw_cstring(8, 0, os_info_v, 0x00FFFF);
 
 	// GPU IRQ Statuses
 	output_irq_status();
