@@ -30,23 +30,28 @@ struct Thread {
 	unsigned short s_reserved;
 };
 
-struct ThreadRotBuffer {
-	unsigned int roffset;
-	unsigned int woffset;
-	struct Thread* queue[TQUEUE_MAX];
+struct ThreadEntry {
+	struct Thread* thread;
+	struct ThreadEntry* prev;
+	struct ThreadEntry* next;
 };
 
-struct ThreadQueues {
-	struct ThreadRotBuffer ready;
-	struct ThreadRotBuffer mwait;
-	struct ThreadRotBuffer swait;
+struct ThreadEntryIterator {
+	struct ThreadEntry* entry;
+};
+
+struct ThreadQueue {
+	struct ThreadEntry entry[TQUEUE_MAX];
+	struct ThreadEntryIterator read;
+	struct ThreadEntryIterator write;
 };
 
 struct Scheduler {
 	struct Thread* rthread;
-	struct ThreadQueues thread_queues[PRIORITIES];
+	struct ThreadQueue ready[PRIORITIES];
+	struct ThreadQueue mwait[PRIORITIES];
+	struct ThreadQueue swait[PRIORITIES];
 };
-
 
 void init_scheduler(void);
 void add_thread(void* pc, void* arg, unsigned char priority);

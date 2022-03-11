@@ -1,5 +1,5 @@
 #include <cpu.h>
-//#include <drivers/uart.h>
+#include <drivers/uart.h>
 #include <graphics/lfb.h>
 #include <lib/kmem.h>
 #include <sys/core.h>
@@ -47,48 +47,48 @@ void ctest4(void);
 void ctest1(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xFF0000);
-	//uart_string("1 Started\n");
+	uart_string("1 Started\n");
 	draw_cletter(x++, y+2, 'L', 0xFF0000);
-	//uart_string("1 Locking\n");
+	uart_string("1 Locking\n");
 	lock(&testm);
 	add_thread(ctest3, 0, 2);
 	draw_cletter(x++, y+2, 'U', 0xFF0000);
-	//uart_string("1 Unlocking\n");
+	uart_string("1 Unlocking\n");
 	unlock(&testm);
 	draw_cletter(x++, y+2, 'F', 0xFF0000);
-	//uart_string("1 Finished\n");
+	uart_string("1 Finished\n");
 }
 
 void ctest2(void)
 {
 	draw_cletter(x++, y+0, 'S', 0x0000FF);
-	//uart_string("2 Started\n");
+	uart_string("2 Started\n");
 	add_thread(ctest4, 0, 3);
 	draw_cletter(x++, y+0, 'L', 0x0000FF);
-	//uart_string("2 Locking\n");
+	uart_string("2 Locking\n");
 	lock(&testm);
 	draw_cletter(x++, y+0, 'U', 0x0000FF);
-	//uart_string("2 Unlocking\n");
+	uart_string("2 Unlocking\n");
 	unlock(&testm);
 	draw_cletter(x++, y+0, 'F', 0x0000FF);
-	//uart_string("2 Finished\n");
+	uart_string("2 Finished\n");
 }
 
 void ctest3(void)
 {
 	draw_cletter(x++, y+1, 'S', 0x00FF00);
-	//uart_string("3 Started\n");
+	uart_string("3 Started\n");
 	add_thread(ctest2, 0, 1);
 	draw_cletter(x++, y+1, 'F', 0x00FF00);
-	//uart_string("3 Finished\n");
+	uart_string("3 Finished\n");
 }
 
 void ctest4(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xAFAF00);
-	//uart_string("4 Started\n");
+	uart_string("4 Started\n");
 	draw_cletter(x++, y+2, 'F', 0xAFAF00);
-	//uart_string("4 Finished\n");
+	uart_string("4 Finished\n");
 }
 
 void btest(void)

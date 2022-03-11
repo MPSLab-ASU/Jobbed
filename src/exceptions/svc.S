@@ -39,7 +39,7 @@ svc_000003: // Free Thread in Table
 	ldr r1, [r2, #0x1c] // thread offset
 	mov r0, #0
 	ldr r2, =thread_table
-	add r2, r1
+	add r2, r1, r2
 	str r0, [r2]
 	b svc_exit
 svc_000004: // Lock Lock (usr_r0 = struct Lock*)

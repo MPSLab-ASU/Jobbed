@@ -47,7 +47,7 @@ void c_irq_handler(void)
 				}
 				// Add task to handle the data
 				else {
-					//add_thread(handle_data, (void*)data, 1);
+					add_thread(handle_data, (void*)data, 1);
 				}
 				return;
 			}
@@ -60,7 +60,7 @@ void c_irq_handler(void)
 			static char timer_lock = 0;
 			if (!timer_lock) {
 				timer_lock = 1;
-				add_thread(test_entry, 0, 2);
+				//add_thread(test_entry, 0, 2);
 				timer_lock = 0;
 			}
 			*nexttime = *timer_chi + 30000000;
