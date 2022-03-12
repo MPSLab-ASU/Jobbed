@@ -63,7 +63,7 @@ void c_irq_handler(void)
 				add_thread(test_entry, 0, 2);
 				timer_lock = 0;
 			}
-			*nexttime = *timer_chi + 30000000;
+			*nexttime = *timer_chi + 8000000;
 			*timer_cs = SYS_TIMER_SC_M0;
 		}
 	}
