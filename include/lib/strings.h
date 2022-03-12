@@ -4,6 +4,7 @@
 #define string_t char*
 
 unsigned long strlen(string_t s);
+void strcpy(string_t src, string_t dest);
 unsigned char strcmp(string_t a, string_t b);
 unsigned char strcmpn(string_t a, string_t b, unsigned int n);
 char* u32_to_str(unsigned long value);

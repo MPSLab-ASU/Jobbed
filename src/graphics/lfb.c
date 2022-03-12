@@ -3,6 +3,7 @@
 #include <graphics/glyphs.h>
 #include <graphics/lfb.h>
 #include <graphics/mbox.h>
+#include <lib/strings.h>
 
 unsigned char *lfb;                         /* raw frame buffer address */
 
@@ -201,4 +202,17 @@ void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned i
 void draw_hex32(unsigned int lx, unsigned int ly, unsigned long val)
 {
 	draw_chex32(lx, ly, val, 0xFFFFFF);
+}
+
+unsigned long draw_cu10(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c)
+{
+	string_t vals = u32_to_str(val);
+	unsigned long len = strlen(vals);
+	draw_cstring(lx, ly, vals, c);
+	return len;
+}
+
+unsigned long draw_u10(unsigned int lx, unsigned int ly, unsigned long val)
+{
+	return draw_cu10(lx, ly, val, 0xFFFFFF);
 }

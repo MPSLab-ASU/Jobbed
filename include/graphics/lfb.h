@@ -26,4 +26,7 @@ void draw_string(unsigned int lx, unsigned int ly, char* s);
 void draw_chex32(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c);
 void draw_hex32(unsigned int lx, unsigned int ly, unsigned long val);
 
+unsigned long draw_cu10(unsigned int lx, unsigned int ly, unsigned long val, unsigned int c);
+unsigned long draw_u10(unsigned int lx, unsigned int ly, unsigned long val);
+
 #endif

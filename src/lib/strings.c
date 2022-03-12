@@ -10,6 +10,16 @@ unsigned long strlen(string_t s)
 	return len;
 }
 
+void strcpy(string_t src, string_t dest)
+{
+	unsigned long idx = 0;
+	while (src[idx] != 0) {
+		dest[idx] = src[idx];
+		idx++;
+	}
+	dest[idx] = src[idx];
+}
+
 unsigned char strcmp(string_t a, string_t b)
 {
 	unsigned long idx = 0;

@@ -73,33 +73,24 @@ void status(void)
 	// Output the frequency
 	draw_string(6, 3, "@");
 	unsigned long frq = read_cntfrq()/1000;
-	char* frq_str = u32_to_str(frq);
-	unsigned long fs_len = strlen(frq_str)+1;
-	draw_string(8, 3, frq_str);
+	unsigned long fs_len = draw_u10(8, 3, frq) + 1;
 	draw_string(8+fs_len, 3, "kHz");
 	// Output the value
 	unsigned long v = read_cntv_tval();
-	char* v_str = u32_to_str(v);
-	unsigned long vs_len = strlen(v_str) + 1;
-	draw_string(8+fs_len+4, 3, v_str);
+	unsigned long vs_len = draw_u10(8+fs_len+4, 3, v)+1;
 	draw_string(8+fs_len+4 +vs_len, 3, "                           ");
 	draw_letter(8+fs_len+4 +vs_len+1, 3, '|');
 	draw_hex32(8+fs_len+7+vs_len, 3, v);
 
 	// Video Status
 	draw_cstring(0, 4, "VIDEO", 0x00FF00);
-	char* gwidth_str;
-	gwidth_str = u32_to_str(gwidth);
-	unsigned long gs_len = strlen(gwidth_str) + 1;
-	draw_string(6, 4, gwidth_str);
-	draw_letter(6+gs_len-1, 4, 'x');
-	gwidth_str = u32_to_str(gheight);
-	unsigned long gs_len1 = strlen(gwidth_str) + 1;
-	draw_string(6+gs_len, 4, gwidth_str);
+	unsigned long gw_len = draw_u10(6, 4, gwidth);
+	unsigned long gh_len = draw_u10(6+gw_len+1, 4, gheight) + 1;
+	draw_letter(6+gw_len, 4, 'x');
 	if(gisrgb)
-		draw_string(6+gs_len+gs_len1, 4, "RGB");
+		draw_string(6+gw_len+gh_len + 1, 4, "RGB");
 	else
-		draw_string(6+gs_len+gs_len1, 4, "BGR");
+		draw_string(6+gw_len+gh_len + 1, 4, "BGR");
 
 	// Core Stacks
 	draw_string(0, 5, "SVC      IRQ      FIQ      User/SYS\n");
@@ -132,6 +123,5 @@ void status(void)
 	draw_hex32(19+14+8+1, 8, coren);
 	draw_string(19+14+9+8, 8, "|");
 	draw_string(19+14+18, 8, "           ");
-	char* t_str = u32_to_str(((unsigned long)tval)/1000000);
-	draw_string(19+14+18, 8, t_str);
+	draw_u10(19+14+18, 8, ((unsigned long)tval)/1000000);
 }
