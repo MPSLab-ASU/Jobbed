@@ -60,7 +60,7 @@ void c_irq_handler(void)
 			static char timer_lock = 0;
 			if (!timer_lock) {
 				timer_lock = 1;
-				//add_thread(test_entry, 0, 2);
+				add_thread(test_entry, 0, 2);
 				timer_lock = 0;
 			}
 			*nexttime = *timer_chi + 30000000;
@@ -103,6 +103,6 @@ void handle_data(unsigned char data)
 	} else if (data == 0x61) {
 		add_thread(uart_scheduler, 0, 2);
 	} else if (data == 0x62) {
-		add_thread(test_entry, 0, 2);
+		//add_thread(test_entry, 0, 2);
 	}
 }
