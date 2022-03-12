@@ -202,6 +202,7 @@ void yield(void)
 	//  thus any threads of the same priority can be run first
 	unsigned char priority = rthread->priority;
 	struct ThreadQueue* trq = &scheduler.ready[priority];
+	trq->read.entry->thread = 0;
 	trq->read.entry = trq->read.entry->next;
 	trq->write.entry->thread = rthread;
 	trq->write.entry = trq->write.entry->next;

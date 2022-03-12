@@ -26,11 +26,13 @@ void test_entry(void)
 	DRAW64(17, y+5, dt%64);
 
 	// atest
-	add_thread(atest, 0, 0);
-	sys0_64(SYS_TIME, &ti);
-	sys0(SYS_YIELD);
-	sys0_64(SYS_TIME, &tf);
-	dt = tf - ti;
+	//add_thread(atest, 0, 0);
+	for(int i = 0; i < 64; i++) {
+		sys0_64(SYS_TIME, &ti);
+		sys0(SYS_YIELD);
+		sys0_64(SYS_TIME, &tf);
+		dt += tf - ti;
+	}
 	DRAW64(34, y+5, dt/64);
 	DRAW64(34+17, y+5, dt%64);
 	add_thread(btest, 0, 4);
