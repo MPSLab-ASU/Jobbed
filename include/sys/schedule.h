@@ -1,7 +1,6 @@
 #ifndef SYS_SCHEDULE_H
 #define SYS_SCHEDULE_H
 
-// If TQUEUE_MAX is changed, ensure sys/schedule.S's value gets changed
 #define TQUEUE_MAX 0x100
 #define STACK_SIZE 0x4000
 #define TQUEUE_CNT 3
