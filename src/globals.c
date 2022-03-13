@@ -1,5 +1,6 @@
 #define GLOBALS_C
 #include <sys/schedule.h>
+#include <util/mutex.h>
 char* os_name = "Jobbed";
 #ifndef VERSION
 char* os_info_v = "?";
@@ -16,6 +17,8 @@ __attribute__((section(".bss"))) unsigned int gwidth;
 __attribute__((section(".bss"))) unsigned int gheight;
 __attribute__((section(".bss"))) unsigned int gpitch;
 __attribute__((section(".bss"))) unsigned int gisrgb;
+__attribute__((section(".bss.mutexl"))) unsigned long mutex_table[MAX_MUTEXS];
+__attribute__((section(".bss.mutexs"))) struct Mutex mutexs[MAX_MUTEXS];
 // 0 - Free
 // 1 - Ready
 // 2 - Waiting for Mutex

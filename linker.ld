@@ -38,6 +38,10 @@ SECTIONS
 	. = ALIGN(4096);
 	KEEP(*(.bss.threads"))
 	. = ALIGN(4096);
+	KEEP(*(.bss.mutexl"))
+	. = ALIGN(4096);
+	KEEP(*(.bss.mutexs"))
+	. = ALIGN(4096);
         *(.bss)
         *(.bss.*)
 	KEEP(*(.bss.mmheap))

@@ -1,5 +1,6 @@
 #include <cpu.h>
 #include <cpu/atomic/swap.h>
+#include <util/mutex.h>
 #include <util/lock.h>
 
 // TODO: Improve locking for system

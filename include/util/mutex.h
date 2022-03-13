@@ -8,11 +8,16 @@
 #define CORE3_PID 4
 #define FIRST_AVAIL_PID CORE3_PID+1
 
+#define MAX_MUTEXS 0x100
+
 // PID field is first so that it can be treated
 //  as a lock
 struct Mutex {
 	unsigned long pid;
 	void* addr;
 } __attribute__((packed, aligned(4)));
+
+struct Mutex* create_mutex(void* addr);
+unsigned char delete_mutex(struct Mutex* m);
 
 #endif
