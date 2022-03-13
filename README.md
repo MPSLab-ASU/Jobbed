@@ -18,8 +18,9 @@
  - // MODE REGISTERS: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
 
 ## Todo
- - Implement Lock for accessing thread information
- - SD Reading
+ - Write Thesis Paper
+ - Semaphore Implementation
+ - Add in remaining checks
 
 ## SVC Calls
  - Sysinfo
@@ -38,13 +39,14 @@ Note: SYS and USER share registers but differ in privilege
 
 # Modes
  - From https://developer.arm.com/documentation/den0013/d/ARM-Processor-Modes-and-Registers
- - User: 10000 PL0
- - FIQ : 10001 PL1
- - IRQ : 10010 PL1
- - SVC : 10011 PL1
- - ABT : 10111 PL1
- - UND : 11011 PL1
- - SYS : 11111 PL1
+ - User: 10:10000 PL0
+ - FIQ : 11:10001 PL1
+ - IRQ : 12:10010 PL1
+ - SVC : 13:10011 PL1
+ - ABT : 17:10111 PL1
+ - HVC : 1A:11010 PL1
+ - UND : 1B:11011 PL1
+ - SYS : 1F:11111 PL1
 
 # Registers
  - From https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
