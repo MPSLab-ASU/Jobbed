@@ -96,14 +96,14 @@ void lfb_showpicture(void)
 	draw_cbox(SCR_WIDTH-FWIDTH, SCR_HEIGHT-FHEIGHT, FWIDTH, FHEIGHT, 0xffd700);
 }
 
-void draw_cpixel(unsigned long lx, unsigned long ly, unsigned int c)
+void draw_cpixel(unsigned int lx, unsigned int ly, unsigned int c)
 {
 	unsigned char* ptr = lfb;
 	ptr += (gpitch*ly+lx*4);
 	*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 }
 
-void draw_cbox(unsigned long lx, unsigned long ly, unsigned int dx, unsigned int dy, unsigned int c)
+void draw_cbox(unsigned int lx, unsigned int ly, unsigned int dx, unsigned int dy, unsigned int c)
 {
 	unsigned char* ptr = lfb;
 	ptr += (gpitch*ly+lx*4);
@@ -116,7 +116,7 @@ void draw_cbox(unsigned long lx, unsigned long ly, unsigned int dx, unsigned int
 	}
 }
 
-void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c)
+void draw_cbyte(unsigned int lx, unsigned int ly, unsigned char letter, unsigned int c)
 {
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
@@ -138,12 +138,12 @@ void draw_cbyte(unsigned char lx, unsigned char ly, unsigned char letter, unsign
 	}
 }
 
-void draw_byte(unsigned char lx, unsigned char ly, unsigned char letter)
+void draw_byte(unsigned int lx, unsigned int ly, unsigned char letter)
 {
 	draw_cbyte(lx, ly, letter, 0xFFFFFF);
 }
 
-void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsigned int c)
+void draw_cletter(unsigned int lx, unsigned int ly, unsigned char letter, unsigned int c)
 {
 	unsigned int x, y;
 	unsigned char* ptr = lfb;
@@ -162,7 +162,7 @@ void draw_cletter(unsigned char lx, unsigned char ly, unsigned char letter, unsi
 	}
 }
 
-void draw_letter(unsigned char lx, unsigned char ly, unsigned char letter)
+void draw_letter(unsigned int lx, unsigned int ly, unsigned char letter)
 {
 	draw_cletter(lx, ly, letter, 0xFFFFFF);
 }
