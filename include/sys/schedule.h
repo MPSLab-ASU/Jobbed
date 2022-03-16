@@ -54,6 +54,7 @@ struct Scheduler {
 };
 
 void init_scheduler(void);
+unsigned char add_thread_without_duplicate(void* pc, void* arg, unsigned char priority);
 unsigned char add_thread(void* pc, void* arg, unsigned char priority);
 void uart_scheduler(void);
 struct Thread* next_thread(void);

@@ -109,5 +109,6 @@ void ctest4(void)
 
 void btest(void)
 {
+	x = 0;
 	add_thread(ctest1, 0, 3);
 }

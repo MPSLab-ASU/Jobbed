@@ -61,7 +61,7 @@ void c_irq_handler(void)
 			static char timer_lock = 0;
 			if (!timer_lock) {
 				timer_lock = 1;
-				add_thread(test_entry, 0, 2);
+				add_thread_without_duplicate(test_entry, 0, 2);
 				timer_lock = 0;
 			}
 			*nexttime = *timer_chi + 8000000;

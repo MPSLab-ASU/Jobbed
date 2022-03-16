@@ -175,6 +175,22 @@ struct ThreadEntry* find_mutex_wait_next(void* m)
 	return 0;
 }
 
+struct ThreadEntry* find_signal_wait_next(void* m)
+{
+	for (unsigned char p = 0; p < PRIORITIES; p++) {
+		struct ThreadQueue* queue = &scheduler.swait[p];
+		struct ThreadEntry* prev = &queue->start;
+		struct ThreadEntry* entry = prev->next;
+		while (entry->entry_type != END_ENTRY) {
+			if (entry->thread->mptr == m)
+				return prev;
+			prev = entry;
+			entry = entry->next;
+		}
+	}
+	return 0;
+}
+
 struct Thread* get_unused_thread(void)
 {
 	for(unsigned long i = 0; i < MAX_THREADS; i++) {
@@ -182,6 +198,28 @@ struct Thread* get_unused_thread(void)
 			return &threads[i];
 	}
 	return 0;
+}
+
+unsigned char find_duplicate(void* pc)
+{
+	for (unsigned char p = 0; p < PRIORITIES; p++) {
+		struct ThreadQueue* queue = &scheduler.ready[p];
+		struct ThreadEntry* entry = queue->start.next;
+		while (entry->entry_type == THREAD_ENTRY) {
+			if (entry->thread->pc == pc) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+unsigned char add_thread_without_duplicate(void* pc, void* arg, unsigned char priority)
+{
+	if (!find_duplicate(pc)) {
+		return add_thread(pc, arg, priority);
+	}
+	return 1;
 }
 
 unsigned char add_thread(void* pc, void* arg, unsigned char priority)
@@ -288,8 +326,6 @@ struct Thread* next_thread(void)
 void c_cleanup(void)
 {
 	struct Thread* rt = scheduler.rthread;
-	struct ThreadEntry* rte = &thread_entries[rt->offset];
-	struct ThreadQueue* queue = &scheduler.ready[rt->priority];
 	pop_from_queue(THREAD_READY, rt->priority);
 	// Mark Thread Unused
 	thread_table[rt->offset] = 0;
@@ -351,6 +387,7 @@ void sched_mutex_yield(void* m)
 
 void sched_mutex_resurrect(void* m)
 {
+	// Find any mutex to resurrect
 	struct ThreadEntry* prev = find_mutex_wait_next(m);
 	if (prev == 0)
 		return;
@@ -368,6 +405,7 @@ void sched_mutex_resurrect(void* m)
 	struct Thread* rthread = scheduler.rthread;
 	unsigned long p = rthread->priority;
 	unsigned long op = rthread->old_priority;
+	// Restore the original priority level
 	if (op != 0xFF) {
 		struct ThreadEntry* tentry = pop_from_queue(THREAD_READY, p);
 		push_to_queue(tentry->thread, THREAD_READY, p);
