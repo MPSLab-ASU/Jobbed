@@ -13,6 +13,12 @@ enum ThreadStatus {
 	THREAD_SWAIT  = 2,
 };
 
+enum EntryTypes {
+	THREAD_ENTRY = 0,
+	START_ENTRY = 1,
+	END_ENTRY = 2,
+};
+
 struct Thread {
 	void* pc;
 	void* sp; // Store r0-r12,lr on stack
@@ -31,18 +37,13 @@ struct Thread {
 
 struct ThreadEntry {
 	struct Thread* thread;
-	struct ThreadEntry* prev;
 	struct ThreadEntry* next;
-};
-
-struct ThreadEntryIterator {
-	struct ThreadEntry* entry;
+	unsigned long entry_type;
 };
 
 struct ThreadQueue {
-	struct ThreadEntry entry[TQUEUE_MAX];
-	struct ThreadEntryIterator read;
-	struct ThreadEntryIterator write;
+	struct ThreadEntry start;
+	struct ThreadEntry end;
 };
 
 struct Scheduler {

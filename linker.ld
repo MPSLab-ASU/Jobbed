@@ -34,13 +34,15 @@ SECTIONS
 	. = ALIGN(4096);
 	KEEP(*(.bss.kmem))
 	. = ALIGN(4096);
-	KEEP(*(.bss.threadl"))
+	KEEP(*(.bss.threadl))
 	. = ALIGN(4096);
-	KEEP(*(.bss.threads"))
+	KEEP(*(.bss.threads))
 	. = ALIGN(4096);
-	KEEP(*(.bss.mutexl"))
+	KEEP(*(.bss.threade))
 	. = ALIGN(4096);
-	KEEP(*(.bss.mutexs"))
+	KEEP(*(.bss.mutexl))
+	. = ALIGN(4096);
+	KEEP(*(.bss.mutexs))
 	. = ALIGN(4096);
         *(.bss)
         *(.bss.*)

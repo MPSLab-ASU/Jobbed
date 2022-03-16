@@ -25,38 +25,27 @@ void init_scheduler(void)
 
 	// Initialize Scheduling Queues
 	for (unsigned long p = 0; p < PRIORITIES; p++) {
-		for (unsigned long t = 0; t < TQUEUE_MAX; t++) {
-			/// Ready Queue
-			scheduler.ready[p].entry[t].thread = 0;
-			if (t == 0)
-				scheduler.ready[p].entry[t].prev = &scheduler.ready[p].entry[TQUEUE_MAX-1];
-			else
-				scheduler.ready[p].entry[t].prev = &scheduler.ready[p].entry[(t-1)%TQUEUE_MAX];
-			scheduler.ready[p].entry[t].next = &scheduler.ready[p].entry[(t+1)%TQUEUE_MAX];
-			/// Mutex Wait Queue
-			scheduler.mwait[p].entry[t].thread = 0;
-			if (t == 0)
-				scheduler.mwait[p].entry[t].prev = &scheduler.mwait[p].entry[TQUEUE_MAX-1];
-			else
-				scheduler.mwait[p].entry[t].prev = &scheduler.mwait[p].entry[(t-1)%TQUEUE_MAX];
-			scheduler.mwait[p].entry[t].next = &scheduler.mwait[p].entry[(t+1)%TQUEUE_MAX];
-			/// Signal Wait Queue
-			scheduler.swait[p].entry[t].thread = 0;
-			if (t == 0)
-				scheduler.swait[p].entry[t].prev = &scheduler.swait[p].entry[TQUEUE_MAX-1];
-			else
-				scheduler.swait[p].entry[t].prev = &scheduler.swait[p].entry[(t-1)%TQUEUE_MAX];
-			scheduler.swait[p].entry[t].next = &scheduler.swait[p].entry[(t+1)%TQUEUE_MAX];
-		}
-		// Ready Queue
-		scheduler.ready[p].read.entry  = &scheduler.ready[p].entry[0];
-		scheduler.ready[p].write.entry = &scheduler.ready[p].entry[0];
-		// Mutex Wait Queue
-		scheduler.mwait[p].read.entry  = &scheduler.mwait[p].entry[0];
-		scheduler.mwait[p].write.entry = &scheduler.mwait[p].entry[0];
-		// Signal Wait Queue
-		scheduler.swait[p].read.entry  = &scheduler.swait[p].entry[0];
-		scheduler.swait[p].write.entry = &scheduler.swait[p].entry[0];
+		// Ready Init
+		scheduler.ready[p].start.thread = 0;
+		scheduler.ready[p].start.next = &scheduler.ready[p].end;
+		scheduler.ready[p].start.entry_type = START_ENTRY;
+		scheduler.ready[p].end.thread = 0;
+		scheduler.ready[p].end.next = &scheduler.ready[p].start;
+		scheduler.ready[p].end.entry_type = END_ENTRY;
+		// Mutex Wait Init
+		scheduler.mwait[p].start.thread = 0;
+		scheduler.mwait[p].start.next = &scheduler.mwait[p].end;
+		scheduler.mwait[p].start.entry_type = START_ENTRY;
+		scheduler.mwait[p].end.thread = 0;
+		scheduler.mwait[p].end.next = &scheduler.mwait[p].start;
+		scheduler.mwait[p].end.entry_type = END_ENTRY;
+		// Signal Wait Init
+		scheduler.swait[p].start.thread = 0;
+		scheduler.swait[p].start.next = &scheduler.swait[p].end;
+		scheduler.swait[p].start.entry_type = START_ENTRY;
+		scheduler.swait[p].end.thread = 0;
+		scheduler.swait[p].end.next = &scheduler.swait[p].start;
+		scheduler.swait[p].end.entry_type = END_ENTRY;
 	}
 
 	// Initialize nextpid
@@ -67,7 +56,13 @@ void init_scheduler(void)
 		struct Thread* t = &threads[i];
 		t->offset = i;
 		t->sp_base = 0x20000000 - STACK_SIZE*i;
+		// Clear the stack use
 		thread_table[i] = 0;
+		struct ThreadEntry* te = &thread_entries[i];
+		te->thread = t;
+		// Initialize To No Next Entry Initially
+		te->next = 0;
+		te->entry_type = THREAD_ENTRY;
 	}
 }
 
@@ -83,7 +78,12 @@ struct Thread* get_unused_thread(void)
 unsigned char add_thread(void* pc, void* arg, unsigned char priority)
 {
 	struct Thread* thread = get_unused_thread();
+	// The only point-of-failure is not having a thread available
+	if (thread == 0)
+		return 1;
+	/// Mark the Stack Space as In-Use
 	thread_table[thread->offset] = 1;
+	/// Thread Setup
 	thread->pc = pc;
 	unsigned long* argp = (void*)thread->sp_base;
 	argp -= 13;
@@ -107,21 +107,16 @@ unsigned char add_thread(void* pc, void* arg, unsigned char priority)
 	thread->old_priority = -1;
 	// Reserved for non-preemptible tasking
 	thread->preempt = 0;
+	/// Add Thread to Scheduler
 	// Get the Ready Queue
 	struct ThreadQueue* ready_queue = &scheduler.ready[thread->priority];
-	// Get the write pointer
-	struct ThreadEntryIterator* ready_write = &ready_queue->write;
-	if (ready_write->entry->thread == 0) {
-		// Add the thread to the write pointer
-		ready_write->entry->thread = thread;
-		// Move the write pointer to the next entry
-		ready_write->entry = ready_write->entry->next;
-	} else {
-		// Cannot add, mark the stack space as available
-		//  so that it can be used on a subsequent add thread
-		thread_table[thread->offset] = 0;
-		return 1;
-	}
+	// Get thread's entry
+	struct ThreadEntry* new_t_entry = &thread_entries[thread->offset];
+	// Append to the end of the thread
+	ready_queue->end.next->next = new_t_entry;
+	ready_queue->end.next = new_t_entry;
+	// Link thread's next entry to end of queue
+	new_t_entry->next = &ready_queue->end;
 	// Schedule if this was called in usermode
 	unsigned long mode = getmode() & 0x1F;
 	if (mode == 0x10) {
@@ -140,36 +135,37 @@ void uart_scheduler(void)
 		uart_string("Priority ");
 		uart_10(p);
 		uart_char('\n');
-		struct ThreadEntryIterator iter;
+		struct ThreadQueue* queue;
+		struct ThreadEntry* entry;
 
-		struct ThreadQueue* rq = &scheduler.ready[p];
+		queue = &scheduler.ready[p];
 		uart_string("Ready Queue\n");
-		iter.entry = rq->read.entry;
-		while (iter.entry != rq->write.entry) {
-			uart_hex((unsigned long)iter.entry->thread);
+		entry = queue->start.next;
+		while (entry->entry_type != END_ENTRY) {
+			uart_hex((unsigned long)entry->thread);
 			uart_char(' ');
-			kmemshow32((void*)iter.entry->thread, 9);
-			iter.entry = iter.entry->next;
+			kmemshow32((void*)entry->thread, 9);
+			entry = entry->next;
 		}
 
-		struct ThreadQueue* mq = &scheduler.mwait[p];
+		queue = &scheduler.mwait[p];
 		uart_string("Mutex Wait Queue\n");
-		iter.entry = mq->read.entry;
-		while (iter.entry != mq->write.entry) {
-			uart_hex((unsigned long)iter.entry->thread);
+		entry = queue->start.next;
+		while (entry->entry_type != END_ENTRY) {
+			uart_hex((unsigned long)entry->thread);
 			uart_char(' ');
-			kmemshow32((void*)iter.entry->thread, 9);
-			iter.entry = iter.entry->next;
+			kmemshow32((void*)entry->thread, 9);
+			entry = entry->next;
 		}
 
-		struct ThreadQueue* sq = &scheduler.swait[p];
+		queue = &scheduler.swait[p];
 		uart_string("Signal Wait Queue\n");
-		iter.entry = sq->read.entry;
-		while (iter.entry != sq->write.entry) {
-			uart_hex((unsigned long)iter.entry->thread);
+		entry = queue->start.next;
+		while (entry->entry_type != END_ENTRY) {
+			uart_hex((unsigned long)entry->thread);
 			uart_char(' ');
-			kmemshow32((void*)iter.entry->thread, 9);
-			iter.entry = iter.entry->next;
+			kmemshow32((void*)entry->thread, 9);
+			entry = entry->next;
 		}
 	}
 	uart_string("==============\n");
@@ -180,9 +176,9 @@ struct Thread* next_thread(void)
 	// Recurse through all priorities to try to find a ready thread
 	for (int p = 0; p < PRIORITIES; p++) {
 		struct ThreadQueue* rq = &scheduler.ready[p];
-		if (rq->read.entry == rq->write.entry)
+		if (rq->start.next->entry_type == END_ENTRY)
 			continue;
-		return rq->read.entry->thread;
+		return rq->start.next->thread;
 	}
 	// No thread found, use basic usrloopthread while waiting for new thread
 	return &usrloopthread;
@@ -191,11 +187,14 @@ struct Thread* next_thread(void)
 void c_cleanup(void)
 {
 	struct Thread* rt = scheduler.rthread;
-	struct ThreadEntryIterator* read = &scheduler.ready[rt->priority].read;
-	// Clear the thread pointer
-	read->entry->thread = 0;
-	// Move read pointer forward
-	read->entry = read->entry->next;
+	struct ThreadEntry* rte = &thread_entries[rt->offset];
+	struct ThreadQueue* queue = &scheduler.ready[rt->priority];
+	// Move head forward
+	queue->start.next = rte->next;
+	if (rte->next->entry_type == END_ENTRY)
+		rte->next->next = &queue->start;
+	// Clear thread entry's next
+	rte->next = 0;
 	// Mark Thread Unused
 	thread_table[rt->offset] = 0;
 }
@@ -210,14 +209,22 @@ void yield(void)
 	//  thus any threads of the same priority can be run first
 	unsigned char priority = rthread->priority;
 	struct ThreadQueue* trq = &scheduler.ready[priority];
-	trq->read.entry = trq->read.entry->next;
-	trq->write.entry->thread = rthread;
-	trq->write.entry = trq->write.entry->next;
+	struct ThreadEntry* te = &thread_entries[rthread->offset];
+	// Move head forward
+	trq->start.next = te->next;
+	if (te->next->entry_type == END_ENTRY)
+		te->next->next = &trq->start;
+	// Add to tail
+	trq->end.next->next = te;
+	trq->end.next = te;
+	te->next = &trq->end;
 }
 
+// TODO: Figure out why two things are appearing in the wait queue by the end of this
 void sched_mutex_yield(void* m)
 {
 	struct Thread* rthread = scheduler.rthread;
+	struct ThreadEntry* rthread_e = &thread_entries[rthread->offset];
 	// usrloopthread should not be yielded
 	if (rthread == &usrloopthread)
 		return;
@@ -227,49 +234,48 @@ void sched_mutex_yield(void* m)
 	struct ThreadQueue* trq = &scheduler.ready[priority];
 	struct ThreadQueue* tmq = &scheduler.mwait[priority];
 	// Move to next thread in the current thread priority's ready queue
-	trq->read.entry = trq->read.entry->next;
+	trq->start.next = trq->start.next->next;
+	if (trq->start.next->next->entry_type == END_ENTRY)
+		trq->end.next = &trq->start;
 	// Add thread to waiting queue
-	tmq->write.entry->thread = rthread;
-	tmq->write.entry = tmq->write.entry->next;
-	// Find the thread with the mutex
-	struct ThreadEntryIterator iter;
+	tmq->end.next->next = rthread_e;
+	tmq->end.next = rthread_e;
+	rthread_e->next = &tmq->end;
+	/// Find the thread with the mutex
 	// Search through each priority
 	for (unsigned long p = 0; p < PRIORITIES; p++) {
-		struct ThreadQueue* rq = &scheduler.ready[p];
-		iter = rq->read;
-		while (iter.entry != rq->write.entry) {
+		struct ThreadQueue* queue = &scheduler.ready[p];
+		// Keep track of the previous entry
+		struct ThreadEntry* prev = &queue->start;
+		struct ThreadEntry* entry = prev->next;
+		while (entry->entry_type != END_ENTRY) {
 			// Check if it is the Mutex's thread
-			if (iter.entry->thread->pid == ((struct Mutex*)m)->pid) {
+			if (entry->thread->pid == ((struct Mutex*)m)->pid) {
+				uart_scheduler();
 				// Promote the thread's priority
-				if (iter.entry->thread->priority > priority) {
+				if (entry->thread->priority > priority) {
+					struct ThreadQueue* new_queue = &scheduler.ready[priority];
 					// Add it to the higher priority queue
-					scheduler.ready[priority].write.entry->thread = iter.entry->thread;
-					// Move the Write Iterator Forward
-					scheduler.ready[priority].write.entry = scheduler.ready[priority].write.entry->next;
+					new_queue->end.next->next = entry;
+					new_queue->end.next = entry;
 					// Set the old priority if not set
-					if (iter.entry->thread->old_priority == 0xFF)
-						iter.entry->thread->old_priority = p;
-
+					if (entry->thread->old_priority == 0xFF)
+						entry->thread->old_priority = p;
 					// Set the new priority
-					iter.entry->thread->priority = priority;
-					
-					// Prune the old priority entry
-					struct ThreadEntry* prev = iter.entry->prev;
-					struct ThreadEntry* next = iter.entry->next;
-					prev->next = next;
-					next->prev = prev;
-					// Put the newly freed entry at end of write queue
-					//iter.entry->prev = rq->write.entry;
-					//iter.entry->next = rq->write.entry->next;
-					if (iter.entry == rq->read.entry)
-						rq->read.entry = rq->read.entry->next;
-					rq->write.entry->next->prev = iter.entry;
-					rq->write.entry->next = iter.entry;
-					iter.entry->thread = 0;
+					entry->thread->priority = priority;
+					// Remove it from the lower priority queue
+					prev->next = entry->next;
+					if (entry->next->entry_type == END_ENTRY) {
+						entry->next->next = prev;
+					}
+					// Set the entry's next entry
+					entry->next = &new_queue->end;
 				}
 				return;
 			}
-			iter.entry = iter.entry->next;
+			// Continue forward
+			prev = entry;
+			entry = entry->next;
 		}
 	}
 }
@@ -278,44 +284,47 @@ void sched_mutex_resurrect(void* m)
 {
 	// Look through each priority
 	for (int p = 0; p < PRIORITIES; p++) {
-		struct ThreadQueue* tmq = &scheduler.mwait[p];
-		struct ThreadEntryIterator iter;
-		iter = tmq->read;
+		struct ThreadQueue* wait_queue = &scheduler.mwait[p];
+		struct ThreadEntry* prev = &wait_queue->start;
+		struct ThreadEntry* entry = prev->next;
 		// Look through the lock wait queue
-		while (iter.entry != tmq->write.entry) {
-			// Check if the thread is waiting for the released mutex
-			if (iter.entry->thread->mptr == m) {
-				// Ressurect the thread
-				iter.entry->thread->mptr = 0;
-				scheduler.ready[iter.entry->thread->priority].write.entry->thread = iter.entry->thread;
-				scheduler.ready[iter.entry->thread->priority].write.entry = scheduler.ready[iter.entry->thread->priority].write.entry->next;
-				// Move the read pointer ahead
-				if (iter.entry == tmq->read.entry)
-					tmq->read.entry = tmq->read.entry->next;
-				iter.entry->prev->next = iter.entry->next;
-				iter.entry->next->prev = iter.entry->prev;
-				tmq->write.entry->next->prev = iter.entry;
-				tmq->write.entry->next = iter.entry;
+		while (entry->entry_type != END_ENTRY) {
+			// Check if the thread is waiting for the release mutex
+			if (entry->thread->mptr == m) {
+				// Resurrect the thread
+				entry->thread->mptr = 0;
+				struct ThreadEntry* end = &scheduler.ready[entry->thread->priority].end;
+				// Remove from old list
+				prev->next = entry->next;
+				if (entry->next->entry_type == END_ENTRY) {
+					prev->next->next = prev;
+				}
+				// Add to new list
+				end->next->next = entry;
+				end->next = entry;
+				entry->next = end;
 				struct Thread* rthread = scheduler.rthread;
-				// Move the current thread to its old priority if it was promoted earlier
+				struct ThreadEntry* rthread_e = &thread_entries[rthread->offset];
+				// Move current thread to old thread if applicable
 				if (rthread->old_priority != 0xFF) {
-					struct ThreadQueue* cur_trq = &scheduler.ready[rthread->priority];
-					struct ThreadQueue* old_trq = &scheduler.ready[rthread->old_priority];
-					// Prune from the current ready queue
-					cur_trq->read.entry->thread = 0;
-					cur_trq->read.entry = cur_trq->read.entry->next;
-					// Prepend to original ready queue
-					old_trq->read.entry = old_trq->read.entry->prev;
-					old_trq->read.entry->thread = rthread;
-					// Reset Priority
+					struct ThreadQueue* cqueue = &scheduler.ready[rthread->priority];
+					struct ThreadQueue* oqueue = &scheduler.ready[rthread->old_priority];
+					// Move current queue up
+					cqueue->start.next = cqueue->start.next->next;
+					if (cqueue->start.next->next->entry_type == END_ENTRY)
+						cqueue->end.next = &cqueue->start;
+					// Add to old queue
+					oqueue->end.next->next = rthread_e;
+					oqueue->end.next = rthread_e;
+					rthread_e->next = &oqueue->end;
+					// Reset priority
 					rthread->priority = rthread->old_priority;
-					rthread->old_priority = -1;
+					rthread->old_priority = 0xFF;
 				}
 				return;
 			}
-			iter.entry = iter.entry->next;
+			prev = entry;
+			entry = entry->next;
 		}
 	}
 }
-
-// TODO: Check offsets
