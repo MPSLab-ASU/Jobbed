@@ -80,7 +80,7 @@ struct Thread* get_unused_thread(void)
 	return 0;
 }
 
-void add_thread(void* pc, void* arg, unsigned char priority)
+unsigned char add_thread(void* pc, void* arg, unsigned char priority)
 {
 	struct Thread* thread = get_unused_thread();
 	thread_table[thread->offset] = 1;
@@ -98,28 +98,36 @@ void add_thread(void* pc, void* arg, unsigned char priority)
 	if (nextpid < FIRST_AVAIL_PID) {
 		nextpid = FIRST_AVAIL_PID;
 	}
+	// Cap Priority Level
 	if (priority >= PRIORITIES)
 		thread->priority = PRIORITIES - 1;
 	else
 		thread->priority = priority;
+	// This thread is new
 	thread->old_priority = -1;
+	// Reserved for non-preemptible tasking
 	thread->preempt = 0;
 	// Get the Ready Queue
 	struct ThreadQueue* ready_queue = &scheduler.ready[thread->priority];
 	// Get the write pointer
 	struct ThreadEntryIterator* ready_write = &ready_queue->write;
-	// TODO: Check if it is possible to add
-	//if (ready_write->queue->thread == 0) {
+	if (ready_write->entry->thread == 0) {
 		// Add the thread to the write pointer
 		ready_write->entry->thread = thread;
 		// Move the write pointer to the next entry
 		ready_write->entry = ready_write->entry->next;
-	//}
+	} else {
+		// Cannot add, mark the stack space as available
+		//  so that it can be used on a subsequent add thread
+		thread_table[thread->offset] = 0;
+		return 1;
+	}
 	// Schedule if this was called in usermode
 	unsigned long mode = getmode() & 0x1F;
 	if (mode == 0x10) {
 		sys0(SYS_YIELD_HIGH);
 	}
+	return 0;
 }
 
 void uart_scheduler(void)
