@@ -408,6 +408,8 @@ void sched_mutex_resurrect(void* m)
 	// Restore the original priority level
 	if (op != 0xFF) {
 		struct ThreadEntry* tentry = pop_from_queue(THREAD_READY, p);
-		push_to_queue(tentry->thread, THREAD_READY, p);
+		tentry->thread->priority = op;
+		tentry->thread->old_priority = 0xFF;
+		push_to_queue(tentry->thread, THREAD_READY, op);
 	}
 }
