@@ -64,6 +64,7 @@ svc_000004_delay_mutex: // Wait-queue the current thread
 	// r0 = struct Lock* m
 	bl sched_mutex_yield
 	ldmfd sp!, {r0-r12,lr}
+	sub lr, #4
 	b schedule
 svc_000005: // Release Lock
 	ldr r0, [sp, #0] // struct Lock* m
