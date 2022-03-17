@@ -84,6 +84,25 @@ void push_to_queue(struct Thread* t, unsigned char type, unsigned char priority)
 	entry->next = &queue->end;
 }
 
+void prepend_to_queue(struct Thread* t, unsigned char type, unsigned char priority)
+{
+	struct ThreadEntry* entry = &thread_entries[t->offset];
+	struct ThreadQueue* queue;
+	if (type == THREAD_READY) {
+		queue = &scheduler.ready[priority];
+	} else if (type == THREAD_MWAIT) {
+		queue = &scheduler.mwait[priority];
+	} else if (type == THREAD_SWAIT) {
+		queue = &scheduler.swait[priority];
+	} else {
+		return;
+	}
+	entry->next = queue->start.next;
+	queue->start.next = entry;
+	if (entry->next->entry_type == END_ENTRY)
+		queue->end.next = entry;
+}
+
 struct ThreadEntry* pop_from_queue(unsigned char type, unsigned char priority)
 {
 	struct ThreadEntry* entry = 0;
@@ -410,6 +429,6 @@ void sched_mutex_resurrect(void* m)
 		struct ThreadEntry* tentry = pop_from_queue(THREAD_READY, p);
 		tentry->thread->priority = op;
 		tentry->thread->old_priority = 0xFF;
-		push_to_queue(tentry->thread, THREAD_READY, op);
+		prepend_to_queue(tentry->thread, THREAD_READY, op);
 	}
 }
