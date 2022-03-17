@@ -4,9 +4,6 @@
 
 .globl kernel_main
 kernel_main:
-	///https://wiki.osdev.org/ARM_Paging
-	// Query the ID_MMFR0 register
-	//mrc p15, 0, r0, c0, c1, 4
 	bl sysinit
 	bl status
 	ldr r2, =ttbr_msg

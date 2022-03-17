@@ -20,10 +20,8 @@
 ## Todo
  - Write Thesis Paper
  - Semaphore Implementation
- - Return if the thread can be added
  - Mutex lock sequentially
  - Modularize
- - Add in remaining checks (scheduling)
 
 ## SVC Calls
  - Sysinfo
