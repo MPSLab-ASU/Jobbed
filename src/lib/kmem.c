@@ -2,6 +2,7 @@
 #include <drivers/uart.h>
 #include <lib/kmem.h>
 
+// Output longs at address
 void kmemshow32(void* data, unsigned long length)
 {
 	unsigned long* ptr = data;
@@ -14,6 +15,7 @@ void kmemshow32(void* data, unsigned long length)
 	uart_char('\n');
 }
 
+// Output bytes at address
 void kmemshow(void* data, unsigned long length)
 {
 	unsigned char* ptr = data;

@@ -11,7 +11,7 @@ unsigned char *lfb;                         /* raw frame buffer address */
 #define SCR_HEIGHT 1080
 
 /**
- * Set screen resolution to 1024x768
+ * Set screen resolution
  */
 void lfb_init(void)
 {

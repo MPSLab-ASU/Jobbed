@@ -57,7 +57,7 @@ void* uart_print(char* s)
 		ptr += 1;
 	}
 	// Low priority flush run whenever
-	add_thread(uart_flush, 0, PRIORITIES-1);
+	add_thread_without_duplicate(uart_flush, 0, PRIORITIES-1);
 	unlock(&ubuffer.l);
 	return 0;
 }

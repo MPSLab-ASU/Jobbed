@@ -4,23 +4,19 @@ undefined:
 	cpsid aif
 	stmfd sp!, {r0-r12,lr}
 	ldr r4, [lr, #-4]
-	mov r0, #0
-	mov r1, #17
+	mov r0, #62
+	mov r1, #0
 	ldr r2, =undefined_msg
 	bl draw_string
-	mov r0, #18
-	mov r1, #17
+	mov r0, #62
+	mov r1, #1
 	mov r2, r4
 	bl draw_hex32
-	mov r0, #27
-	mov r1, #17
-	ldr r2, =undefined_at
-	bl draw_string
 	// Output lr
 	ldr r0, [sp, #0x34]
 	sub r2, r0, #4
-	mov r0, #31
-	mov r1, #17
+	mov r0, #62
+	mov r1, #2
 	bl draw_hex32
 	// Skip instruction for now
 	// In future, 

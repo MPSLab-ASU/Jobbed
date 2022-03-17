@@ -19,11 +19,6 @@ __attribute__((section(".bss"))) unsigned int gpitch;
 __attribute__((section(".bss"))) unsigned int gisrgb;
 __attribute__((section(".bss.mutexl"))) unsigned long mutex_table[MAX_MUTEXS];
 __attribute__((section(".bss.mutexs"))) struct Mutex mutexs[MAX_MUTEXS];
-// 0 - Free
-// 1 - Ready
-// 2 - Waiting for Mutex
-// 3 - Waiting for Signal
-// 4+ - Reserved
 __attribute__((section(".bss.threadl"))) unsigned char thread_table[MAX_THREADS];
 __attribute__((section(".bss.threads"))) struct Thread threads[MAX_THREADS];
 __attribute__((section(".bss.threade"))) struct ThreadEntry thread_entries[MAX_THREADS];

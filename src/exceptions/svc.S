@@ -3,8 +3,10 @@
 svc:
 	cpsid aif
 	stmfd sp!, {r0-r12,lr}
+	// Get the SVC Exception #
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
+	// Jump to the appropriate Call
 	cmp r0, #5
 	bgt svc_exit
 	beq svc_000005
@@ -18,11 +20,11 @@ svc:
 	beq svc_000001
 	cmp r0, #0
 	beq svc_000000
-svc_000000:
+svc_000000: // SYS_YIELD
 	bl yield
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-svc_000001: // Get time
+svc_000001: // SYS_TIME
 	mov r2, #0x3004
 	movt r2, #0x3F00
 	ldr r0, [r2, #4] // <- SYS_TIMER_CLO
@@ -50,13 +52,15 @@ svc_000004: // Lock Lock (usr_r0 = struct Lock*)
 1:	clrex
 	ldrex r2, [r0, #0]
 	cmp r2, #0
+	// If it is not available, wait-queue the thread
 	bne svc_000004_delay_mutex
+	// Otherwise lock it
 	strexeq r2, r1, [r0, #0]
 	teq r2, #0
 	bne 1b
 	dmb
 	b svc_exit
-svc_000004_delay_mutex:
+svc_000004_delay_mutex: // Wait-queue the current thread
 	// r0 = struct Lock* m
 	bl sched_mutex_yield
 	ldmfd sp!, {r0-r12,lr}
@@ -65,9 +69,11 @@ svc_000005: // Release Lock
 	ldr r0, [sp, #0] // struct Lock* m
 	mov r1, #0
 	dmb
+	// Unlock
 	str r1, [r0, #0]
 	dsb
 	sev
+	// Awake any threads waiting for this lock
 	bl sched_mutex_resurrect
 	ldmfd sp!, {r0-r12,lr}
 	b schedule

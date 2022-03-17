@@ -8,7 +8,6 @@
 /// https://www.cs.uic.edu/~jbell/CourseNotes/OperatingSystems/3_Processes.html
 /// https://developer.arm.com/documentation/dht0008/a/arm-synchronization-primitives/practical-uses/implementing-a-semaphore?lang=en
 
-// TODO: Once scheduling works, have a failed lock put thread in waiting state
 static inline void atm_lock(unsigned long pid, unsigned long* addr)
 {
 	unsigned long tmp, current_lock_value;
