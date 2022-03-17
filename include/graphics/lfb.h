@@ -1,8 +1,8 @@
 #ifndef GRAPHICS_LFB_H
 #define GRAPHICS_LFB_H
 
-#define GG_MAX_X 128
-#define GG_MAX_Y  100
+#define GG_MAX_X 240
+#define GG_MAX_Y 67
 
 #define DRAW64(x,y,v) draw_hex32(x,y,v>>32);draw_hex32(x+8,y,v);
 
