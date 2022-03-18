@@ -27,6 +27,7 @@ struct Entry* pop_from_queue(struct Queue* q);
 // Remove the entry after this one from its queue
 struct Entry* remove_next_from_queue(struct Entry* e);
 // Find an entry in a queue
+//  Returns the entry before the target entry
 struct Entry* find_value(void* value, struct Queue* q);
 
 #endif

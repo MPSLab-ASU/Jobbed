@@ -1,5 +1,6 @@
 #ifndef UTIL_MUTEX_H
 #define UTIL_MUTEX_H
+#include <lib/queue.h>
 
 #define NULL_PID 0
 #define CORE0_PID 1
@@ -17,6 +18,12 @@ struct Mutex {
 	void* addr;
 } __attribute__((packed, aligned(4)));
 
+struct MutexManager {
+	struct Queue free;
+	struct Queue used;
+};
+
+void mutex_init(void);
 struct Mutex* create_mutex(void* addr);
 unsigned char delete_mutex(struct Mutex* m);
 

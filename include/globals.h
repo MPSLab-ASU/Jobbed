@@ -13,12 +13,13 @@ extern unsigned long nextpid;
 extern unsigned long stimel;
 extern unsigned long stimeh;
 extern struct Scheduler scheduler;
+extern struct MutexManager mutex_manager;
 extern struct Thread usrloopthread;
 extern unsigned int gwidth, gheight, gpitch, gisrgb;
+extern struct Mutex mutexs[MAX_MUTEXS];
+extern struct Entry mutex_entries[MAX_MUTEXS];
 extern struct Thread threads[MAX_THREADS];
 extern struct Entry thread_entries[MAX_THREADS];
-extern unsigned long mutex_table[MAX_MUTEXS];
-extern struct Mutex mutexs[MAX_MUTEXS];
 #endif
 
 #endif
