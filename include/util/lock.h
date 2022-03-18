@@ -5,6 +5,10 @@ struct Lock {
 	unsigned long pid;
 } __attribute__((packed, aligned(4)));
 
+struct Semaphore {
+	unsigned long value;
+} __attribute__((packed, aligned(4)));
+
 void lock(struct Lock* l);
 void unlock(struct Lock* l);
 
