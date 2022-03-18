@@ -20,6 +20,12 @@ kernel_main:
 	wfe
 	b 2b
 
+testf:
+	push {lr}
+	mrs r0, cpsr
+	bl uart_hexn
+	pop {pc}
+
 .section .data
 ttbr_msg:
 	.asciz "MMU Initialized!"

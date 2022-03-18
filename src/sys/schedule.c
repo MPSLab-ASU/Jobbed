@@ -250,7 +250,7 @@ unsigned char add_thread_without_duplicate(void* pc, void* arg, unsigned char pr
 	return 1;
 }
 
-unsigned char add_thread(void* pc, void* arg, unsigned char priority)
+unsigned char svc_add_thread(void* pc, void* arg, unsigned char priority)
 {
 	struct Entry* thread_entry = get_unused_thread();
 	// The only point-of-failure is not having a thread available
@@ -283,11 +283,6 @@ unsigned char add_thread(void* pc, void* arg, unsigned char priority)
 	thread->preempt = 0;
 	/// Add Thread to Scheduler
 	push_thread_to_queue(thread, THREAD_READY, thread->priority);
-	// Schedule if this was called in usermode
-	unsigned long mode = getmode() & 0x1F;
-	if (mode == 0x10) {
-		sys0(SYS_YIELD_HIGH);
-	}
 	return 0;
 }
 

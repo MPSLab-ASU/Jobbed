@@ -27,8 +27,15 @@ svc_000001: // SYS_TIME
 svc_000002: // Run Schedule
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-svc_000003: // Unused
-	b svc_exit
+svc_000003: // Add Thread
+	ldr r0, [sp, #0]
+	ldr r1, [sp, #4]
+	ldr r2, [sp, #8]
+	and r2, #0xFF
+	bl svc_add_thread
+	str r0, [sp, #0]
+	ldmfd sp!, {r0-r12,lr}
+	b schedule
 svc_000004: // Lock Lock (usr_r0 = struct Lock*)
 	ldr r3, =scheduler
 	ldr r2, [r3, #0] // struct Thread* rthread

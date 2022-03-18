@@ -91,7 +91,7 @@ static inline void* getirqstack(void)
 #define SYS_TIME        1
 #define SYS_SCHED       2
 #define SYS_YIELD_HIGH  2
-#define SYS_FREE_STACK  3
+#define SYS_ADD_THREAD  3
 #define SYS_LOCK        4
 #define SYS_UNLOCK      5
 #define SYS_SEMAPHORE_P 6

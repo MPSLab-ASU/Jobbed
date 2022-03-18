@@ -41,3 +41,13 @@ cleanup:
 kernel_usr_task_loop:
 	wfe
 	b kernel_usr_task_loop
+
+.globl add_thread
+add_thread:
+	mrs r3, cpsr
+	and r3, #0x1F
+	cmp r3, #0x10
+	beq 1f
+	b svc_add_thread
+1:	svc #3
+	bx lr
