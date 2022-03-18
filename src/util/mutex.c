@@ -1,4 +1,6 @@
+#include <cpu.h>
 #include <util/mutex.h>
+#include <util/lock.h>
 #include <globals.h>
 
 void mutex_init(void)
@@ -49,4 +51,38 @@ unsigned char delete_mutex(struct Mutex* m)
 	// Add it to the free queue
 	prepend_to_queue(entry, &mutex_manager.free);
 	return 0;
+}
+
+void lock_mutex(struct Mutex* m)
+{
+	struct Thread* rthread = scheduler.rthread;
+	unsigned long rpid = rthread->pid;
+	unsigned long mode = getmode() & 0x1F;
+	if (mode == 0x10) {
+		sys1(SYS_LOCK, m);
+		// Find this mutex
+		struct Entry* mentry = find_value(m, &mutex_manager.used);
+		// If it is not a managed mutex, break away
+		if (mentry == 0)
+			return;
+		// Get the next entry
+		mentry = mentry->next->next;
+		// Ensure this thread locks all mutexs sequentially
+		//  To avoid a deadlock
+		while (mentry->entry_type == VALUE_ENTRY) {
+			struct Mutex* vmutex = mentry->value;
+			// If this thread had locked it
+			//  Toggle the lock to prevent deadlock
+			if (vmutex->pid == rpid) {
+				sys1(SYS_UNLOCK, m);
+				sys1(SYS_LOCK, m);
+			}
+			mentry = mentry->next;
+		}
+	}
+}
+
+void unlock_mutex(struct Mutex* m)
+{
+	unlock((struct Lock*)m);
 }
