@@ -125,8 +125,29 @@ void ctest4(void)
 	//uart_string("4 Finished\n");
 }
 
+static unsigned long test_semaphore = 0;
+
+void stest1(void)
+{
+	draw_cletter(x++, y+1, ' ', 0xFF0000);
+	draw_cletter(x++, y+1, 'S', 0xFF0000);
+	draw_cletter(x++, y+1, 'P', 0xFF0000);
+	sys1(SYS_SEMAPHORE_P, &test_semaphore);
+	draw_cletter(x++, y+1, 'F', 0xFF0000);
+}
+
+void stest2(void)
+{
+	draw_cletter(x++, y+2, 'S', 0xFF00);
+	draw_cletter(x++, y+2, 'V', 0xFF00);
+	sys1(SYS_SEMAPHORE_V, &test_semaphore);
+	draw_cletter(x++, y+2, 'F', 0xFF00);
+}
+
 void btest(void)
 {
 	x = 0;
 	add_thread(ctest1, 0, 3);
+	add_thread(stest1, 0, 6);
+	add_thread(stest2, 0, 7);
 }
