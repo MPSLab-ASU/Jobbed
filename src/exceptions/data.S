@@ -3,11 +3,7 @@
 data:
 	cpsid aif
 	stmfd sp!, {r0-r12,lr}
-	mov r4, lr
-	mov r0, #0
-	mov r1, #15
-	ldr r2, =data_msg
-	bl draw_string
+	ldr r4, [lr, #-4]
 	// Output return address
 	mov r0, #80
 	mov r1, #0
@@ -31,6 +27,3 @@ data:
 	bl draw_hex32
 	ldmfd sp!, {r0-r12,lr}
 	subs pc, lr, #4 // Should be 8 once I can actually handle the abort
-
-.section .data
-data_msg:	.asciz "Data Handler"
