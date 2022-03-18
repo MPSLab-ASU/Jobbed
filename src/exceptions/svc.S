@@ -6,20 +6,12 @@ svc:
 	// Get the SVC Exception #
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
-	// Jump to the appropriate Call
-	cmp r0, #5
+	cmp r0, #7
+	// Check it is within our defined SVC
 	bgt svc_exit
-	beq svc_000005
-	cmp r0, #4
-	beq svc_000004
-	cmp r0, #3
-	beq svc_000003
-	cmp r0, #2
-	beq svc_000002
-	cmp r0, #1
-	beq svc_000001
-	cmp r0, #0
-	beq svc_000000
+	//// Jump to the appropriate Call
+	adr r3, svc_table
+	ldr pc, [r3, r0, LSL #2]
 svc_000000: // SYS_YIELD
 	bl yield
 	ldmfd sp!, {r0-r12,lr}
@@ -79,5 +71,43 @@ svc_000005: // Release Lock
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
 	b svc_exit
+svc_000006: // Semaphore decrease
+	ldr r0, [sp, #0] // struct Semaphore* s
+1:	clrex
+	ldrex r2, [r0, #0]
+	cmp r2, #0
+	beq svc_000006_delay_semaphore
+	sub r1, r2, #1
+	strexeq r2, r1, [r0, #0]
+	teq r2, #0
+	bne 1b
+	dmb
+	b svc_exit
+svc_000006_delay_semaphore:
+	bl sched_semaphore_yield
+	ldmfd sp!, {r0-r12,lr}
+	sub lr, #4
+	b schedule
+svc_000007: // Semaphore increase
+	ldr r0, [sp, #0] // struct Semaphore* s
+1:	clrex
+	ldrex r2, [r0, #0]
+	add r1, r2, #1
+	strexeq r2, r1, [r0, #0]
+	teq r2, #0
+	bne 1b
+	dmb
+	bl sched_semaphore_resurrect
+	b svc_exit
 svc_exit:
 	ldmfd sp!, {r0-r12,pc}^
+
+svc_table:
+	.word svc_000000
+	.word svc_000001
+	.word svc_000002
+	.word svc_000003
+	.word svc_000004
+	.word svc_000005
+	.word svc_000006
+	.word svc_000007
