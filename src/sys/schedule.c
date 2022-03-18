@@ -47,10 +47,6 @@ void init_scheduler(void)
 		scheduler.swait[p].end.next = &scheduler.swait[p].start;
 		scheduler.swait[p].end.entry_type = END_ENTRY;
 	}
-	scheduler.free_threads.start.value = 0;
-	scheduler.free_threads.start.entry_type = START_ENTRY;
-	scheduler.free_threads.end.value = 0;
-	scheduler.free_threads.end.entry_type = END_ENTRY;
 
 	// Initialize nextpid
 	nextpid = FIRST_AVAIL_PID;
@@ -60,13 +56,15 @@ void init_scheduler(void)
 		struct Thread* t = &threads[i];
 		t->offset = i;
 		t->sp_base = 0x20000000 - STACK_SIZE*i;
-		struct Entry* te = &thread_entries[i];
-		te->value = t;
-		// Initialize To No Next Entry Initially
-		te->next = &thread_entries[(i+1)%MAX_THREADS];
-		te->entry_type = VALUE_ENTRY;
+		thread_entries[i].value = t;
+		thread_entries[i].next = &thread_entries[(i+1)];
+		thread_entries[i].entry_type = VALUE_ENTRY;
 	}
 	// Initialize the free queue
+	scheduler.free_threads.start.value = 0;
+	scheduler.free_threads.start.entry_type = START_ENTRY;
+	scheduler.free_threads.end.value = 0;
+	scheduler.free_threads.end.entry_type = END_ENTRY;
 	scheduler.free_threads.start.next = &thread_entries[0];
 	scheduler.free_threads.end.next = &thread_entries[MAX_THREADS-1];
 	thread_entries[MAX_THREADS-1].next = &scheduler.free_threads.end;
@@ -299,6 +297,7 @@ void uart_scheduler(void)
 	uart_hex((unsigned long)scheduler.rthread);
 	uart_char(' ');
 	kmemshow32((void*)scheduler.rthread, 9);
+	unsigned long length;
 	for(int p = 0; p < PRIORITIES; p++) {
 		uart_string("Priority ");
 		uart_10(p);
@@ -309,33 +308,50 @@ void uart_scheduler(void)
 		queue = &scheduler.ready[p];
 		uart_string("Ready Queue\n");
 		entry = queue->start.next;
+		length = 0;
 		while (entry->entry_type != END_ENTRY) {
 			uart_hex((unsigned long)entry->value);
 			uart_char(' ');
 			kmemshow32((void*)entry->value, 9);
 			entry = entry->next;
+			length++;
 		}
+		uart_hexn(length);
 
 		queue = &scheduler.mwait[p];
 		uart_string("Mutex Wait Queue\n");
 		entry = queue->start.next;
+		length = 0;
 		while (entry->entry_type != END_ENTRY) {
 			uart_hex((unsigned long)entry->value);
 			uart_char(' ');
 			kmemshow32((void*)entry->value, 9);
 			entry = entry->next;
+			length++;
 		}
+		uart_hexn(length);
 
 		queue = &scheduler.swait[p];
 		uart_string("Signal Wait Queue\n");
 		entry = queue->start.next;
+		length = 0;
 		while (entry->entry_type != END_ENTRY) {
 			uart_hex((unsigned long)entry->value);
 			uart_char(' ');
 			kmemshow32((void*)entry->value, 9);
 			entry = entry->next;
+			length++;
 		}
+		uart_hexn(length);
 	}
+	// Count number of free threads
+	struct Queue* queue = &scheduler.free_threads;
+	struct Entry* entry = queue->start.next;
+	while (entry->entry_type != END_ENTRY) {
+		entry = entry->next;
+		length++;
+	}
+	uart_hexn(length);
 	uart_string("==============\n");
 }
 

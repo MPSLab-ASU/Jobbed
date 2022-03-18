@@ -31,8 +31,11 @@ void c_irq_handler(void)
 				}
 
 				// Handle the recieved data
+				// Ctrl+G to output scheduler debug info
+				if (data == 0x7)
+					uart_scheduler();
 				// Ctrl+T to toggle timer
-				if(data == 0x14) {
+				else if(data == 0x14) {
 					unsigned long timer_status;
 					asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));
 					if(timer_status == 0) {

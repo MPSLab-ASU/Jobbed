@@ -2,7 +2,7 @@
 #define SYS_SCHEDULE_H
 #include <lib/queue.h>
 
-#define TQUEUE_MAX 0x800
+#define TQUEUE_MAX 0x80
 #define STACK_SIZE 0x4000
 #define TQUEUE_CNT 3
 #define PRIORITIES 8
