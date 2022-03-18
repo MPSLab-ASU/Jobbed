@@ -78,7 +78,7 @@ svc_000006: // Semaphore decrease
 	cmp r2, #0
 	beq svc_000006_delay_semaphore
 	sub r1, r2, #1
-	strexeq r2, r1, [r0, #0]
+	strex r2, r1, [r0, #0]
 	teq r2, #0
 	bne 1b
 	dmb
@@ -88,6 +88,7 @@ svc_000006_delay_semaphore:
 	ldmfd sp!, {r0-r12,lr}
 	sub lr, #4
 	b schedule
+	b svc_exit
 svc_000007: // Semaphore increase
 	ldr r0, [sp, #0] // struct Semaphore* s
 1:	clrex
@@ -98,6 +99,8 @@ svc_000007: // Semaphore increase
 	bne 1b
 	dmb
 	bl sched_semaphore_resurrect
+	ldmfd sp!, {r0-r12,lr}
+	b schedule
 	b svc_exit
 svc_exit:
 	ldmfd sp!, {r0-r12,pc}^
