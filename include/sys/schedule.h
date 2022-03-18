@@ -1,7 +1,7 @@
 #ifndef SYS_SCHEDULE_H
 #define SYS_SCHEDULE_H
 
-#define TQUEUE_MAX 0x100
+#define TQUEUE_MAX 0x800
 #define STACK_SIZE 0x4000
 #define TQUEUE_CNT 3
 #define PRIORITIES 8

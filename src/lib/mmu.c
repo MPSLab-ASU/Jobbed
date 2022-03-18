@@ -15,11 +15,15 @@ void mmu_section(unsigned long virtual, unsigned long physical, unsigned long fl
 	*entry = physval;
 }
 
+extern unsigned long __bss_end;
 void mmu_init(void)
 {
-	mmu_section(0x00000000, 0x00000000, CACHABLE | BUFFERABLE);
-	for (unsigned long addr =  0x00100000;; addr += 0x00100000) {
-		mmu_section(addr, addr, NO_PERMISSIONS_REQUIRED);
+	for (unsigned long addr =  0x00000000;; addr += 0x00100000) {
+		if (addr < (unsigned long)&__bss_end) {
+			mmu_section(addr, addr, CACHABLE | BUFFERABLE);
+		} else {
+			mmu_section(addr, addr, NO_PERMISSIONS_REQUIRED);
+		}
 		if (addr == 0x02000000)
 			mmu_section(addr, addr, CACHABLE | BUFFERABLE | NO_PERMISSIONS_REQUIRED);
 		//else if (addr == 0x3F000000)
