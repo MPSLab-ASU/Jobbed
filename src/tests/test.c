@@ -55,7 +55,7 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < 64; i++) {
 		sys0_64(SYS_TIME, &ti);
-		add_thread(atest, 0, 0);
+		add_thread(atest, 0, 3);
 		sys0_64(SYS_TIME, &tf);
 		dt += tf - ti;
 		if (z % 2) {
@@ -67,6 +67,23 @@ void test_entry(void)
 	}
 	DRAW64(70, y+5, dt/64);
 	DRAW64(70+17, y+5, dt%64);
+
+	z = 1;
+	dt = 0;
+	for(int i = 0; i < 64; i++) {
+		sys0_64(SYS_TIME, &ti);
+		add_thread(atest, 0, 0);
+		sys0_64(SYS_TIME, &tf);
+		dt += tf - ti;
+		if (z % 2) {
+			DRAW64(105+17, y+((z+1)/2)+5, (tf-ti));
+		} else {
+			DRAW64(105, y+(z/2)+5, (tf-ti));
+		}
+		z++;
+	}
+	DRAW64(105, y+5, dt/64);
+	DRAW64(105+17, y+5, dt%64);
 	add_thread(btest, 0, 4);
 }
 
@@ -146,6 +163,10 @@ void stest2(void)
 
 void btest(void)
 {
+	draw_string(0, y+0, "                   ");
+	draw_string(0, y+1, "                   ");
+	draw_string(0, y+2, "                   ");
+	draw_string(0, y+3, "                   ");
 	x = 0;
 	add_thread(ctest1, 0, 3);
 	add_thread(stest1, 0, 6);
