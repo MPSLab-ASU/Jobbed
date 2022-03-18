@@ -94,5 +94,7 @@ static inline void* getirqstack(void)
 #define SYS_FREE_STACK  3
 #define SYS_LOCK        4
 #define SYS_UNLOCK      5
+#define SYS_SEMAPHORE_P 6
+#define SYS_SEMAPHORE_V 7
 
 #endif

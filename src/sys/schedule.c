@@ -194,14 +194,14 @@ struct ThreadEntry* find_mutex_wait_next(void* m)
 	return 0;
 }
 
-struct ThreadEntry* find_signal_wait_next(void* m)
+struct ThreadEntry* find_signal_wait_next(void* s)
 {
 	for (unsigned char p = 0; p < PRIORITIES; p++) {
 		struct ThreadQueue* queue = &scheduler.swait[p];
 		struct ThreadEntry* prev = &queue->start;
 		struct ThreadEntry* entry = prev->next;
 		while (entry->entry_type != END_ENTRY) {
-			if (entry->thread->mptr == m)
+			if (entry->thread->mptr == s)
 				return prev;
 			prev = entry;
 			entry = entry->next;
@@ -404,6 +404,23 @@ void sched_mutex_yield(void* m)
 	}
 }
 
+void sched_semaphore_yield(void* s)
+{
+	struct Thread* rthread = scheduler.rthread;
+	// usrloopthread should not be yielded
+	if (rthread == &usrloopthread)
+		return;
+	unsigned char priority = rthread->priority;
+	// Signify which lock this thread is waiting for
+	rthread->mptr = s;
+	struct ThreadEntry* rt;
+	// Remove from top of running queue
+	rt = pop_from_queue(THREAD_READY, priority);
+	if (rt != 0)
+		// Push to bottom of wait queue
+		push_to_queue(rt->thread, THREAD_SWAIT, priority);
+}
+
 void sched_mutex_resurrect(void* m)
 {
 	// Find any mutex to resurrect
@@ -431,4 +448,22 @@ void sched_mutex_resurrect(void* m)
 		tentry->thread->old_priority = 0xFF;
 		prepend_to_queue(tentry->thread, THREAD_READY, op);
 	}
+}
+
+void sched_semaphore_resurrect(void* s)
+{
+	// Find any signal/ semaphore to resurrect
+	struct ThreadEntry* prev = find_signal_wait_next(s);
+	if (prev == 0)
+		return;
+	struct ThreadEntry* entry = prev->next;
+	struct Thread* thread = entry->thread;
+	// Resurrect the thread
+	thread->mptr = 0;
+	// Remove from wait queue
+	entry = remove_next_from_queue(prev);
+	if (entry == 0)
+		return;
+	// Add to ready queue
+	push_to_queue(entry->thread, THREAD_READY, entry->thread->priority);
 }
