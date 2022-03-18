@@ -15,9 +15,8 @@ extern unsigned long stimeh;
 extern struct Scheduler scheduler;
 extern struct Thread usrloopthread;
 extern unsigned int gwidth, gheight, gpitch, gisrgb;
-extern unsigned char thread_table[MAX_THREADS];
 extern struct Thread threads[MAX_THREADS];
-extern struct ThreadEntry thread_entries[MAX_THREADS];
+extern struct Entry thread_entries[MAX_THREADS];
 extern unsigned long mutex_table[MAX_MUTEXS];
 extern struct Mutex mutexs[MAX_MUTEXS];
 #endif

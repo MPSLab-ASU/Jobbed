@@ -26,27 +26,31 @@ void init_scheduler(void)
 	// Initialize Scheduling Queues
 	for (unsigned long p = 0; p < PRIORITIES; p++) {
 		// Ready Init
-		scheduler.ready[p].start.thread = 0;
+		scheduler.ready[p].start.value = 0;
 		scheduler.ready[p].start.next = &scheduler.ready[p].end;
 		scheduler.ready[p].start.entry_type = START_ENTRY;
-		scheduler.ready[p].end.thread = 0;
+		scheduler.ready[p].end.value = 0;
 		scheduler.ready[p].end.next = &scheduler.ready[p].start;
 		scheduler.ready[p].end.entry_type = END_ENTRY;
 		// Mutex Wait Init
-		scheduler.mwait[p].start.thread = 0;
+		scheduler.mwait[p].start.value = 0;
 		scheduler.mwait[p].start.next = &scheduler.mwait[p].end;
 		scheduler.mwait[p].start.entry_type = START_ENTRY;
-		scheduler.mwait[p].end.thread = 0;
+		scheduler.mwait[p].end.value = 0;
 		scheduler.mwait[p].end.next = &scheduler.mwait[p].start;
 		scheduler.mwait[p].end.entry_type = END_ENTRY;
 		// Signal Wait Init
-		scheduler.swait[p].start.thread = 0;
+		scheduler.swait[p].start.value = 0;
 		scheduler.swait[p].start.next = &scheduler.swait[p].end;
 		scheduler.swait[p].start.entry_type = START_ENTRY;
-		scheduler.swait[p].end.thread = 0;
+		scheduler.swait[p].end.value = 0;
 		scheduler.swait[p].end.next = &scheduler.swait[p].start;
 		scheduler.swait[p].end.entry_type = END_ENTRY;
 	}
+	scheduler.free_threads.start.value = 0;
+	scheduler.free_threads.start.entry_type = START_ENTRY;
+	scheduler.free_threads.end.value = 0;
+	scheduler.free_threads.end.entry_type = END_ENTRY;
 
 	// Initialize nextpid
 	nextpid = FIRST_AVAIL_PID;
@@ -56,20 +60,22 @@ void init_scheduler(void)
 		struct Thread* t = &threads[i];
 		t->offset = i;
 		t->sp_base = 0x20000000 - STACK_SIZE*i;
-		// Clear the stack use
-		thread_table[i] = 0;
-		struct ThreadEntry* te = &thread_entries[i];
-		te->thread = t;
+		struct Entry* te = &thread_entries[i];
+		te->value = t;
 		// Initialize To No Next Entry Initially
-		te->next = 0;
-		te->entry_type = THREAD_ENTRY;
+		te->next = &thread_entries[(i+1)%MAX_THREADS];
+		te->entry_type = VALUE_ENTRY;
 	}
+	// Initialize the free queue
+	scheduler.free_threads.start.next = &thread_entries[0];
+	scheduler.free_threads.end.next = &thread_entries[MAX_THREADS-1];
+	thread_entries[MAX_THREADS-1].next = &scheduler.free_threads.end;
 }
 
-void push_to_queue(struct Thread* t, unsigned char type, unsigned char priority)
+void push_thread_to_queue(struct Thread* t, unsigned char type, unsigned char priority)
 {
-	struct ThreadEntry* entry = &thread_entries[t->offset];
-	struct ThreadQueue* queue;
+	struct Entry* entry = &thread_entries[t->offset];
+	struct Queue* queue;
 	if (type == THREAD_READY) {
 		queue = &scheduler.ready[priority];
 	} else if (type == THREAD_MWAIT) {
@@ -79,15 +85,16 @@ void push_to_queue(struct Thread* t, unsigned char type, unsigned char priority)
 	} else {
 		return;
 	}
-	queue->end.next->next = entry;
-	queue->end.next = entry;
-	entry->next = &queue->end;
+	push_to_queue(entry, queue);
+	//queue->end.next->next = entry;
+	//queue->end.next = entry;
+	//entry->next = &queue->end;
 }
 
-void prepend_to_queue(struct Thread* t, unsigned char type, unsigned char priority)
+void prepend_thread_to_queue(struct Thread* t, unsigned char type, unsigned char priority)
 {
-	struct ThreadEntry* entry = &thread_entries[t->offset];
-	struct ThreadQueue* queue;
+	struct Entry* entry = &thread_entries[t->offset];
+	struct Queue* queue;
 	if (type == THREAD_READY) {
 		queue = &scheduler.ready[priority];
 	} else if (type == THREAD_MWAIT) {
@@ -97,16 +104,17 @@ void prepend_to_queue(struct Thread* t, unsigned char type, unsigned char priori
 	} else {
 		return;
 	}
-	entry->next = queue->start.next;
-	queue->start.next = entry;
-	if (entry->next->entry_type == END_ENTRY)
-		queue->end.next = entry;
+	prepend_to_queue(entry, queue);
+	//entry->next = queue->start.next;
+	//queue->start.next = entry;
+	//if (entry->next->entry_type == END_ENTRY)
+	//	queue->end.next = entry;
 }
 
-struct ThreadEntry* pop_from_queue(unsigned char type, unsigned char priority)
+struct Entry* pop_thread_from_queue(unsigned char type, unsigned char priority)
 {
-	struct ThreadEntry* entry = 0;
-	struct ThreadQueue* queue;
+	struct Entry* entry = 0;
+	struct Queue* queue;
 	if (type == THREAD_READY) {
 		queue = &scheduler.ready[priority];
 	} else if (type == THREAD_MWAIT) {
@@ -116,40 +124,41 @@ struct ThreadEntry* pop_from_queue(unsigned char type, unsigned char priority)
 	} else {
 		return entry;
 	}
-	if (queue->start.next->entry_type == END_ENTRY)
-		return entry;
-	entry = queue->start.next;
-	queue->start.next = entry->next;
-	if (entry->next->entry_type == END_ENTRY)
-		queue->end.next = &queue->start;
-	return entry;
+	return pop_from_queue(queue);
+	//if (queue->start.next->entry_type == END_ENTRY)
+	//	return entry;
+	//entry = queue->start.next;
+	//queue->start.next = entry->next;
+	//if (entry->next->entry_type == END_ENTRY)
+	//	queue->end.next = &queue->start;
+	//return entry;
 }
 
-struct ThreadEntry* remove_next_from_queue(struct ThreadEntry* te)
-{
-	struct ThreadEntry* prev = te;
-	struct ThreadEntry* remove = te->next;
-	struct ThreadEntry* next = remove->next;
-	if (remove->entry_type == END_ENTRY || remove->entry_type == START_ENTRY)
-		return 0;
-	prev->next = next;
-	if (next->entry_type == END_ENTRY)
-		next->next = prev;
-	return remove;
-}
+//struct Entry* remove_next_from_queue(struct Entry* te)
+//{
+//	struct Entry* prev = te;
+//	struct Entry* remove = te->next;
+//	struct Entry* next = remove->next;
+//	if (remove->entry_type == END_ENTRY || remove->entry_type == START_ENTRY)
+//		return 0;
+//	prev->next = next;
+//	if (next->entry_type == END_ENTRY)
+//		next->next = prev;
+//	return remove;
+//}
 
-struct ThreadEntry* find_pid(unsigned long pid)
+struct Entry* find_pid(unsigned long pid)
 {
 	for (unsigned char p = 0; p < PRIORITIES; p++) {
-		struct ThreadQueue* queue;
-		struct ThreadEntry* prev;
-		struct ThreadEntry* entry;
+		struct Queue* queue;
+		struct Entry* prev;
+		struct Entry* entry;
 
 		queue = &scheduler.ready[p];
 		prev = &queue->start;
 		entry = prev->next;
 		while (entry->entry_type != END_ENTRY) {
-			if (entry->thread->pid == pid)
+			if (((struct Thread*)entry->value)->pid == pid)
 				return prev;
 			prev = entry;
 			entry = entry->next;
@@ -159,7 +168,7 @@ struct ThreadEntry* find_pid(unsigned long pid)
 		prev = &queue->start;
 		entry = prev->next;
 		while (entry->entry_type != END_ENTRY) {
-			if (entry->thread->pid == pid)
+			if (((struct Thread*)entry->value)->pid == pid)
 				return prev;
 			prev = entry;
 			entry = entry->next;
@@ -169,7 +178,7 @@ struct ThreadEntry* find_pid(unsigned long pid)
 		prev = &queue->start;
 		entry = prev->next;
 		while (entry->entry_type != END_ENTRY) {
-			if (entry->thread->pid == pid)
+			if (((struct Thread*)entry->value)->pid == pid)
 				return prev;
 			prev = entry;
 			entry = entry->next;
@@ -178,14 +187,14 @@ struct ThreadEntry* find_pid(unsigned long pid)
 	return 0;
 }
 
-struct ThreadEntry* find_mutex_wait_next(void* m)
+struct Entry* find_mutex_wait_next(void* m)
 {
 	for (unsigned char p = 0; p < PRIORITIES; p++) {
-		struct ThreadQueue* queue = &scheduler.mwait[p];
-		struct ThreadEntry* prev = &queue->start;
-		struct ThreadEntry* entry = prev->next;
+		struct Queue* queue = &scheduler.mwait[p];
+		struct Entry* prev = &queue->start;
+		struct Entry* entry = prev->next;
 		while (entry->entry_type != END_ENTRY) {
-			if (entry->thread->mptr == m)
+			if (((struct Thread*)entry->value)->mptr == m)
 				return prev;
 			prev = entry;
 			entry = entry->next;
@@ -194,14 +203,14 @@ struct ThreadEntry* find_mutex_wait_next(void* m)
 	return 0;
 }
 
-struct ThreadEntry* find_signal_wait_next(void* s)
+struct Entry* find_signal_wait_next(void* s)
 {
 	for (unsigned char p = 0; p < PRIORITIES; p++) {
-		struct ThreadQueue* queue = &scheduler.swait[p];
-		struct ThreadEntry* prev = &queue->start;
-		struct ThreadEntry* entry = prev->next;
+		struct Queue* queue = &scheduler.swait[p];
+		struct Entry* prev = &queue->start;
+		struct Entry* entry = prev->next;
 		while (entry->entry_type != END_ENTRY) {
-			if (entry->thread->mptr == s)
+			if (((struct Thread*)entry->value)->mptr == s)
 				return prev;
 			prev = entry;
 			entry = entry->next;
@@ -210,22 +219,24 @@ struct ThreadEntry* find_signal_wait_next(void* s)
 	return 0;
 }
 
-struct Thread* get_unused_thread(void)
+struct Entry* get_unused_thread(void)
 {
-	for(unsigned long i = 0; i < MAX_THREADS; i++) {
-		if (thread_table[i] == 0)
-			return &threads[i];
-	}
-	return 0;
+	struct Queue* q = &scheduler.free_threads;
+	// If we have no available free threads
+	//  return null pointer
+	if (q->start.next->entry_type == END_ENTRY)
+		return 0;
+	// Otherwise, get the next thread
+	return pop_from_queue(q);
 }
 
 unsigned char find_duplicate(void* pc)
 {
 	for (unsigned char p = 0; p < PRIORITIES; p++) {
-		struct ThreadQueue* queue = &scheduler.ready[p];
-		struct ThreadEntry* entry = queue->start.next;
-		while (entry->entry_type == THREAD_ENTRY) {
-			if (entry->thread->pc == pc) {
+		struct Queue* queue = &scheduler.ready[p];
+		struct Entry* entry = queue->start.next;
+		while (entry->entry_type == VALUE_ENTRY) {
+			if (((struct Thread*)entry->value)->pc == pc) {
 				return 1;
 			}
 		}
@@ -243,12 +254,11 @@ unsigned char add_thread_without_duplicate(void* pc, void* arg, unsigned char pr
 
 unsigned char add_thread(void* pc, void* arg, unsigned char priority)
 {
-	struct Thread* thread = get_unused_thread();
+	struct Entry* thread_entry = get_unused_thread();
 	// The only point-of-failure is not having a thread available
-	if (thread == 0)
+	if (thread_entry == 0)
 		return 1;
-	/// Mark the Stack Space as In-Use
-	thread_table[thread->offset] = 1;
+	struct Thread* thread = thread_entry->value;
 	/// Thread Setup
 	thread->pc = pc;
 	unsigned long* argp = (void*)thread->sp_base;
@@ -274,7 +284,7 @@ unsigned char add_thread(void* pc, void* arg, unsigned char priority)
 	// Reserved for non-preemptible tasking
 	thread->preempt = 0;
 	/// Add Thread to Scheduler
-	push_to_queue(thread, THREAD_READY, thread->priority);
+	push_thread_to_queue(thread, THREAD_READY, thread->priority);
 	// Schedule if this was called in usermode
 	unsigned long mode = getmode() & 0x1F;
 	if (mode == 0x10) {
@@ -293,16 +303,16 @@ void uart_scheduler(void)
 		uart_string("Priority ");
 		uart_10(p);
 		uart_char('\n');
-		struct ThreadQueue* queue;
-		struct ThreadEntry* entry;
+		struct Queue* queue;
+		struct Entry* entry;
 
 		queue = &scheduler.ready[p];
 		uart_string("Ready Queue\n");
 		entry = queue->start.next;
 		while (entry->entry_type != END_ENTRY) {
-			uart_hex((unsigned long)entry->thread);
+			uart_hex((unsigned long)entry->value);
 			uart_char(' ');
-			kmemshow32((void*)entry->thread, 9);
+			kmemshow32((void*)entry->value, 9);
 			entry = entry->next;
 		}
 
@@ -310,9 +320,9 @@ void uart_scheduler(void)
 		uart_string("Mutex Wait Queue\n");
 		entry = queue->start.next;
 		while (entry->entry_type != END_ENTRY) {
-			uart_hex((unsigned long)entry->thread);
+			uart_hex((unsigned long)entry->value);
 			uart_char(' ');
-			kmemshow32((void*)entry->thread, 9);
+			kmemshow32((void*)entry->value, 9);
 			entry = entry->next;
 		}
 
@@ -320,9 +330,9 @@ void uart_scheduler(void)
 		uart_string("Signal Wait Queue\n");
 		entry = queue->start.next;
 		while (entry->entry_type != END_ENTRY) {
-			uart_hex((unsigned long)entry->thread);
+			uart_hex((unsigned long)entry->value);
 			uart_char(' ');
-			kmemshow32((void*)entry->thread, 9);
+			kmemshow32((void*)entry->value, 9);
 			entry = entry->next;
 		}
 	}
@@ -333,10 +343,10 @@ struct Thread* next_thread(void)
 {
 	// Recurse through all priorities to try to find a ready thread
 	for (int p = 0; p < PRIORITIES; p++) {
-		struct ThreadQueue* rq = &scheduler.ready[p];
+		struct Queue* rq = &scheduler.ready[p];
 		if (rq->start.next->entry_type == END_ENTRY)
 			continue;
-		return rq->start.next->thread;
+		return rq->start.next->value;
 	}
 	// No thread found, use basic usrloopthread while waiting for new thread
 	return &usrloopthread;
@@ -345,9 +355,9 @@ struct Thread* next_thread(void)
 void c_cleanup(void)
 {
 	struct Thread* rt = scheduler.rthread;
-	pop_from_queue(THREAD_READY, rt->priority);
-	// Mark Thread Unused
-	thread_table[rt->offset] = 0;
+	struct Entry* e = pop_thread_from_queue(THREAD_READY, rt->priority);
+	// Add to free threads
+	prepend_to_queue(e, &scheduler.free_threads);
 }
 
 void yield(void)
@@ -359,12 +369,12 @@ void yield(void)
 	// Put current thread at the end of its ready queue,
 	//  thus any threads of the same priority can be run first
 	unsigned char priority = rthread->priority;
-	struct ThreadEntry* tq;
+	struct Entry* tq;
 	// Remove from top of queue
-	tq = pop_from_queue(THREAD_READY, priority);
+	tq = pop_thread_from_queue(THREAD_READY, priority);
 	if (tq != 0) {
 		// Add to bottom of queue
-		push_to_queue(tq->thread, THREAD_READY, priority);
+		push_thread_to_queue(tq->value, THREAD_READY, priority);
 	}
 }
 
@@ -377,30 +387,30 @@ void sched_mutex_yield(void* m)
 	unsigned char priority = rthread->priority;
 	// Signify which lock this thread is waiting for
 	rthread->mptr = m;
-	struct ThreadEntry* rt;
+	struct Entry* rt;
 	// Remove from top of running queue
-	rt = pop_from_queue(THREAD_READY, priority);
+	rt = pop_thread_from_queue(THREAD_READY, priority);
 	if (rt != 0)
 		// Push to bottom of wait queue
-		push_to_queue(rt->thread, THREAD_MWAIT, priority);
+		push_thread_to_queue(rt->value, THREAD_MWAIT, priority);
 	// Find the thread that has the mutex locked
 	struct Mutex* mtex = m;
-	struct ThreadEntry* mutex_next = find_pid(mtex->pid);
+	struct Entry* mutex_next = find_pid(mtex->pid);
 	if (mutex_next == 0)
 		return;
 	// The next thread is the one with the lock
-	struct ThreadEntry* mutex_thread_entry = mutex_next->next;
+	struct Entry* mutex_thread_entry = mutex_next->next;
 	// Check if it is lower priority
-	if (mutex_thread_entry->thread->priority > priority) {
+	if (((struct Thread*)mutex_thread_entry->value)->priority > priority) {
 		// Remove it from the old priority queue
 		remove_next_from_queue(mutex_next);
-		struct Thread* t = mutex_thread_entry->thread;
+		struct Thread* t = mutex_thread_entry->value;
 		// Preserve the old priority
 		if (t->old_priority == 0xFF)
 			t->old_priority = t->priority;
 		t->priority = priority;
 		// Add it to the higher priority queue
-		push_to_queue(t, THREAD_READY, priority);
+		push_thread_to_queue(t, THREAD_READY, priority);
 	}
 }
 
@@ -413,22 +423,22 @@ void sched_semaphore_yield(void* s)
 	unsigned char priority = rthread->priority;
 	// Signify which lock this thread is waiting for
 	rthread->mptr = s;
-	struct ThreadEntry* rt;
+	struct Entry* rt;
 	// Remove from top of running queue
-	rt = pop_from_queue(THREAD_READY, priority);
+	rt = pop_thread_from_queue(THREAD_READY, priority);
 	if (rt != 0)
 		// Push to bottom of wait queue
-		push_to_queue(rt->thread, THREAD_SWAIT, priority);
+		push_thread_to_queue(rt->value, THREAD_SWAIT, priority);
 }
 
 void sched_mutex_resurrect(void* m)
 {
 	// Find any mutex to resurrect
-	struct ThreadEntry* prev = find_mutex_wait_next(m);
+	struct Entry* prev = find_mutex_wait_next(m);
 	if (prev == 0)
 		return;
-	struct ThreadEntry* entry = prev->next;
-	struct Thread* thread = entry->thread;
+	struct Entry* entry = prev->next;
+	struct Thread* thread = entry->value;
 	// Resurrect the thread
 	thread->mptr = 0;
 	// Remove from wait queue
@@ -436,28 +446,28 @@ void sched_mutex_resurrect(void* m)
 	if (entry == 0)
 		return;
 	// Add to ready queue
-	push_to_queue(entry->thread, THREAD_READY, entry->thread->priority);
+	push_thread_to_queue(entry->value, THREAD_READY, ((struct Thread*)entry->value)->priority);
 	// Demote current thread
 	struct Thread* rthread = scheduler.rthread;
 	unsigned long p = rthread->priority;
 	unsigned long op = rthread->old_priority;
 	// Restore the original priority level
 	if (op != 0xFF) {
-		struct ThreadEntry* tentry = pop_from_queue(THREAD_READY, p);
-		tentry->thread->priority = op;
-		tentry->thread->old_priority = 0xFF;
-		prepend_to_queue(tentry->thread, THREAD_READY, op);
+		struct Entry* tentry = pop_thread_from_queue(THREAD_READY, p);
+		((struct Thread*)entry->value)->priority = op;
+		((struct Thread*)entry->value)->old_priority = 0xFF;
+		prepend_thread_to_queue(tentry->value, THREAD_READY, op);
 	}
 }
 
 void sched_semaphore_resurrect(void* s)
 {
 	// Find any signal/ semaphore to resurrect
-	struct ThreadEntry* prev = find_signal_wait_next(s);
+	struct Entry* prev = find_signal_wait_next(s);
 	if (prev == 0)
 		return;
-	struct ThreadEntry* entry = prev->next;
-	struct Thread* thread = entry->thread;
+	struct Entry* entry = prev->next;
+	struct Thread* thread = entry->value;
 	// Resurrect the thread
 	thread->mptr = 0;
 	// Remove from wait queue
@@ -465,5 +475,5 @@ void sched_semaphore_resurrect(void* s)
 	if (entry == 0)
 		return;
 	// Add to ready queue
-	push_to_queue(entry->thread, THREAD_READY, entry->thread->priority);
+	push_thread_to_queue(entry->value, THREAD_READY, ((struct Thread*)entry->value)->priority);
 }

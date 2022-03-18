@@ -148,6 +148,6 @@ void btest(void)
 {
 	x = 0;
 	add_thread(ctest1, 0, 3);
-	add_thread(stest1, 0, 6);
-	add_thread(stest2, 0, 7);
+	//add_thread(stest1, 0, 6);
+	//add_thread(stest2, 0, 7);
 }

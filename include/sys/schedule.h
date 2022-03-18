@@ -1,5 +1,6 @@
 #ifndef SYS_SCHEDULE_H
 #define SYS_SCHEDULE_H
+#include <lib/queue.h>
 
 #define TQUEUE_MAX 0x800
 #define STACK_SIZE 0x4000
@@ -11,12 +12,6 @@ enum ThreadStatus {
 	THREAD_READY  = 0,
 	THREAD_MWAIT  = 1,
 	THREAD_SWAIT  = 2,
-};
-
-enum EntryTypes {
-	THREAD_ENTRY = 0,
-	START_ENTRY = 1,
-	END_ENTRY = 2,
 };
 
 struct Thread {
@@ -35,22 +30,12 @@ struct Thread {
 	unsigned short s_reserved;
 };
 
-struct ThreadEntry {
-	struct Thread* thread;
-	struct ThreadEntry* next;
-	unsigned long entry_type;
-};
-
-struct ThreadQueue {
-	struct ThreadEntry start;
-	struct ThreadEntry end;
-};
-
 struct Scheduler {
 	struct Thread* rthread;
-	struct ThreadQueue ready[PRIORITIES];
-	struct ThreadQueue mwait[PRIORITIES];
-	struct ThreadQueue swait[PRIORITIES];
+	struct Queue ready[PRIORITIES];
+	struct Queue mwait[PRIORITIES];
+	struct Queue swait[PRIORITIES];
+	struct Queue free_threads;
 };
 
 void init_scheduler(void);

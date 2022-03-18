@@ -27,14 +27,7 @@ svc_000001: // SYS_TIME
 svc_000002: // Run Schedule
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-svc_000003: // Free Thread in Table
-	ldr r3, =scheduler
-	ldr r2, [r3, #0] // struct Thread* rthread
-	ldr r1, [r2, #0x1c] // thread offset
-	mov r0, #0
-	ldr r2, =thread_table
-	add r2, r1, r2
-	str r0, [r2]
+svc_000003: // Unused
 	b svc_exit
 svc_000004: // Lock Lock (usr_r0 = struct Lock*)
 	ldr r3, =scheduler
