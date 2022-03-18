@@ -46,7 +46,11 @@ void sysinit(void)
 	lfb_init();
 	lfb_showpicture();
 
+	// Initialize Memory Management Unit
 	mmu_init();
+	
+	// Initialize Mutex Manager
+	mutex_init();
 
 	// Start Scheduler
 	init_scheduler();
