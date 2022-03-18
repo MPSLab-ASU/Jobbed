@@ -19,7 +19,6 @@
 
 ## Todo
  - Write Thesis Paper
- - Semaphore Implementation
  - Mutex lock sequentially
  - Modularize
 
