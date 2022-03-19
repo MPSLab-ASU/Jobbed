@@ -10,7 +10,7 @@ void mutex_init(void)
 		mutexs[m].addr = 0;
 		mutex_entries[m].value = &mutexs[m];
 		mutex_entries[m].entry_type = VALUE_ENTRY;
-		mutex_entries[m].next = &mutex_entries[(m+1)%MAX_MUTEXS];
+		mutex_entries[m].next = &mutex_entries[m+1];
 	}
 	// Initialize Free Mutexs
 	mutex_manager.free.start.value = 0;
@@ -47,9 +47,9 @@ unsigned char delete_mutex(struct Mutex* m)
 	if (entry == 0)
 		return 1;
 	// Remove it from the queue
-	remove_next_from_queue(entry);
+	struct Entry* theentry = remove_next_from_queue(entry);
 	// Add it to the free queue
-	prepend_to_queue(entry, &mutex_manager.free);
+	prepend_to_queue(theentry, &mutex_manager.free);
 	return 0;
 }
 
