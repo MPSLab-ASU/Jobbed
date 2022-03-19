@@ -19,7 +19,7 @@
 
 ## Todo
  - Write Thesis Paper
- - Mutex lock sequentially
+ - Subscribe function to particular time
  - Modularize
 
 ## SVC Calls
