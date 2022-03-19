@@ -168,48 +168,57 @@ void priority_inversion_test4(void);
 void priority_inversion_test1(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xFF0000);
-	//uart_string("1 Started\n");
-	draw_cletter(x++, y+2, 'L', 0xFF0000);
-	//uart_string("1 Locking\n");
+	// Try Lock
+	draw_cletter(x++, y+2, 'T', 0xFF0000);
 	lock(&testm);
+	// Lock Acquired
+	draw_cletter(x++, y+2, 'L', 0xFF0000);
+	// Add Thread to Assist with Priority Inversion
+	//  Check
+	//  - Show that this thread gets temporarily
+	//     promoted
 	add_thread(priority_inversion_test3, 0, 2);
+	// Unlock
 	draw_cletter(x++, y+2, 'U', 0xFF0000);
-	//uart_string("1 Unlocking\n");
 	unlock(&testm);
 	draw_cletter(x++, y+2, 'F', 0xFF0000);
-	//uart_string("1 Finished\n");
 }
 
 void priority_inversion_test2(void)
 {
 	draw_cletter(x++, y+0, 'S', 0x0000FF);
-	//uart_string("2 Started\n");
+	// Add Thread to Assist with Priority Inversion
+	//  Check
+	//  - Show that Thread 1 is Prepended To Queue
 	add_thread(priority_inversion_test4, 0, 3);
-	draw_cletter(x++, y+0, 'L', 0x0000FF);
-	//uart_string("2 Locking\n");
+	// Try Lock
+	draw_cletter(x++, y+0, 'T', 0x0000FF);
 	lock(&testm);
+	// Lock Acquired
+	draw_cletter(x++, y+0, 'L', 0x0000FF);
+	// Unlock
 	draw_cletter(x++, y+0, 'U', 0x0000FF);
-	//uart_string("2 Unlocking\n");
 	unlock(&testm);
 	draw_cletter(x++, y+0, 'F', 0x0000FF);
-	//uart_string("2 Finished\n");
 }
 
 void priority_inversion_test3(void)
 {
 	draw_cletter(x++, y+1, 'S', 0x00FF00);
-	//uart_string("3 Started\n");
+	// Add thread to Assist with Priority Inversion
+	//  Check
+	//  - Add high priority thread that will try
+	//     to lock the mutex
 	add_thread(priority_inversion_test2, 0, 1);
 	draw_cletter(x++, y+1, 'F', 0x00FF00);
-	//uart_string("3 Finished\n");
 }
 
 void priority_inversion_test4(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xAFAF00);
-	//uart_string("4 Started\n");
+	// Do nothing,
+	//  just show that this is executed last
 	draw_cletter(x++, y+2, 'F', 0xAFAF00);
-	//uart_string("4 Finished\n");
 }
 
 static unsigned long test_semaphore = 0;
@@ -218,14 +227,18 @@ void semaphore_test1(void)
 {
 	draw_cletter(x++, y+1, ' ', 0xFF0000);
 	draw_cletter(x++, y+1, 'S', 0xFF0000);
-	draw_cletter(x++, y+1, 'P', 0xFF0000);
+	// Try to decrement semaphore
+	draw_cletter(x++, y+1, 'T', 0xFF0000);
 	sys1(SYS_SEMAPHORE_P, &test_semaphore);
+	// Semaphore decremented
+	draw_cletter(x++, y+1, 'P', 0xFF0000);
 	draw_cletter(x++, y+1, 'F', 0xFF0000);
 }
 
 void semaphore_test2(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xFF00);
+	// Increment semaphore
 	draw_cletter(x++, y+2, 'V', 0xFF00);
 	sys1(SYS_SEMAPHORE_V, &test_semaphore);
 	draw_cletter(x++, y+2, 'F', 0xFF00);
@@ -237,10 +250,17 @@ static struct Mutex* dead2 = 0;
 void deadlock_test2(void)
 {
 	draw_cletter(x++, y+1, 'S', 0xFF0000);
-	draw_cletter(x++, y+1, 'l', 0xFF0000);
+	// Try Lock 1
+	draw_cletter(x++, y+1, 'T', 0xFF0000);
 	lock_mutex(dead1);
+	// Lock 1 Acquired
 	draw_cletter(x++, y+1, 'L', 0xFF0000);
+	// Try Lock 2
+	draw_cletter(x++, y+1, 't', 0xFF0000);
 	lock_mutex(dead2);
+	// Lock 2 Acquired
+	draw_cletter(x++, y+1, 'l', 0xFF0000);
+	// Unlock Locks
 	draw_cletter(x++, y+1, 'u', 0xFF0000);
 	unlock_mutex(dead2);
 	draw_cletter(x++, y+1, 'U', 0xFF0000);
@@ -254,12 +274,24 @@ void deadlock_test1(void)
 	draw_cletter(x++, y+2, 'S', 0xFF00);
 	dead1 = create_mutex((void*)0xDEADBEEF);
 	dead2 = create_mutex((void*)0x12345678);
-	draw_cletter(x++, y+2, 'L', 0xFF00);
+	// Try Lock 2
+	draw_cletter(x++, y+2, 't', 0xFF00);
 	lock_mutex(dead2);
+	// Lock 2 Acquired
+	draw_cletter(x++, y+2, 'l', 0xFF00);
+	// Create Higher priority thread to
+	//  check deadlock condition
 	draw_cletter(x++, y+2, 'A', 0xFF00);
 	add_thread(deadlock_test2, 0, 4);
-	draw_cletter(x++, y+2, 'l', 0xFF00);
+	// Try Lock 1 - This would deadlock
+	//  if no mechanism is in place to
+	//  prevent it
+	draw_cletter(x++, y+2, 'T', 0xFF00);
 	lock_mutex(dead1);
+	// Lock 1 Acquired - Deadlock condition
+	//  properly handled
+	draw_cletter(x++, y+2, 'L', 0xFF00);
+	// Unlock Locks
 	draw_cletter(x++, y+2, 'u', 0xFF00);
 	unlock_mutex(dead2);
 	draw_cletter(x++, y+2, 'U', 0xFF00);
