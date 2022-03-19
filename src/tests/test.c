@@ -12,9 +12,9 @@ void qualitative_tests(void);
 
 static int x = 0;
 static int y = 13;
-#define TEST_STR_CLR "   "
-#define TEST_RESULT_WIDTH 14
-#define TEST_COUNT 128
+#define TEST_STR_CLR "    "
+#define TEST_RESULT_WIDTH 15
+#define TEST_COUNT 4096
 #define TEST_BIN_COUNT 32
 void test_entry(void)
 {
@@ -42,7 +42,7 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
-	draw_string(tidx, y+5, "      ");
+	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
@@ -63,7 +63,7 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
-	draw_string(tidx, y+5, "      ");
+	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
@@ -84,7 +84,7 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
-	draw_string(tidx, y+5, "      ");
+	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
@@ -105,7 +105,7 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
-	draw_string(tidx, y+5, "      ");
+	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
@@ -127,7 +127,7 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
-	draw_string(tidx, y+5, "      ");
+	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
@@ -149,7 +149,7 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
-	draw_string(tidx, y+5, "      ");
+	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
