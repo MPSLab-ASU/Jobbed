@@ -12,78 +12,148 @@ void btest(void);
 
 static int x = 0;
 static int y = 13;
+#define TEST_STR_CLR "   "
+#define TEST_RESULT_WIDTH 14
+#define TEST_COUNT 128
+#define TEST_BIN_COUNT 32
 void test_entry(void)
 {
 	x = 0;
-	unsigned int z = 1;
 	draw_string(0, y+4, "Starting tests");
-	unsigned long long ti, tf, dt=0;
-	for(int i = 0; i < 64; i++) {
+	unsigned long long ti, tf, dt=0,len;
+	unsigned int tidx = 0;
+	unsigned long bins[TEST_BIN_COUNT];
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		bins[i] = 0;
+	}
+
+	// Test 1: Tracing Time
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_64(SYS_TIME, &ti);
 		sys0_64(SYS_TIME, &tf);
 		dt += tf - ti;
-		if (z % 2) {
-			DRAW64(0+17, y+((z+1)/2)+5, (tf-ti));
-		} else {
-			DRAW64(0, y+(z/2)+5, (tf-ti));
-		}
-		z++;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
 	}
-	DRAW64(0, y+5, dt/64);
-	DRAW64(17, y+5, dt%64);
-	z = 1;
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "      ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
 
-	// atest
-	//add_thread(atest, 0, 0);
+	// Test 2: Yield Time
 	dt = 0;
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_64(SYS_TIME, &ti);
 		sys0(SYS_YIELD);
 		sys0_64(SYS_TIME, &tf);
 		dt += tf - ti;
-		if (z % 2) {
-			DRAW64(35+17, y+((z+1)/2)+5, (tf-ti));
-		} else {
-			DRAW64(35, y+(z/2)+5, (tf-ti));
-		}
-		z++;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
 	}
-	DRAW64(35, y+5, dt/64);
-	DRAW64(35+17, y+5, dt%64);
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "      ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
 
-	z = 1;
+	// Test 3: Add Thread, Lower Priority
 	dt = 0;
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_64(SYS_TIME, &ti);
 		add_thread(atest, 0, 3);
 		sys0_64(SYS_TIME, &tf);
 		dt += tf - ti;
-		if (z % 2) {
-			DRAW64(70+17, y+((z+1)/2)+5, (tf-ti));
-		} else {
-			DRAW64(70, y+(z/2)+5, (tf-ti));
-		}
-		z++;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
 	}
-	DRAW64(70, y+5, dt/64);
-	DRAW64(70+17, y+5, dt%64);
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "      ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
 
-	z = 1;
+	// Test 4: Add Thread, Higher Priority
 	dt = 0;
-	for(int i = 0; i < 64; i++) {
+	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_64(SYS_TIME, &ti);
 		add_thread(atest, 0, 0);
 		sys0_64(SYS_TIME, &tf);
 		dt += tf - ti;
-		if (z % 2) {
-			DRAW64(105+17, y+((z+1)/2)+5, (tf-ti));
-		} else {
-			DRAW64(105, y+(z/2)+5, (tf-ti));
-		}
-		z++;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
 	}
-	DRAW64(105, y+5, dt/64);
-	DRAW64(105+17, y+5, dt%64);
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "      ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+
+	// Test 5: Create Mutex
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		sys0_64(SYS_TIME, &ti);
+		struct Mutex* m = create_mutex(0);
+		sys0_64(SYS_TIME, &tf);
+		delete_mutex(m);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "      ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+
+	// Test 6: Delete Mutex
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		struct Mutex* m = create_mutex(0);
+		sys0_64(SYS_TIME, &ti);
+		delete_mutex(m);
+		sys0_64(SYS_TIME, &tf);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "      ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+
 	add_thread(btest, 0, 4);
 }
 
