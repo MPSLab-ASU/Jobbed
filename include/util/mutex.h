@@ -24,7 +24,10 @@ struct MutexManager {
 };
 
 void mutex_init(void);
+void uart_mutexes(void);
 struct Mutex* create_mutex(void* addr);
 unsigned char delete_mutex(struct Mutex* m);
+void lock_mutex(struct Mutex* m);
+void unlock_mutex(struct Mutex* m);
 
 #endif

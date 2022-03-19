@@ -53,32 +53,46 @@ unsigned char delete_mutex(struct Mutex* m)
 	return 0;
 }
 
+void uart_mutexes(void)
+{
+	struct Entry* entry = mutex_manager.used.start.next;
+	while (entry->entry_type == VALUE_ENTRY)
+	{
+		struct Mutex* m = entry->value;
+		uart_hex(m);
+		uart_char(' ');
+		uart_hex(m->pid);
+		uart_char(' ');
+		uart_hexn(m->addr);
+		entry = entry->next;
+	}
+}
+
 void lock_mutex(struct Mutex* m)
 {
 	struct Thread* rthread = scheduler.rthread;
 	unsigned long rpid = rthread->pid;
 	unsigned long mode = getmode() & 0x1F;
 	if (mode == 0x10) {
-		sys1(SYS_LOCK, m);
 		// Find this mutex
 		struct Entry* mentry = find_value(m, &mutex_manager.used);
 		// If it is not a managed mutex, break away
 		if (mentry == 0)
 			return;
-		// Get the next entry
-		mentry = mentry->next->next;
+		struct Entry* entry = mutex_manager.used.start.next;
 		// Ensure this thread locks all mutexs sequentially
 		//  To avoid a deadlock
-		while (mentry->entry_type == VALUE_ENTRY) {
-			struct Mutex* vmutex = mentry->value;
+		while (entry->entry_type == VALUE_ENTRY) {
+			struct Mutex* vmutex = entry->value;
 			// If this thread had locked it
 			//  Toggle the lock to prevent deadlock
 			if (vmutex->pid == rpid) {
-				sys1(SYS_UNLOCK, m);
-				sys1(SYS_LOCK, m);
+				sys1(SYS_UNLOCK, vmutex);
+				sys1(SYS_LOCK, vmutex);
 			}
-			mentry = mentry->next;
+			entry = entry->next;
 		}
+		sys1(SYS_LOCK, m);
 	}
 }
 
