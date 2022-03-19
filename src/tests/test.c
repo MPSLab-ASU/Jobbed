@@ -252,8 +252,8 @@ void dtest1(void)
 {
 	draw_cletter(x++, y+2, ' ', 0xFF0000);
 	draw_cletter(x++, y+2, 'S', 0xFF0000);
-	dead1 = create_mutex(0xDEADBEEF);
-	dead2 = create_mutex(0x12345678);
+	dead1 = create_mutex((void*)0xDEADBEEF);
+	dead2 = create_mutex((void*)0x12345678);
 	draw_cletter(x++, y+2, 'L', 0xFF0000);
 	lock_mutex(dead2);
 	draw_cletter(x++, y+2, 'A', 0xFF0000);

@@ -1,4 +1,5 @@
 #include <cpu.h>
+#include <drivers/uart.h>
 #include <util/mutex.h>
 #include <util/lock.h>
 #include <globals.h>
@@ -59,11 +60,11 @@ void uart_mutexes(void)
 	while (entry->entry_type == VALUE_ENTRY)
 	{
 		struct Mutex* m = entry->value;
-		uart_hex(m);
+		uart_hex((unsigned long)m);
 		uart_char(' ');
 		uart_hex(m->pid);
 		uart_char(' ');
-		uart_hexn(m->addr);
+		uart_hexn((unsigned long)m->addr);
 		entry = entry->next;
 	}
 }
