@@ -8,7 +8,7 @@
 #include <util/lock.h>
 
 extern void atest(void);
-void btest(void);
+void qualitative_tests(void);
 
 static int x = 0;
 static int y = 13;
@@ -154,25 +154,25 @@ void test_entry(void)
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
 
-	add_thread(btest, 0, 4);
+	add_thread(qualitative_tests, 0, 4);
 }
 
 //static struct Mutex testm = {.addr = 0, .pid = 0};
 static struct Lock testm = {.pid = 0};
 
-void ctest1(void);
-void ctest2(void);
-void ctest3(void);
-void ctest4(void);
+void priority_inversion_test1(void);
+void priority_inversion_test2(void);
+void priority_inversion_test3(void);
+void priority_inversion_test4(void);
 
-void ctest1(void)
+void priority_inversion_test1(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xFF0000);
 	//uart_string("1 Started\n");
 	draw_cletter(x++, y+2, 'L', 0xFF0000);
 	//uart_string("1 Locking\n");
 	lock(&testm);
-	add_thread(ctest3, 0, 2);
+	add_thread(priority_inversion_test3, 0, 2);
 	draw_cletter(x++, y+2, 'U', 0xFF0000);
 	//uart_string("1 Unlocking\n");
 	unlock(&testm);
@@ -180,11 +180,11 @@ void ctest1(void)
 	//uart_string("1 Finished\n");
 }
 
-void ctest2(void)
+void priority_inversion_test2(void)
 {
 	draw_cletter(x++, y+0, 'S', 0x0000FF);
 	//uart_string("2 Started\n");
-	add_thread(ctest4, 0, 3);
+	add_thread(priority_inversion_test4, 0, 3);
 	draw_cletter(x++, y+0, 'L', 0x0000FF);
 	//uart_string("2 Locking\n");
 	lock(&testm);
@@ -195,16 +195,16 @@ void ctest2(void)
 	//uart_string("2 Finished\n");
 }
 
-void ctest3(void)
+void priority_inversion_test3(void)
 {
 	draw_cletter(x++, y+1, 'S', 0x00FF00);
 	//uart_string("3 Started\n");
-	add_thread(ctest2, 0, 1);
+	add_thread(priority_inversion_test2, 0, 1);
 	draw_cletter(x++, y+1, 'F', 0x00FF00);
 	//uart_string("3 Finished\n");
 }
 
-void ctest4(void)
+void priority_inversion_test4(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xAFAF00);
 	//uart_string("4 Started\n");
@@ -214,7 +214,7 @@ void ctest4(void)
 
 static unsigned long test_semaphore = 0;
 
-void stest1(void)
+void semaphore_test1(void)
 {
 	draw_cletter(x++, y+1, ' ', 0xFF0000);
 	draw_cletter(x++, y+1, 'S', 0xFF0000);
@@ -223,7 +223,7 @@ void stest1(void)
 	draw_cletter(x++, y+1, 'F', 0xFF0000);
 }
 
-void stest2(void)
+void semaphore_test2(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xFF00);
 	draw_cletter(x++, y+2, 'V', 0xFF00);
@@ -234,50 +234,50 @@ void stest2(void)
 static struct Mutex* dead1 = 0;
 static struct Mutex* dead2 = 0;
 
-void dtest2(void)
+void deadlock_test2(void)
 {
-	draw_cletter(x++, y+1, 'S', 0xFF00);
-	draw_cletter(x++, y+1, 'l', 0xFF00);
+	draw_cletter(x++, y+1, 'S', 0xFF0000);
+	draw_cletter(x++, y+1, 'l', 0xFF0000);
 	lock_mutex(dead1);
-	draw_cletter(x++, y+1, 'L', 0xFF00);
+	draw_cletter(x++, y+1, 'L', 0xFF0000);
 	lock_mutex(dead2);
-	draw_cletter(x++, y+1, 'u', 0xFF00);
+	draw_cletter(x++, y+1, 'u', 0xFF0000);
 	unlock_mutex(dead2);
-	draw_cletter(x++, y+1, 'U', 0xFF00);
+	draw_cletter(x++, y+1, 'U', 0xFF0000);
 	unlock_mutex(dead1);
-	draw_cletter(x++, y+1, 'F', 0xFF00);
+	draw_cletter(x++, y+1, 'F', 0xFF0000);
 }
 
-void dtest1(void)
+void deadlock_test1(void)
 {
-	draw_cletter(x++, y+2, ' ', 0xFF0000);
-	draw_cletter(x++, y+2, 'S', 0xFF0000);
+	draw_cletter(x++, y+2, ' ', 0xFF00);
+	draw_cletter(x++, y+2, 'S', 0xFF00);
 	dead1 = create_mutex((void*)0xDEADBEEF);
 	dead2 = create_mutex((void*)0x12345678);
-	draw_cletter(x++, y+2, 'L', 0xFF0000);
+	draw_cletter(x++, y+2, 'L', 0xFF00);
 	lock_mutex(dead2);
-	draw_cletter(x++, y+2, 'A', 0xFF0000);
-	add_thread(dtest2, 0, 6);
-	draw_cletter(x++, y+2, 'l', 0xFF0000);
+	draw_cletter(x++, y+2, 'A', 0xFF00);
+	add_thread(deadlock_test2, 0, 4);
+	draw_cletter(x++, y+2, 'l', 0xFF00);
 	lock_mutex(dead1);
-	draw_cletter(x++, y+2, 'u', 0xFF0000);
+	draw_cletter(x++, y+2, 'u', 0xFF00);
 	unlock_mutex(dead2);
-	draw_cletter(x++, y+2, 'U', 0xFF0000);
+	draw_cletter(x++, y+2, 'U', 0xFF00);
 	unlock_mutex(dead1);
 	delete_mutex(dead1);
 	delete_mutex(dead2);
-	draw_cletter(x++, y+2, 'F', 0xFF0000);
+	draw_cletter(x++, y+2, 'F', 0xFF00);
 }
 
-void btest(void)
+void qualitative_tests(void)
 {
 	draw_string(0, y+0, "                   ");
 	draw_string(0, y+1, "                   ");
 	draw_string(0, y+2, "                   ");
 	draw_string(0, y+3, "                   ");
 	x = 0;
-	add_thread(ctest1, 0, 3);
-	//add_thread(stest1, 0, 6);
-	//add_thread(stest2, 0, 7);
-	add_thread(dtest1, 0, 7);
+	add_thread(priority_inversion_test1, 0, 3);
+	add_thread(deadlock_test1, 0, 5);
+	add_thread(semaphore_test1, 0, 6);
+	add_thread(semaphore_test2, 0, 7);
 }
