@@ -83,8 +83,6 @@ unsigned long c_fiq_handler(void)
 		counter++;
 		if (counter % 0x6000 == 0)
 			counter = 0;
-		if (counter % 0x08 == 0)
-			status();
 		if (counter % 0x40 == 0)
 			return 1;
 		return 0;

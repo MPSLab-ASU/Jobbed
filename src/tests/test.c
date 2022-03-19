@@ -4,8 +4,9 @@
 #include <lib/kmem.h>
 #include <sys/core.h>
 #include <sys/schedule.h>
-#include <util/mutex.h>
 #include <util/lock.h>
+#include <util/mutex.h>
+#include <util/status.h>
 
 extern void atest(void);
 void qualitative_tests(void);
@@ -149,6 +150,39 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
+	draw_string(tidx, y+5, "       ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+
+	// Test 7: Tick Latency
+#define DELAY_TIME 512000
+	unsigned long center = 0;
+	sys0_64(SYS_TIME, &ti);
+	delay(DELAY_TIME);
+	sys0_64(SYS_TIME, &tf);
+	center = (tf - ti - 10);
+	if (10 > (tf-ti))
+		center = 0;
+	dt = 0;
+	unsigned long j = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		sys0_64(SYS_TIME, &ti);
+		delay(DELAY_TIME);
+		sys0_64(SYS_TIME, &tf);
+		dt += tf - ti;
+		if ((tf-ti-center) < TEST_BIN_COUNT)
+			bins[(tf-ti)-center]++;
+		else
+			j++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_hex32(tidx, y+4, j);
 	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
@@ -312,4 +346,5 @@ void qualitative_tests(void)
 	add_thread(deadlock_test1, 0, 5);
 	add_thread(semaphore_test1, 0, 6);
 	add_thread(semaphore_test2, 0, 7);
+	add_thread(time_status, 0, 8);
 }

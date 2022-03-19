@@ -11,6 +11,7 @@
 #include <sys/power.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
+#include <util/status.h>
 #include <util/time.h>
 
 // Initialize IRQs

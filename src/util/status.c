@@ -58,6 +58,24 @@ void output_irq_status(void)
 	}
 }
 
+void time_status(void)
+{
+	// Report Sys Timer Stataus
+	unsigned long systime;
+	draw_string(0, 8, "Sys Timer Status");
+	systime = *(volatile unsigned long*)SYS_TIMER_CS;
+	draw_hex32(17, 8, systime);
+	draw_string(17+8, 8, ":");
+	unsigned long long tval = get_time();
+	draw_hex32(17+8, 8, (tval >> 32));
+	draw_hex32(17+8+8, 8, tval);
+	systime = *(volatile unsigned long*)SYS_TIMER_C0;
+	draw_hex32(19+14+8+1, 8, systime);
+	draw_string(19+14+9+8, 8, "|");
+	draw_string(19+14+18, 8, "           ");
+	draw_u10(19+14+18, 8, ((unsigned long)tval)/1000000);
+}
+
 void status(void)
 {
 	// OS Info
@@ -111,18 +129,5 @@ void status(void)
 	draw_string(0, 7, "Status Updated by Core #");
 	draw_hex32(24, 7, coren);
 
-	// Report Sys Timer Stataus
-	unsigned long systime;
-	draw_string(0, 8, "Sys Timer Status");
-	systime = *(volatile unsigned long*)SYS_TIMER_CS;
-	draw_hex32(17, 8, systime);
-	draw_string(17+8, 8, ":");
-	unsigned long long tval = get_time();
-	draw_hex32(17+8, 8, (tval >> 32));
-	draw_hex32(17+8+8, 8, tval);
-	systime = *(volatile unsigned long*)SYS_TIMER_C0;
-	draw_hex32(19+14+8+1, 8, systime);
-	draw_string(19+14+9+8, 8, "|");
-	draw_string(19+14+18, 8, "           ");
-	draw_u10(19+14+18, 8, ((unsigned long)tval)/1000000);
+	time_status();
 }
