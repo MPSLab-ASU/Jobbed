@@ -231,6 +231,44 @@ void stest2(void)
 	draw_cletter(x++, y+2, 'F', 0xFF00);
 }
 
+static struct Mutex* dead1 = 0;
+static struct Mutex* dead2 = 0;
+
+void dtest2(void)
+{
+	draw_cletter(x++, y+1, 'S', 0xFF00);
+	draw_cletter(x++, y+1, 'l', 0xFF00);
+	lock_mutex(dead1);
+	draw_cletter(x++, y+1, 'L', 0xFF00);
+	lock_mutex(dead2);
+	draw_cletter(x++, y+1, 'u', 0xFF00);
+	unlock_mutex(dead2);
+	draw_cletter(x++, y+1, 'U', 0xFF00);
+	unlock_mutex(dead1);
+	draw_cletter(x++, y+1, 'F', 0xFF00);
+}
+
+void dtest1(void)
+{
+	draw_cletter(x++, y+2, ' ', 0xFF0000);
+	draw_cletter(x++, y+2, 'S', 0xFF0000);
+	dead1 = create_mutex(0xDEADBEEF);
+	dead2 = create_mutex(0x12345678);
+	draw_cletter(x++, y+2, 'L', 0xFF0000);
+	lock_mutex(dead2);
+	draw_cletter(x++, y+2, 'A', 0xFF0000);
+	add_thread(dtest2, 0, 6);
+	draw_cletter(x++, y+2, 'l', 0xFF0000);
+	lock_mutex(dead1);
+	draw_cletter(x++, y+2, 'u', 0xFF0000);
+	unlock_mutex(dead2);
+	draw_cletter(x++, y+2, 'U', 0xFF0000);
+	unlock_mutex(dead1);
+	delete_mutex(dead1);
+	delete_mutex(dead2);
+	draw_cletter(x++, y+2, 'F', 0xFF0000);
+}
+
 void btest(void)
 {
 	draw_string(0, y+0, "                   ");
@@ -239,6 +277,7 @@ void btest(void)
 	draw_string(0, y+3, "                   ");
 	x = 0;
 	add_thread(ctest1, 0, 3);
-	add_thread(stest1, 0, 6);
-	add_thread(stest2, 0, 7);
+	//add_thread(stest1, 0, 6);
+	//add_thread(stest2, 0, 7);
+	add_thread(dtest1, 0, 7);
 }
