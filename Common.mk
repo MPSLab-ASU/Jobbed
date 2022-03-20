@@ -20,7 +20,7 @@ OBJDUMP = ${CROSS}-objdump
 QEMU = qemu-system-arm
 GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O3 -Wall -Wextra -nostdlib -Iinclude -g
-CFLAGS += -DVERSION="\"0.1d\""
+CFLAGS += -DVERSION="\"0.9z\""
 AFLAGS = -mcpu=cortex-a7 -Iinclude -g
 QFLAGS = -M raspi2b -cpu cortex-a7 -m 1G
 
