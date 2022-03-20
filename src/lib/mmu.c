@@ -19,16 +19,13 @@ extern unsigned long __bss_end;
 void mmu_init(void)
 {
 	for (unsigned long addr =  0x00000000;; addr += 0x00100000) {
-		if (addr < (unsigned long)&__bss_end) {
+		if ((addr+0x00100000) < (unsigned long)&__bss_end) {
 			mmu_section(addr, addr, CACHABLE | BUFFERABLE);
 		} else {
 			mmu_section(addr, addr, NO_PERMISSIONS_REQUIRED);
 		}
 		if (addr == 0x02000000)
 			mmu_section(addr, addr, CACHABLE | BUFFERABLE | NO_PERMISSIONS_REQUIRED);
-		//else if (addr == 0x3F000000)
-		//else
-		//	mmu_section(addr, addr, NO_PERMISSIONS_REQUIRED);
 		if (addr == 0xFFF00000)
 			break;
 	}
