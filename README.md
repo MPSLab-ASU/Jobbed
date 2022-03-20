@@ -19,7 +19,6 @@
 
 ## Todo
  - Write Thesis Paper
- - Subscribe function to particular time
  - Modularize
 
 ## SVC Calls
@@ -60,3 +59,12 @@ Note: SYS and USER share registers but differ in privilege
 
 # Program Status Registers
  - https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/Program-Status-Registers--PSRs-?lang=en#CIHJBHJA
+
+# Memory Layout
+ - 0x00004000 - 0x00008000 MMU Entries
+ - 0x00008000 - 0x0000D000 Code
+ - 0x0000D000 - 0x0000E000 Data
+ - 0x0000E000 - 0x00296000 BSS
+ - 0x18000000 - 0x20000000 Thread Stacks
+ - 0x3F000000 - 0x40000000 MMIO
+ - 0x40000000 - 0xFFFFFFFF Local Peripherals
