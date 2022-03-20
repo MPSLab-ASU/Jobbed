@@ -3,8 +3,6 @@
 #include <util/mutex.h>
 #include <util/lock.h>
 
-// TODO: Improve locking for system
-//  1. Deadlock prevention by going through mutex list
 void lock(struct Lock* l)
 {
 	unsigned long mode = getmode() & 0x1F;

@@ -103,10 +103,6 @@ void prepend_thread_to_queue(struct Thread* t, unsigned char type, unsigned char
 		return;
 	}
 	prepend_to_queue(entry, queue);
-	//entry->next = queue->start.next;
-	//queue->start.next = entry;
-	//if (entry->next->entry_type == END_ENTRY)
-	//	queue->end.next = entry;
 }
 
 struct Entry* pop_thread_from_queue(unsigned char type, unsigned char priority)
@@ -123,27 +119,7 @@ struct Entry* pop_thread_from_queue(unsigned char type, unsigned char priority)
 		return entry;
 	}
 	return pop_from_queue(queue);
-	//if (queue->start.next->entry_type == END_ENTRY)
-	//	return entry;
-	//entry = queue->start.next;
-	//queue->start.next = entry->next;
-	//if (entry->next->entry_type == END_ENTRY)
-	//	queue->end.next = &queue->start;
-	//return entry;
 }
-
-//struct Entry* remove_next_from_queue(struct Entry* te)
-//{
-//	struct Entry* prev = te;
-//	struct Entry* remove = te->next;
-//	struct Entry* next = remove->next;
-//	if (remove->entry_type == END_ENTRY || remove->entry_type == START_ENTRY)
-//		return 0;
-//	prev->next = next;
-//	if (next->entry_type == END_ENTRY)
-//		next->next = prev;
-//	return remove;
-//}
 
 struct Entry* find_pid(unsigned long pid)
 {
