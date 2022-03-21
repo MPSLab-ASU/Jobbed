@@ -11,6 +11,13 @@
 extern void atest(void);
 void qualitative_tests(void);
 
+void mutex_contention_helper(struct Mutex* m)
+{
+	lock_mutex(m);
+	sys0(SYS_YIELD);
+	unlock_mutex(m);
+}
+
 static int x = 0;
 static int y = 13;
 #define TEST_STR_CLR "    "
@@ -155,26 +162,17 @@ void test_entry(void)
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
 
-	// Test 7: Tick Latency
-#define DELAY_TIME 512000
-	unsigned long center = 0;
-	sys0_64(SYS_TIME, &ti);
-	delay(DELAY_TIME);
-	sys0_64(SYS_TIME, &tf);
-	center = (tf - ti - 10);
-	if (10 > (tf-ti))
-		center = 0;
+	// Test 7: Lock Mutex
 	dt = 0;
-	unsigned long j = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
+		struct Mutex* m = create_mutex(0);
 		sys0_64(SYS_TIME, &ti);
-		delay(DELAY_TIME);
+		lock_mutex(m);
 		sys0_64(SYS_TIME, &tf);
+		delete_mutex(m);
 		dt += tf - ti;
-		if ((tf-ti-center) < TEST_BIN_COUNT)
-			bins[(tf-ti)-center]++;
-		else
-			j++;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
 	}
 	for (int i = 0; i < TEST_BIN_COUNT; i++) {
 		draw_hex32(tidx, y+6+i, i);
@@ -182,11 +180,92 @@ void test_entry(void)
 		draw_u10(tidx+9, y+6+i, bins[i]);
 		bins[i] = 0;
 	}
-	draw_hex32(tidx, y+4, j);
 	draw_string(tidx, y+5, "       ");
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+
+	// Test 7a: Lock Contended Mutex
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		struct Mutex* m = create_mutex(0);
+		add_thread(mutex_contention_helper, m, 2);
+		sys0(SYS_YIELD);
+		sys0_64(SYS_TIME, &ti);
+		lock_mutex(m);
+		sys0_64(SYS_TIME, &tf);
+		delete_mutex(m);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "       ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+
+	// Test 8: Unlock Mutex
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		struct Mutex* m = create_mutex(0);
+		lock_mutex(m);
+		sys0_64(SYS_TIME, &ti);
+		unlock_mutex(m);
+		sys0_64(SYS_TIME, &tf);
+		delete_mutex(m);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "       ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+
+//	// Test 7: Tick Latency
+//#define DELAY_TIME 512000
+//	unsigned long center = 0;
+//	sys0_64(SYS_TIME, &ti);
+//	delay(DELAY_TIME);
+//	sys0_64(SYS_TIME, &tf);
+//	center = (tf - ti - 10);
+//	if (10 > (tf-ti))
+//		center = 0;
+//	dt = 0;
+//	unsigned long j = 0;
+//	for(int i = 0; i < TEST_COUNT; i++) {
+//		sys0_64(SYS_TIME, &ti);
+//		delay(DELAY_TIME);
+//		sys0_64(SYS_TIME, &tf);
+//		dt += tf - ti;
+//		if ((tf-ti-center) < TEST_BIN_COUNT)
+//			bins[(tf-ti)-center]++;
+//		else
+//			j++;
+//	}
+//	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+//		draw_hex32(tidx, y+6+i, i);
+//		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+//		draw_u10(tidx+9, y+6+i, bins[i]);
+//		bins[i] = 0;
+//	}
+//	draw_hex32(tidx, y+4, j);
+//	draw_string(tidx, y+5, "       ");
+//	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+//	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+//	tidx += TEST_RESULT_WIDTH;
 
 	add_thread(qualitative_tests, 0, 4);
 }
