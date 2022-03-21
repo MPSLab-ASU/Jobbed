@@ -98,6 +98,8 @@ svc_000007: // Semaphore increase
 	teq r2, #0
 	bne 1b
 	dmb
+	cmp r1, #1
+	bne svc_exit
 	bl sched_semaphore_resurrect
 	ldmfd sp!, {r0-r12,lr}
 	b schedule

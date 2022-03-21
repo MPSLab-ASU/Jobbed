@@ -1,5 +1,6 @@
 #include <cpu.h>
 //#include <drivers/uart.h>
+#include <globals.h>
 #include <graphics/lfb.h>
 #include <lib/kmem.h>
 #include <sys/core.h>
@@ -27,6 +28,7 @@ static int y = 13;
 void test_entry(void)
 {
 	x = 0;
+	draw_hex32(0, y-1, nextpid);
 	draw_string(0, y+4, "Starting tests");
 	unsigned long long ti, tf, dt=0,len;
 	unsigned int tidx = 0;
@@ -54,6 +56,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 2: Yield Time
 	dt = 0;
@@ -75,6 +78,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 3: Add Thread, Lower Priority
 	dt = 0;
@@ -96,6 +100,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 4: Add Thread, Higher Priority
 	dt = 0;
@@ -117,6 +122,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 5: Create Mutex
 	dt = 0;
@@ -139,6 +145,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 6: Delete Mutex
 	dt = 0;
@@ -161,6 +168,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 7: Lock Mutex
 	dt = 0;
@@ -184,6 +192,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 7a: Lock Contended Mutex
 	dt = 0;
@@ -209,6 +218,7 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 	// Test 8: Unlock Mutex
 	dt = 0;
@@ -233,6 +243,79 @@ void test_entry(void)
 	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
+
+	// Semaphore
+	static unsigned long sem = 0;
+
+	// Test 9: Semaphore Decrease
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		sem = 1;
+		sys0_64(SYS_TIME, &ti);
+		sys1(SYS_SEMAPHORE_P, &sem);
+		sys0_64(SYS_TIME, &tf);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "       ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
+
+	// Test 10: Semaphore Increase
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		sem = 0;
+		sys0_64(SYS_TIME, &ti);
+		sys1(SYS_SEMAPHORE_V, &sem);
+		sys0_64(SYS_TIME, &tf);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "       ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
+
+	// Test 10a: Semaphore Increase - No Schedule
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		sem = 1;
+		sys0_64(SYS_TIME, &ti);
+		sys1(SYS_SEMAPHORE_V, &sem);
+		sys0_64(SYS_TIME, &tf);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "       ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
 
 //	// Test 7: Tick Latency
 //#define DELAY_TIME 512000
@@ -266,6 +349,7 @@ void test_entry(void)
 //	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
 //	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
 //	tidx += TEST_RESULT_WIDTH;
+//	draw_hex32(0, y-1, nextpid);
 
 	add_thread(qualitative_tests, 0, 4);
 }
