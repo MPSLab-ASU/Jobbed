@@ -12,6 +12,8 @@
 extern void atest(void);
 void qualitative_tests(void);
 
+void nooptest(void) {}
+
 void mutex_contention_helper(struct Mutex* m)
 {
 	lock_mutex(m);
@@ -84,7 +86,7 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_64(SYS_TIME, &ti);
-		add_thread(atest, 0, 3);
+		add_thread(nooptest, 0, 3);
 		sys0_64(SYS_TIME, &tf);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
@@ -106,7 +108,7 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_64(SYS_TIME, &ti);
-		add_thread(atest, 0, 0);
+		add_thread(nooptest, 0, 0);
 		sys0_64(SYS_TIME, &tf);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
