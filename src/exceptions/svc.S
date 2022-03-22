@@ -100,6 +100,22 @@ svc_000007: // Semaphore increase
 	dmb
 	cmp r1, #1
 	bne svc_exit
+	mov r1, #1
+	bl sched_semaphore_resurrect
+	ldmfd sp!, {r0-r12,lr}
+	b schedule
+	b svc_exit
+svc_000008: // Semaphore add #
+	ldr r0, [sp, #0] // struct Semaphore* s
+	ldr r3, [sp, #1] // unsigned long # times to increase
+1:	clrex
+	ldrex r2, [r0, #0]
+	add r1, r2, #1
+	strexeq r2, r1, [r0, #0]
+	teq r2, #0
+	bne 1b
+	dmb
+	mov r1, r3
 	bl sched_semaphore_resurrect
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
@@ -116,3 +132,4 @@ svc_table:
 	.word svc_000005
 	.word svc_000006
 	.word svc_000007
+	.word svc_000008
