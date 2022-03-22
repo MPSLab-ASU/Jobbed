@@ -26,29 +26,27 @@ unsigned long c_irq_handler(void)
 			if(load32(UART0_MIS) & (1<<4)) {
 				// Get the UART data
 				unsigned long data = load32(UART0_DR);
-				// Draw it on the screen
-				{
-					draw_chex32(0, 9, data, 0xAA00FF);
-				}
 
 				// Handle the recieved data
 				// Ctrl+G to output scheduler debug info
-				if (data == 0x7)
+				if (data == 0x7) {
 					uart_scheduler();
-				// Ctrl+T to toggle timer
-				else if(data == 0x14) {
-					unsigned long timer_status;
-					asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));
-					if(timer_status == 0) {
-						cntfrq = read_cntfrq();
-						write_cntv_tval(cntfrq/CPS);
-						enablecntv();
-						draw_cstring(0, 3, "TIMER", 0x00FF00);
-					} else {
-						disablecntv();
-						draw_cstring(0, 3, "TIMER", 0xFF0000);
-					}
+					uart_mutexes();
 				}
+				//// Ctrl+T to toggle timer
+				//else if(data == 0x14) {
+				//	unsigned long timer_status;
+				//	asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));
+				//	if(timer_status == 0) {
+				//		cntfrq = read_cntfrq();
+				//		write_cntv_tval(cntfrq/CPS);
+				//		enablecntv();
+				//		draw_cstring(0, 3, "TIMER", 0x00FF00);
+				//	} else {
+				//		disablecntv();
+				//		draw_cstring(0, 3, "TIMER", 0xFF0000);
+				//	}
+				//}
 				// Add task to handle the data
 				else {
 					add_thread(handle_data, (void*)data, 7);
@@ -110,5 +108,9 @@ void handle_data(unsigned char data)
 		add_thread(uart_scheduler, 0, 2);
 	} else if (data == 0x62) {
 		//add_thread(test_entry, 0, 2);
+	}
+	// Draw it on the screen
+	{
+		draw_chex32(0, 9, data, 0xAA00FF);
 	}
 }

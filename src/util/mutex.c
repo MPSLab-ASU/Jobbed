@@ -67,6 +67,13 @@ void uart_mutexes(void)
 		uart_hexn((unsigned long)m->addr);
 		entry = entry->next;
 	}
+	unsigned long count = 0;
+	entry = mutex_manager.free.start.next;
+	while (entry->entry_type == VALUE_ENTRY) {
+		count++;
+		entry = entry->next;
+	}
+	uart_hexn(count);
 }
 
 void lock_mutex(struct Mutex* m)
