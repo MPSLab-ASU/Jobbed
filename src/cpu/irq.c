@@ -50,9 +50,8 @@ void c_irq_handler(void)
 				}
 				// Add task to handle the data
 				else {
-					add_thread(handle_data, (void*)data, 1);
+					add_thread(handle_data, (void*)data, 7);
 				}
-				return;
 			}
 		}
 		// Check if System Time Compare 0 Triggered the Interrupt
@@ -67,7 +66,6 @@ void c_irq_handler(void)
 	}
 	// Check if CNTV triggered the interrupt
 	else if (source & (1 << 3)) {
-		return;
 	}
 	return;
 }
