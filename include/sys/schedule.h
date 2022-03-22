@@ -48,6 +48,6 @@ void yield(void);
 void sched_mutex_yield(void* m);
 void sched_semaphore_yield(void* s);
 void sched_mutex_resurrect(void* m);
-void sched_semaphore_resurrect(void* s);
+void sched_semaphore_resurrect(void* s, unsigned long count);
 
 #endif
