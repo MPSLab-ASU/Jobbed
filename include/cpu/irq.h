@@ -18,7 +18,7 @@ static inline void disablefiq(void)
 	asm volatile("cpsid f");
 }
 
-void c_irq_handler(void);
+unsigned long c_irq_handler(void);
 unsigned long c_fiq_handler(void);
 
 #endif

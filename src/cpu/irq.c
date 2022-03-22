@@ -14,7 +14,8 @@
 
 void handle_data(unsigned char);
 
-void c_irq_handler(void)
+static unsigned long counter = 0;
+unsigned long c_irq_handler(void)
 {
 	unsigned long source = load32(CORE0_IRQ_SOURCE);
 	// Check if GPU Interrupt
@@ -51,6 +52,7 @@ void c_irq_handler(void)
 				// Add task to handle the data
 				else {
 					add_thread(handle_data, (void*)data, 7);
+					return 1;
 				}
 			}
 		}
@@ -60,30 +62,40 @@ void c_irq_handler(void)
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
 			add_thread_without_duplicate(test_entry, 0, 2);
-			*nexttime = *timer_chi + 8000000;
+			*nexttime = *timer_chi + 4000000;
 			*timer_cs = SYS_TIMER_SC_M0;
+			status();
+			return 1;
 		}
 	}
 	// Check if CNTV triggered the interrupt
 	else if (source & (1 << 3)) {
-	}
-	return;
-}
-
-static unsigned long counter = 0;
-unsigned long c_fiq_handler(void)
-{
-	unsigned long source = load32(CORE0_FIQ_SOURCE);
-	// Check if CNTV triggered the interrupt
-	if (source & (1 << 3)) {
 		// Reset the counter
 		write_cntv_tval(cntfrq/CPS);
 		counter++;
 		if (counter % 0x6000 == 0)
 			counter = 0;
-		if (counter % 0x40 == 0)
+	}
+	return 0;
+}
+
+unsigned long c_fiq_handler(void)
+{
+	unsigned long source = load32(CORE0_FIQ_SOURCE);
+	if (source & (1 << 8)) {
+		// Check if System Time Compare 0 Triggered the Interrupt
+		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M0) {
+			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
+			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
+			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
+			add_thread_without_duplicate(test_entry, 0, 2);
+			*nexttime = *timer_chi + 4000000;
+			*timer_cs = SYS_TIMER_SC_M0;
 			return 1;
-		return 0;
+		}
+	}
+	// Check if CNTV triggered the interrupt
+	else if (source & (1 << 3)) {
 	}
 	return 0;
 }

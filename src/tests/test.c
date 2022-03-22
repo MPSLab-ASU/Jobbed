@@ -505,6 +505,7 @@ void qualitative_tests(void)
 	draw_string(0, y+2, "                   ");
 	draw_string(0, y+3, "                   ");
 	x = 0;
+	add_thread(atest, 0, 0);
 	add_thread(priority_inversion_test1, 0, 3);
 	add_thread(deadlock_test1, 0, 5);
 	add_thread(semaphore_test1, 0, 6);

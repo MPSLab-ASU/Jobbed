@@ -14,7 +14,7 @@ kernel_main:
 
 	// Intentional undefined instruction
 	// .word 0xf7f0a000
-	cpsie aif, #0x10
+	cpsie ai, #0x10
 	svc #2 // Start scheduling!
 2:
 	wfe
