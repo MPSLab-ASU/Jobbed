@@ -39,7 +39,7 @@ void test_entry(void)
 		bins[i] = 0;
 	}
 
-	// Test 2: Yield Time
+	// Test 1: Trace Time
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_64(SYS_TIME, &ti);
