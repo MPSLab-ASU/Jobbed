@@ -325,12 +325,12 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sem = 1;
-		//sys0_32(SYS_TIME_2, &tf);
+		sys0_32(SYS_TIME_2, &tf);
 		sys1(SYS_SEMAPHORE_V, &sem);
-		//sys0_32(SYS_TIME_2, &ti);
-		//dt += tf - ti;
-		//if ((tf-ti) < TEST_BIN_COUNT)
-		//	bins[(tf-ti)]++;
+		sys0_32(SYS_TIME_2, &ti);
+		dt += tf - ti;
+		if ((tf-ti) < TEST_BIN_COUNT)
+			bins[(tf-ti)]++;
 	}
 	for (int i = 0; i < TEST_BIN_COUNT; i++) {
 		draw_hex32(tidx, y+6+i, i);
