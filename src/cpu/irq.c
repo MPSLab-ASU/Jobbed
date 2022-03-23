@@ -80,20 +80,9 @@ unsigned long c_irq_handler(void)
 unsigned long c_fiq_handler(void)
 {
 	unsigned long source = load32(CORE0_FIQ_SOURCE);
-	if (source & (1 << 8)) {
-		// Check if System Time Compare 0 Triggered the Interrupt
-		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M0) {
-			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
-			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
-			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
-			add_thread_without_duplicate(test_entry, 0, 2);
-			*nexttime = *timer_chi + 4000000;
-			*timer_cs = SYS_TIMER_SC_M0;
-			return 1;
-		}
-	}
 	// Check if CNTV triggered the interrupt
-	else if (source & (1 << 3)) {
+	if (source & (1 << 3)) {
+		write_cntv_tval(cntfrq);
 	}
 	return 0;
 }

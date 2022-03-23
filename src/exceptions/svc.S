@@ -6,7 +6,7 @@ svc:
 	// Get the SVC Exception #
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
-	cmp r0, #7
+	cmp r0, #9
 	// Check it is within our defined SVC
 	bgt svc_exit
 	//// Jump to the appropriate Call
@@ -120,6 +120,10 @@ svc_000008: // Semaphore add #
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
 	b svc_exit
+svc_000009: // SYS_TIME_2
+	mrc p15, 0, r0, c14, c3, 0
+	str r0, [sp, #0]
+	b svc_exit
 svc_exit:
 	ldmfd sp!, {r0-r12,pc}^
 
@@ -133,3 +137,4 @@ svc_table:
 	.word svc_000006
 	.word svc_000007
 	.word svc_000008
+	.word svc_000009

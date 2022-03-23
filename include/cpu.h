@@ -80,6 +80,7 @@ static inline void* getirqstack(void)
 #define syscall_h_expand_and_quote(text)	syscall_h_quote(text)
 
 #define sys0(sys_n) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::: "r0", "r1", "r2", "r3");
+#define sys0_32(sys_n,addr) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) "\nmov r2, %0\nstr r0, [r2]" ::"r"(addr): "r0", "r1", "r2", "r3", "memory");
 #define sys0_64(sys_n,addr) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) "\nmov r2, %0\nstr r1, [r2]\nstr r0, [r2, #4]" ::"r"(addr): "r0", "r1", "r2", "r3", "memory");
 //#define sys1(sys_n,arg0) asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::[r0]"r"(arg0): "r0", "r1", "r2", "r3");
 #define sys1(sys_n,arg0) {\
@@ -87,14 +88,16 @@ static inline void* getirqstack(void)
 		asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::"r"(r0): "memory"); \
 		}
 
-#define SYS_YIELD       0
-#define SYS_TIME        1
-#define SYS_SCHED       2
-#define SYS_YIELD_HIGH  2
-#define SYS_ADD_THREAD  3
-#define SYS_LOCK        4
-#define SYS_UNLOCK      5
-#define SYS_SEMAPHORE_P 6
-#define SYS_SEMAPHORE_V 7
+#define SYS_YIELD        0
+#define SYS_TIME         1
+#define SYS_SCHED        2
+#define SYS_YIELD_HIGH   2
+#define SYS_ADD_THREAD   3
+#define SYS_LOCK         4
+#define SYS_UNLOCK       5
+#define SYS_SEMAPHORE_P  6
+#define SYS_SEMAPHORE_V  7
+#define SYS_SEMAPHORE_IV 8
+#define SYS_TIME_2       9
 
 #endif

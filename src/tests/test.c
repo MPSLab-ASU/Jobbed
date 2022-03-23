@@ -41,9 +41,34 @@ void test_entry(void)
 
 	// Test 1: Tracing Time
 	dt = 0;
+	ti = 0;
+	tf = 0;
+	int t1, t2;
 	for(int i = 0; i < TEST_COUNT; i++) {
-		sys0_64(SYS_TIME, &ti);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &tf);
+		sys0_32(SYS_TIME_2, &ti);
+		dt += tf-ti;
+		if ((tf-ti) < TEST_BIN_COUNT) {
+			bins[(tf-ti)]++;
+		}
+	}
+	for (int i = 0; i < TEST_BIN_COUNT; i++) {
+		draw_hex32(tidx, y+6+i, i);
+		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
+		draw_u10(tidx+9, y+6+i, bins[i]);
+		bins[i] = 0;
+	}
+	draw_string(tidx, y+5, "       ");
+	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
+	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
+	tidx += TEST_RESULT_WIDTH;
+	draw_hex32(0, y-1, nextpid);
+
+	// Test 1: Tracing Time
+	dt = 0;
+	for(int i = 0; i < TEST_COUNT; i++) {
+		sys0_32(SYS_TIME_2, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
 			bins[(tf-ti)]++;
@@ -63,9 +88,9 @@ void test_entry(void)
 	// Test 2: Yield Time
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		sys0(SYS_YIELD);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
 			bins[(tf-ti)]++;
@@ -85,9 +110,9 @@ void test_entry(void)
 	// Test 3: Add Thread, Lower Priority
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		add_thread(nooptest, 0, 3);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
 			bins[(tf-ti)]++;
@@ -107,9 +132,9 @@ void test_entry(void)
 	// Test 4: Add Thread, Higher Priority
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		add_thread(nooptest, 0, 0);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
 			bins[(tf-ti)]++;
@@ -129,9 +154,9 @@ void test_entry(void)
 	// Test 5: Create Mutex
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		struct Mutex* m = create_mutex(0);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		delete_mutex(m);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
@@ -153,9 +178,9 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		struct Mutex* m = create_mutex(0);
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		delete_mutex(m);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
 			bins[(tf-ti)]++;
@@ -176,9 +201,9 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		struct Mutex* m = create_mutex(0);
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		lock_mutex(m);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		delete_mutex(m);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
@@ -202,9 +227,9 @@ void test_entry(void)
 		struct Mutex* m = create_mutex(0);
 		add_thread(mutex_contention_helper, m, 2);
 		sys0(SYS_YIELD);
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		lock_mutex(m);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		delete_mutex(m);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
@@ -227,9 +252,9 @@ void test_entry(void)
 	for(int i = 0; i < TEST_COUNT; i++) {
 		struct Mutex* m = create_mutex(0);
 		lock_mutex(m);
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		unlock_mutex(m);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		delete_mutex(m);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
@@ -254,9 +279,9 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sem = 1;
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		sys1(SYS_SEMAPHORE_P, &sem);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
 			bins[(tf-ti)]++;
@@ -277,9 +302,9 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sem = 0;
-		sys0_64(SYS_TIME, &ti);
+		sys0_32(SYS_TIME_2, &tf);
 		sys1(SYS_SEMAPHORE_V, &sem);
-		sys0_64(SYS_TIME, &tf);
+		sys0_32(SYS_TIME_2, &ti);
 		dt += tf - ti;
 		if ((tf-ti) < TEST_BIN_COUNT)
 			bins[(tf-ti)]++;
@@ -300,12 +325,12 @@ void test_entry(void)
 	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sem = 1;
-		sys0_64(SYS_TIME, &ti);
+		//sys0_32(SYS_TIME_2, &tf);
 		sys1(SYS_SEMAPHORE_V, &sem);
-		sys0_64(SYS_TIME, &tf);
-		dt += tf - ti;
-		if ((tf-ti) < TEST_BIN_COUNT)
-			bins[(tf-ti)]++;
+		//sys0_32(SYS_TIME_2, &ti);
+		//dt += tf - ti;
+		//if ((tf-ti) < TEST_BIN_COUNT)
+		//	bins[(tf-ti)]++;
 	}
 	for (int i = 0; i < TEST_BIN_COUNT; i++) {
 		draw_hex32(tidx, y+6+i, i);
@@ -322,18 +347,18 @@ void test_entry(void)
 //	// Test 7: Tick Latency
 //#define DELAY_TIME 512000
 //	unsigned long center = 0;
-//	sys0_64(SYS_TIME, &ti);
+//	sys0_32(SYS_TIME_2, &tf);
 //	delay(DELAY_TIME);
-//	sys0_64(SYS_TIME, &tf);
+//	sys0_32(SYS_TIME_2, &ti);
 //	center = (tf - ti - 10);
 //	if (10 > (tf-ti))
 //		center = 0;
 //	dt = 0;
 //	unsigned long j = 0;
 //	for(int i = 0; i < TEST_COUNT; i++) {
-//		sys0_64(SYS_TIME, &ti);
+//		sys0_32(SYS_TIME_2, &tf);
 //		delay(DELAY_TIME);
-//		sys0_64(SYS_TIME, &tf);
+//		sys0_32(SYS_TIME_2, &ti);
 //		dt += tf - ti;
 //		if ((tf-ti-center) < TEST_BIN_COUNT)
 //			bins[(tf-ti)-center]++;
