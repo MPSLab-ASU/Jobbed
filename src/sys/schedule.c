@@ -344,7 +344,7 @@ void c_cleanup(void)
 	struct Thread* rt = scheduler.rthread;
 	struct Entry* e = pop_thread_from_queue(THREAD_READY, rt->priority);
 	// Add to free threads
-	prepend_to_queue(e, &scheduler.free_threads);
+	push_to_queue(e, &scheduler.free_threads);
 }
 
 void yield(void)

@@ -431,12 +431,41 @@ void semaphore_test1(void)
 	sys1(SYS_SEMAPHORE_P, &test_semaphore);
 	// Semaphore decremented
 	draw_cletter(x++, y+1, 'P', 0xFF0000);
+	draw_cletter(x++, y+1, 'V', 0xFF0000);
+	sys1(SYS_SEMAPHORE_V, &test_semaphore);
+	draw_cletter(x++, y+1, 'V', 0xFF0000);
+	sys1(SYS_SEMAPHORE_V, &test_semaphore);
+	draw_cletter(x++, y+1, 'V', 0xFF0000);
+	sys1(SYS_SEMAPHORE_V, &test_semaphore);
+	// Try to decrement semaphore
+	draw_cletter(x++, y+1, 'T', 0xFF0000);
+	sys1(SYS_SEMAPHORE_P, &test_semaphore);
+	// Semaphore decremented
+	draw_cletter(x++, y+1, 'P', 0xFF0000);
+	// Try to decrement semaphore
+	draw_cletter(x++, y+1, 'T', 0xFF0000);
+	sys1(SYS_SEMAPHORE_P, &test_semaphore);
+	// Semaphore decremented
+	draw_cletter(x++, y+1, 'P', 0xFF0000);
+	// Try to decrement semaphore
+	draw_cletter(x++, y+1, 'T', 0xFF0000);
+	sys1(SYS_SEMAPHORE_P, &test_semaphore);
+	// Semaphore decremented
+	draw_cletter(x++, y+1, 'P', 0xFF0000);
+	// Try to decrement semaphore
+	draw_cletter(x++, y+1, 'T', 0xFF0000);
+	sys1(SYS_SEMAPHORE_P, &test_semaphore);
+	// Semaphore decremented
+	draw_cletter(x++, y+1, 'P', 0xFF0000);
 	draw_cletter(x++, y+1, 'F', 0xFF0000);
 }
 
 void semaphore_test2(void)
 {
 	draw_cletter(x++, y+2, 'S', 0xFF00);
+	// Increment semaphore
+	draw_cletter(x++, y+2, 'V', 0xFF00);
+	sys1(SYS_SEMAPHORE_V, &test_semaphore);
 	// Increment semaphore
 	draw_cletter(x++, y+2, 'V', 0xFF00);
 	sys1(SYS_SEMAPHORE_V, &test_semaphore);
