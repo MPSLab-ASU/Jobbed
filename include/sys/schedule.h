@@ -2,10 +2,10 @@
 #define SYS_SCHEDULE_H
 #include <lib/queue.h>
 
-#define TQUEUE_MAX 0x400
+#define TQUEUE_MAX 0x2000
 #define STACK_SIZE 0x4000
-#define PRIORITIES 8
-#define MAX_THREADS TQUEUE_MAX*PRIORITIES
+#define PRIORITIES 20
+#define MAX_THREADS TQUEUE_MAX
 
 enum ThreadStatus {
 	THREAD_READY  = 0,

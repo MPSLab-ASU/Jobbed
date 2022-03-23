@@ -49,7 +49,7 @@ unsigned long c_irq_handler(void)
 				//}
 				// Add task to handle the data
 				else {
-					add_thread(handle_data, (void*)data, 7);
+					add_thread(handle_data, (void*)data, PRIORITIES-1);
 					return 1;
 				}
 			}
