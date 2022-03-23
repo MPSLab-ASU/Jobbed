@@ -11,6 +11,13 @@ kernel_main:
 	mov r1, #0
 	mov r3, #0xFF00
 	bl draw_cstring
+	// Initialize System Cycle Counter
+	mov r0, #1
+	mcr p15, 0, r0, c9, c14, 0
+	mov r0, #1
+	mcr p15, 0, r0, c9, c12, 0
+	mov r0, #0x80000000
+	mcr p15, 0, r0, c9, c12, 1
 
 	// Intentional undefined instruction
 	// .word 0xf7f0a000

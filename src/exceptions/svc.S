@@ -125,7 +125,7 @@ svc_000008: // Semaphore add #
 	b schedule
 	b svc_exit
 svc_000009: // SYS_TIME_2
-	mrc p15, 0, r0, c14, c3, 0
+	mrc p15, 0, r0, c9, c13, 0
 	str r0, [sp, #0]
 	b svc_exit
 svc_exit:
