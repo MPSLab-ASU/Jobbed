@@ -6,11 +6,15 @@ svc:
 	// Get the SVC Exception #
 	ldr r0, [lr, #-4]
 	bic r0, #0xFF000000
-	cmp r0, #9
 	// Check it is within our defined SVC
+	cmp r0, #7
+	adrle r3, svc_table_1
+	ldrle pc, [r3, r0, LSL #2]
+	sub r0, #8
+	cmp r0, #7
 	bgt svc_exit
 	//// Jump to the appropriate Call
-	adr r3, svc_table
+	adr r3, svc_table_2
 	ldr pc, [r3, r0, LSL #2]
 svc_000000: // SYS_YIELD
 	bl yield
@@ -127,7 +131,7 @@ svc_000009: // SYS_TIME_2
 svc_exit:
 	ldmfd sp!, {r0-r12,pc}^
 
-svc_table:
+svc_table_1:
 	.word svc_000000
 	.word svc_000001
 	.word svc_000002
@@ -136,5 +140,6 @@ svc_table:
 	.word svc_000005
 	.word svc_000006
 	.word svc_000007
+svc_table_2:
 	.word svc_000008
 	.word svc_000009

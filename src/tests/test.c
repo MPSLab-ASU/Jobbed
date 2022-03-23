@@ -41,31 +41,6 @@ void test_entry(void)
 
 	// Test 1: Tracing Time
 	dt = 0;
-	ti = 0;
-	tf = 0;
-	int t1, t2;
-	for(int i = 0; i < TEST_COUNT; i++) {
-		sys0_32(SYS_TIME_2, &tf);
-		sys0_32(SYS_TIME_2, &ti);
-		dt += tf-ti;
-		if ((tf-ti) < TEST_BIN_COUNT) {
-			bins[(tf-ti)]++;
-		}
-	}
-	for (int i = 0; i < TEST_BIN_COUNT; i++) {
-		draw_hex32(tidx, y+6+i, i);
-		draw_string(tidx+9, y+6+i, TEST_STR_CLR);
-		draw_u10(tidx+9, y+6+i, bins[i]);
-		bins[i] = 0;
-	}
-	draw_string(tidx, y+5, "       ");
-	len = draw_u10(tidx, y+5, dt/TEST_COUNT);
-	draw_u10(tidx+len+1, y+5, dt%TEST_COUNT);
-	tidx += TEST_RESULT_WIDTH;
-	draw_hex32(0, y-1, nextpid);
-
-	// Test 1: Tracing Time
-	dt = 0;
 	for(int i = 0; i < TEST_COUNT; i++) {
 		sys0_32(SYS_TIME_2, &tf);
 		sys0_32(SYS_TIME_2, &ti);
