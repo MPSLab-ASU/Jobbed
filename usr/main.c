@@ -1,5 +1,27 @@
 #include <graphics/lfb.h>
+#include <globals.h>
 #include <symbols.h>
+#include <sys/schedule.h>
+#include <util/time.h>
+
+void loop(void);
+
+void handle_data(unsigned char data)
+{
+	// Newline Case
+	if (data == 0x0D) {
+	// Backspace Case
+	} else if (data == 0x08 || data == 0x7F) {
+	} else if (data == 0x61) {
+		add_thread(uart_scheduler, 0, 2);
+	} else if (data == 0x62) {
+		//add_thread(test_entry, 0, 2);
+	}
+	// Draw it on the screen
+	{
+		draw_chex32(0, 9, data, 0xAA00FF);
+	}
+}
 
 char* ulong_to_string(unsigned long value, char* data)
 {
@@ -21,16 +43,37 @@ char* ulong_to_string(unsigned long value, char* data)
 	return dptr;
 }
 
-void main(void)
+void loop(void)
 {
 	static char str[13];
 	static unsigned long previous = 0;
 	char* start;
 	unsigned long current = *(volatile unsigned long*)SYS_TIMER_CHI;
 	start = ulong_to_string(current, str);
+	draw_string(0, 10, "            ");
 	draw_string(0, 10, start);
-	start = ulong_to_string(current - previous, str);
+	start = ulong_to_string(previous, str);
 	draw_string(0, 11, "            ");
 	draw_string(0, 11, start);
-	previous = current;
+	start = ulong_to_string(nextpid, str);
+	draw_string(0, 12, "            ");
+	draw_string(0, 12, start);
+	previous++;
+	wait_msec(3000);
+	add_thread(loop, 0, 3);
+}
+
+void loopt(void)
+{
+	static char str[13];
+	draw_string(0, 9, ulong_to_string(*(volatile unsigned long*)SYS_TIMER_CHI, str));
+}
+
+static unsigned long TICK_RATE = 5000000;
+static unsigned long UART_PRIORITY = 2;
+void main(void)
+{
+	subscribe_irq(UART_IRQ, handle_data, &UART_PRIORITY);
+	subscribe_irq(SYS_TIMER_0_IRQ, loopt, &TICK_RATE);
+	add_thread(loop, 0, 0);
 }

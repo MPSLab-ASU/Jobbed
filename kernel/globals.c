@@ -1,4 +1,5 @@
 #define GLOBALS_C
+#include <cpu/irq.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
 char* os_name = "Jobbed";
@@ -18,6 +19,7 @@ __attribute__((section(".bss"))) unsigned int gwidth;
 __attribute__((section(".bss"))) unsigned int gheight;
 __attribute__((section(".bss"))) unsigned int gpitch;
 __attribute__((section(".bss"))) unsigned int gisrgb;
+__attribute__((section(".bss"))) struct IrqEntry irqs[MAX_IRQS];
 __attribute__((section(".bss.mutexs"))) struct Mutex mutexs[MAX_MUTEXS];
 __attribute__((section(".bss.mutexe"))) struct Entry mutex_entries[MAX_MUTEXS];
 __attribute__((section(".bss.threads"))) struct Thread threads[MAX_THREADS];

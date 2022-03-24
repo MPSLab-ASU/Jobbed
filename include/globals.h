@@ -1,5 +1,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
+#include <cpu/irq.h>
 #include <sys/schedule.h>
 #include <util/mutex.h>
 
@@ -20,6 +21,7 @@ extern struct Mutex mutexs[MAX_MUTEXS];
 extern struct Entry mutex_entries[MAX_MUTEXS];
 extern struct Thread threads[MAX_THREADS];
 extern struct Entry thread_entries[MAX_THREADS];
+extern struct IrqEntry irqs[MAX_IRQS];
 #endif
 
 #endif

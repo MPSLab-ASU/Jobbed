@@ -50,7 +50,7 @@ enum
 	IRQ_BASIC_DISABLE = (IRQ_BASE + 0x224),
 
 	// Peripherals Interrupts
-	UART_IRQ   = 57,
+	//UART_IRQ   = 57,
 	GPIO_IRQ_0 = 49,
 	GPIO_IRQ_1 = 50,
 	GPIO_IRQ_2 = 51,

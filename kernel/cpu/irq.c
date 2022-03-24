@@ -13,8 +13,6 @@
 
 #define CPS 1000
 
-void handle_data(unsigned char);
-
 static unsigned long counter = 0;
 unsigned long c_irq_handler(void)
 {
@@ -37,19 +35,19 @@ unsigned long c_irq_handler(void)
 				}
 #endif
 				// Add task to handle the data
-				{
-					add_thread(handle_data, (void*)data, PRIORITIES-1);
+				if (irqs[UART_IRQ].handler != 0) {
+					add_thread(irqs[UART_IRQ].handler, (void*)data, *(unsigned long*)irqs[UART_IRQ].handler_info);
 					return 1;
 				}
 			}
 		}
 		// Check if System Time Compare 0 Triggered the Interrupt
-		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M0) {
+		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M0 && irqs[SYS_TIMER_0_IRQ].handler != 0) {
 			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
-			add_thread_without_duplicate(main, 0, 0);
-			*nexttime = *timer_chi + USR_TIME;
+			add_thread(irqs[SYS_TIMER_0_IRQ].handler, 0, 1);
+			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_0_IRQ].handler_info;
 			*timer_cs = SYS_TIMER_SC_M0;
 			return 1;
 		}
@@ -69,25 +67,39 @@ unsigned long c_fiq_handler(void)
 {
 	unsigned long source = load32(CORE0_FIQ_SOURCE);
 	// Check if CNTV triggered the interrupt
-	if (source & (1 << 3)) {
+	if (source & (1 << 3) && irqs[LOCAL_TIMER_IRQ].handler != 0) {
+		add_thread(irqs[LOCAL_TIMER_IRQ].handler, 0, 1);
 		write_cntv_tval(cntfrq);
 	}
 	return 0;
 }
 
-void handle_data(unsigned char data)
+void subscribe_irq(unsigned long irq_num, void* handler, void* handler_info)
 {
-	// Newline Case
-	if (data == 0x0D) {
-	// Backspace Case
-	} else if (data == 0x08 || data == 0x7F) {
-	} else if (data == 0x61) {
-		add_thread(uart_scheduler, 0, 2);
-	} else if (data == 0x62) {
-		//add_thread(test_entry, 0, 2);
-	}
-	// Draw it on the screen
-	{
-		draw_chex32(0, 9, data, 0xAA00FF);
+	if (irq_num >= MAX_IRQS)
+		return;
+	irqs[irq_num].handler = handler;
+	irqs[irq_num].handler_info = handler_info;
+	switch (irq_num) {
+		case UART_IRQ:
+			store32(1<<4, UART0_IMSC);
+			store32(1<<25, IRQ_ENABLE2);
+			break;
+		case SYS_TIMER_0_IRQ:
+			store32(SYS_TIMER_SC_M0, IRQ_ENABLE1);
+			*(volatile unsigned long*)SYS_TIMER_C0 = *(volatile unsigned long*)SYS_TIMER_CHI + *(unsigned long*)handler_info;
+			break;
+		case SYS_TIMER_1_IRQ:
+			store32(SYS_TIMER_SC_M1, IRQ_ENABLE1);
+			*(volatile unsigned long*)SYS_TIMER_C1 = *(volatile unsigned long*)SYS_TIMER_CHI + *(unsigned long*)handler_info;
+			break;
+		case SYS_TIMER_2_IRQ:
+			store32(SYS_TIMER_SC_M2, IRQ_ENABLE1);
+			*(volatile unsigned long*)SYS_TIMER_C2 = *(volatile unsigned long*)SYS_TIMER_CHI + *(unsigned long*)handler_info;
+			break;
+		case SYS_TIMER_3_IRQ:
+			store32(SYS_TIMER_SC_M3, IRQ_ENABLE1);
+			*(volatile unsigned long*)SYS_TIMER_C3 = *(volatile unsigned long*)SYS_TIMER_CHI + *(unsigned long*)handler_info;
+			break;
 	}
 }
