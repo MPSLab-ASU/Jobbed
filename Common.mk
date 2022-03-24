@@ -19,7 +19,6 @@ A_OBJECTD = $(A_OBJECTK) $(A_OBJECTU)
 ATTACH_USB ?= 0
 AUTO ?= 0
 BSP ?= 2
-BUILD ?= 0
 GDEBUG ?= 0
 DEBUG ?= 0
 SILENT ?= 0
@@ -56,12 +55,6 @@ ifeq ($(BSP),2)
 	CFLAGS += -DBSP23
 endif
 
-# Use Correct Hardware Timing
-ifneq ($(BUILD),0)
-	RPI_BUILD = 1
-	CFLAGS += -DRPI_BUILD
-endif
-
 # Pause and wait for GDB if requested
 ifneq ($(GDEBUG),0)
 	QFLAGS += -s -S
@@ -86,6 +79,7 @@ endif
 
 default: clean build/kernel7.img
 
+build/kernel7.img: CFLAGS += -DRPI_BUILD
 build/kernel7.img: build/kernel.elf
 	@mkdir -p $(@D)
 	${OBJCOPY} $< -O binary $@
