@@ -66,14 +66,16 @@ void loop(void)
 void loopt(void)
 {
 	static char str[13];
-	draw_string(0, 9, ulong_to_string(*(volatile unsigned long*)SYS_TIMER_CHI, str));
+	draw_string(0, 14, ulong_to_string(*(volatile unsigned long*)SYS_TIMER_CHI, str));
 }
 
-static unsigned long TICK_RATE = 5000000;
+static unsigned long TICK_RATE_0 = 5000000;
+static unsigned long TICK_RATE_1 =  300000;
 static unsigned long UART_PRIORITY = 2;
 void main(void)
 {
 	subscribe_irq(UART_IRQ, handle_data, &UART_PRIORITY);
-	subscribe_irq(SYS_TIMER_0_IRQ, loopt, &TICK_RATE);
+	subscribe_irq(SYS_TIMER_0_IRQ, loopt, &TICK_RATE_0);
+	subscribe_irq(SYS_TIMER_1_IRQ, loopt, &TICK_RATE_1);
 	add_thread(loop, 0, 0);
 }

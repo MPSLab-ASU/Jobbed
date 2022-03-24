@@ -51,6 +51,36 @@ unsigned long c_irq_handler(void)
 			*timer_cs = SYS_TIMER_SC_M0;
 			return 1;
 		}
+		// Check if System Time Compare 1 Triggered the Interrupt
+		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M1 && irqs[SYS_TIMER_1_IRQ].handler != 0) {
+			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
+			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
+			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C1;
+			add_thread(irqs[SYS_TIMER_1_IRQ].handler, 0, 1);
+			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_1_IRQ].handler_info;
+			*timer_cs = SYS_TIMER_SC_M1;
+			return 1;
+		}
+		// Check if System Time Compare 2 Triggered the Interrupt
+		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M2 && irqs[SYS_TIMER_2_IRQ].handler != 0) {
+			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
+			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
+			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C2;
+			add_thread(irqs[SYS_TIMER_2_IRQ].handler, 0, 1);
+			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_2_IRQ].handler_info;
+			*timer_cs = SYS_TIMER_SC_M2;
+			return 1;
+		}
+		// Check if System Time Compare 3 Triggered the Interrupt
+		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M3 && irqs[SYS_TIMER_3_IRQ].handler != 0) {
+			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
+			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
+			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C3;
+			add_thread(irqs[SYS_TIMER_3_IRQ].handler, 0, 1);
+			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_3_IRQ].handler_info;
+			*timer_cs = SYS_TIMER_SC_M3;
+			return 1;
+		}
 	}
 	// Check if CNTV triggered the interrupt
 	else if (source & (1 << 3)) {
