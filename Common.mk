@@ -80,6 +80,8 @@ endif
 default: clean build/kernel7.img
 
 build/kernel7.img: CFLAGS += -DRPI_BUILD
+build/kernel7.img: CFLAGS := $(filter-out -g,$(CFLAGS))
+build/kernel7.img: AFLAGS := $(filter-out -g,$(AFLAGS))
 build/kernel7.img: build/kernel.elf
 	@mkdir -p $(@D)
 	${OBJCOPY} $< -O binary $@
