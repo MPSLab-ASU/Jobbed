@@ -9,6 +9,7 @@
 #include <util/mutex.h>
 #include <util/status.h>
 #include <util/time.h>
+#include <usr/main.h>
 
 #define CPS 1000
 
@@ -59,10 +60,9 @@ unsigned long c_irq_handler(void)
 			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
-			add_thread_without_duplicate(test_entry, 0, 2);
-			*nexttime = *timer_chi + 4000000;
+			add_thread_without_duplicate(main, 0, 0);
+			*nexttime = *timer_chi + 40;
 			*timer_cs = SYS_TIMER_SC_M0;
-			status();
 			return 1;
 		}
 	}
