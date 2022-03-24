@@ -1,13 +1,26 @@
-C_SOURCES = $(wildcard src/*.c src/**/*.c)
-C_OBJECTS = ${C_SOURCES:.c=.co}
-C_OBJECTD = ${subst src,obj,${C_OBJECTS}}
-A_SOURCES = $(wildcard src/*.S src/**/*.S)
-A_OBJECTS = ${A_SOURCES:.S=.ao}
-A_OBJECTD = ${subst src,obj,${A_OBJECTS}}
+# Kernel Sources/Objects
+C_SOURCEK = $(wildcard kernel/*.c kernel/**/*.c)
+C_OBJECTk = ${C_SOURCEK:.c=.co}
+C_OBJECTK = ${subst kernel/,obj/kernel/,${C_OBJECTk}}
+A_SOURCEK = $(wildcard kernel/*.S kernel/**/*.S)
+A_OBJECTk = ${A_SOURCEK:.S=.ao}
+A_OBJECTK = ${subst kernel/,obj/kernel/,${A_OBJECTk}}
+# User Sources/Objects
+C_SOURCEU = $(wildcard usr/*.c usr/**/*.c)
+C_OBJECTu = ${C_SOURCEU:.c=.co}
+C_OBJECTU = ${subst usr/,obj/usr/,${C_OBJECTu}}
+A_SOURCEU = $(wildcard usr/*.S usr/**/*.S)
+A_OBJECTu = ${A_SOURCEU:.S=.ao}
+A_OBJECTU = ${subst usr/,obj/usr/,${A_OBJECTu}}
+# Combined Objects
+C_OBJECTD = $(C_OBJECTK) $(C_OBJECTU)
+A_OBJECTD = $(A_OBJECTK) $(A_OBJECTU)
 
 ATTACH_USB ?= 0
 AUTO ?= 0
 BSP ?= 2
+BUILD ?= 0
+GDEBUG ?= 0
 DEBUG ?= 0
 SILENT ?= 0
 DISK ?= /dev/sdc1
@@ -43,9 +56,20 @@ ifeq ($(BSP),2)
 	CFLAGS += -DBSP23
 endif
 
+# Use Correct Hardware Timing
+ifneq ($(BUILD),0)
+	RPI_BUILD = 1
+	CFLAGS += -DRPI_BUILD
+endif
+
 # Pause and wait for GDB if requested
-ifneq ($(DEBUG),0)
+ifneq ($(GDEBUG),0)
 	QFLAGS += -s -S
+endif
+
+# Debugging Flag
+ifneq ($(DEBUG),0)
+	CFLAGS += -DDEBUG
 endif
 
 # Don't use screen if requested
@@ -75,13 +99,22 @@ dump: build/kernel.list
 build/kernel.elf: ${A_OBJECTD} ${C_OBJECTD}
 	@tput setaf 6 2> /dev/null || true; echo Linking Kernel; tput sgr0 2> /dev/null || true
 	@mkdir -p $(@D)
+	@echo ${C_SOURCEK}
 	${CC} -T linker.ld -o $@ -ffreestanding -O3 -nostdlib $^
 
-obj/%.co: src/%.c
+obj/kernel/%.co: kernel/%.c
 	@mkdir -p $(@D)
 	${CC} ${CFLAGS} -c $< -o $@
 
-obj/%.ao: src/%.S
+obj/kernel/%.ao: kernel/%.S
+	@mkdir -p $(@D)
+	${AS} ${AFLAGS} -c $< -o $@
+
+obj/usr/%.co: usr/%.c
+	@mkdir -p $(@D)
+	${CC} ${CFLAGS} -c $< -o $@
+
+obj/usr/%.ao: usr/%.S
 	@mkdir -p $(@D)
 	${AS} ${AFLAGS} -c $< -o $@
 

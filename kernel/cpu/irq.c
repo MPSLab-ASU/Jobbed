@@ -29,27 +29,15 @@ unsigned long c_irq_handler(void)
 				unsigned long data = load32(UART0_DR);
 
 				// Handle the recieved data
+#ifdef DEBUG
 				// Ctrl+G to output scheduler debug info
 				if (data == 0x7) {
 					uart_scheduler();
 					uart_mutexes();
 				}
-				//// Ctrl+T to toggle timer
-				//else if(data == 0x14) {
-				//	unsigned long timer_status;
-				//	asm volatile("mrc p15, 0, %0, c14, c3, 1" : "=r"(timer_status));
-				//	if(timer_status == 0) {
-				//		cntfrq = read_cntfrq();
-				//		write_cntv_tval(cntfrq/CPS);
-				//		enablecntv();
-				//		draw_cstring(0, 3, "TIMER", 0x00FF00);
-				//	} else {
-				//		disablecntv();
-				//		draw_cstring(0, 3, "TIMER", 0xFF0000);
-				//	}
-				//}
+#endif
 				// Add task to handle the data
-				else {
+				{
 					add_thread(handle_data, (void*)data, PRIORITIES-1);
 					return 1;
 				}
@@ -61,7 +49,7 @@ unsigned long c_irq_handler(void)
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
 			add_thread_without_duplicate(main, 0, 0);
-			*nexttime = *timer_chi + 40;
+			*nexttime = *timer_chi + USR_TIME;
 			*timer_cs = SYS_TIMER_SC_M0;
 			return 1;
 		}
@@ -69,7 +57,7 @@ unsigned long c_irq_handler(void)
 	// Check if CNTV triggered the interrupt
 	else if (source & (1 << 3)) {
 		// Reset the counter
-		write_cntv_tval(cntfrq/CPS);
+		write_cntv_tval(cntfrq);
 		counter++;
 		if (counter % 0x6000 == 0)
 			counter = 0;

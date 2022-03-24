@@ -20,6 +20,13 @@ char* ulong_to_string(unsigned long value, char* data)
 void main(void)
 {
 	static char str[13];
-	char* start = ulong_to_string(*(volatile unsigned long*)SYS_TIMER_CHI, str);
+	static unsigned long previous = 0;
+	char* start;
+	unsigned long current = *(volatile unsigned long*)SYS_TIMER_CHI;
+	start = ulong_to_string(current, str);
 	draw_string(0, 10, start);
+	start = ulong_to_string(current - previous, str);
+	draw_string(0, 11, "            ");
+	draw_string(0, 11, start);
+	previous = current;
 }
