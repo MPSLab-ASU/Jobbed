@@ -23,14 +23,14 @@ static struct SysTimerInfo stime_2 = {
 	.arg = 0,
 };
 
-static struct UartInfo UART_INFO = {
-	.priority = 2,
-};
-
 static struct SysTimerInfo stime_3 = {
 	.tick_rate = 70000,
 	.priority = 0,
 	.arg = 0,
+};
+
+static struct UartInfo UART_INFO = {
+	.priority = 2,
 };
 
 void main(void)
