@@ -66,7 +66,13 @@ void loop(void)
 void loopt(void)
 {
 	static char str[13];
+	static char cnt = 18;
 	draw_string(0, 14, ulong_to_string(*(volatile unsigned long*)SYS_TIMER_CHI, str));
+	cnt--;
+	if (cnt == 2)
+		unsubscribe_irq(SYS_TIMER_1_IRQ);
+	if (cnt == 0)
+		unsubscribe_irq(SYS_TIMER_0_IRQ);
 }
 
 static unsigned long TICK_RATE_0 = 5000000;
