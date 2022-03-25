@@ -133,3 +133,28 @@ void subscribe_irq(unsigned long irq_num, void* handler, void* handler_info)
 			break;
 	}
 }
+
+void unsubscribe_irq(unsigned long irq_num)
+{
+	if (irq_num >= MAX_IRQS)
+		return;
+	irqs[irq_num].handler = 0;
+	irqs[irq_num].handler_info = 0;
+	switch (irq_num) {
+		case UART_IRQ:
+			store32(1<<25, IRQ_DISABLE2);
+			break;
+		case SYS_TIMER_0_IRQ:
+			store32(SYS_TIMER_SC_M0, IRQ_DISABLE1);
+			break;
+		case SYS_TIMER_1_IRQ:
+			store32(SYS_TIMER_SC_M1, IRQ_DISABLE1);
+			break;
+		case SYS_TIMER_2_IRQ:
+			store32(SYS_TIMER_SC_M2, IRQ_DISABLE1);
+			break;
+		case SYS_TIMER_3_IRQ:
+			store32(SYS_TIMER_SC_M3, IRQ_DISABLE1);
+			break;
+	}
+}

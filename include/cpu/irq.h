@@ -34,5 +34,6 @@ static inline void disablefiq(void)
 unsigned long c_irq_handler(void);
 unsigned long c_fiq_handler(void);
 void subscribe_irq(unsigned long irq_num, void* handler, void* handler_info);
+void unsubscribe_irq(unsigned long irq_num);
 
 #endif
