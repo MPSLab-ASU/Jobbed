@@ -35,7 +35,7 @@ static struct UartInfo UART_INFO = {
 };
 
 static struct GPIOInfo gpinfo = {
-	.pin = (1<<16),
+	.pin = (1<<16 | 1<<12),
 	.priority = 0,
 };
 
@@ -59,4 +59,5 @@ void main(void)
 	subscribe_irq(GPIO_BANK_1_IRQ, gptest, &gpinfo);
 	add_thread(loop, 0, 8);
 	add_thread(consumer, 0, 3);
+	uart_string("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 }

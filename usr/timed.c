@@ -28,6 +28,8 @@ void consumer(void)
 
 void loop(void)
 {
+	unsigned long long ti, tf;
+	sys0_64(SYS_TIME, &ti);
 	static char str[13];
 	static unsigned long previous = 0;
 	char* start;
@@ -49,8 +51,10 @@ void loop(void)
 	//	draw_hex32(0, 17, count++);
 	//	add_thread(producer, 0, 4);
 	//}
+	sys0_64(SYS_TIME, &tf);
+	draw_hex32(0, 13, tf-ti);
 	wait_msec(30000);
-	add_thread(loop, 0, 3);
+	//add_thread(loop, 0, 3);
 }
 
 void loopt(void)

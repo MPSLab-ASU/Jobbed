@@ -17,6 +17,7 @@ static unsigned long counter = 0;
 unsigned long c_irq_handler(void)
 {
 	unsigned long source = load32(CORE0_IRQ_SOURCE);
+	unsigned long scheduled = 0;
 	// Check if GPU Interrupt
 	if (source & (1 << 8)) {
 		// Check if UART Interrupt
@@ -38,7 +39,7 @@ unsigned long c_irq_handler(void)
 				if (irqs[UART_IRQ].handler != 0) {
 					struct UartInfo* uart_info = irqs[UART_IRQ].handler_info;
 					add_thread(irqs[UART_IRQ].handler, (void*)data, uart_info->priority);
-					return 1;
+					scheduled = 1;
 				}
 			}
 		}
@@ -47,6 +48,7 @@ unsigned long c_irq_handler(void)
 			if (*GPEDS0 & g->pin) {
 				add_thread(irqs[GPIO_BANK_1_IRQ].handler, 0, g->priority);
 				*GPEDS0 = g->pin;
+				scheduled = 1;
 			}
 		}
 		// Check if System Time Compare 0 Triggered the Interrupt
@@ -58,7 +60,7 @@ unsigned long c_irq_handler(void)
 			add_thread(irqs[SYS_TIMER_0_IRQ].handler, stinfo->arg, stinfo->priority);
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M0;
-			return 1;
+			scheduled = 1;
 		}
 		// Check if System Time Compare 1 Triggered the Interrupt
 		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M1 && irqs[SYS_TIMER_1_IRQ].handler != 0) {
@@ -69,7 +71,7 @@ unsigned long c_irq_handler(void)
 			add_thread(irqs[SYS_TIMER_1_IRQ].handler, stinfo->arg, stinfo->priority);
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M1;
-			return 1;
+			scheduled = 1;
 		}
 		// Check if System Time Compare 2 Triggered the Interrupt
 		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M2 && irqs[SYS_TIMER_2_IRQ].handler != 0) {
@@ -80,7 +82,7 @@ unsigned long c_irq_handler(void)
 			add_thread(irqs[SYS_TIMER_2_IRQ].handler, stinfo->arg, stinfo->priority);
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M2;
-			return 1;
+			scheduled = 1;
 		}
 		// Check if System Time Compare 3 Triggered the Interrupt
 		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M3 && irqs[SYS_TIMER_3_IRQ].handler != 0) {
@@ -91,7 +93,7 @@ unsigned long c_irq_handler(void)
 			add_thread(irqs[SYS_TIMER_3_IRQ].handler, stinfo->arg, stinfo->priority);
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M3;
-			return 1;
+			scheduled = 1;
 		}
 	}
 	// Check if CNTV triggered the interrupt
@@ -102,7 +104,7 @@ unsigned long c_irq_handler(void)
 		if (counter % 0x6000 == 0)
 			counter = 0;
 	}
-	return 0;
+	return scheduled;
 }
 
 unsigned long c_fiq_handler(void)
@@ -161,7 +163,7 @@ void subscribe_irq(unsigned long irq_num, void* handler, void* handler_info)
 		case GPIO_BANK_1_IRQ:
 			store32((1 << (49-32)), IRQ_ENABLE2);
 			struct GPIOInfo* g = irqs[irq_num].handler_info;
-			*GPREN0 = g->pin;
+			*GPAREN0 = g->pin;
 			break;
 	}
 }
