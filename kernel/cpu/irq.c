@@ -136,6 +136,10 @@ void subscribe_irq(unsigned long irq_num, void* handler, void* handler_info)
 			store32(SYS_TIMER_SC_M3, IRQ_ENABLE1);
 			*(volatile unsigned long*)SYS_TIMER_C3 = *(volatile unsigned long*)SYS_TIMER_CHI + *(unsigned long*)handler_info;
 			break;
+		case LOCAL_TIMER_IRQ:
+			store32(0x80, CORE0_TIMER_IRQCNTL);
+			sys0(SYS_ENABLE_CNTV);
+			break;
 	}
 }
 
@@ -160,6 +164,10 @@ void unsubscribe_irq(unsigned long irq_num)
 			break;
 		case SYS_TIMER_3_IRQ:
 			store32(SYS_TIMER_SC_M3, IRQ_DISABLE1);
+			break;
+		case LOCAL_TIMER_IRQ:
+			store32(0x00, CORE0_TIMER_IRQCNTL);
+			sys0(SYS_DISABLE_CNTV);
 			break;
 	}
 }

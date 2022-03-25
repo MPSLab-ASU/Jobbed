@@ -11,7 +11,7 @@ svc:
 	adrle r3, svc_table_1
 	ldrle pc, [r3, r0, LSL #2]
 	sub r0, #8
-	cmp r0, #7
+	cmp r0, #3
 	bgt svc_exit
 	//// Jump to the appropriate Call
 	adr r3, svc_table_2
@@ -128,6 +128,17 @@ svc_000009: // SYS_TIME_2
 	mrc p15, 0, r0, c9, c13, 0
 	str r0, [sp, #0]
 	b svc_exit
+svc_00000A: // SYS_CNTV_ENABLE
+	ldr r0, =cntfrq
+	ldr r0, [r0]
+	mcr p15, 0, r0, c14, c3, 0
+	mov r0, #1
+	mcr p15, 0, r0, c14, c3, 1
+	b svc_exit
+svc_00000B: // SYS_CNTV_DISABLE
+	mov r0, #0
+	mcr p15, 0, r0, c14, c3, 1
+	b svc_exit
 svc_exit:
 	ldmfd sp!, {r0-r12,pc}^
 
@@ -143,3 +154,5 @@ svc_table_1:
 svc_table_2:
 	.word svc_000008
 	.word svc_000009
+	.word svc_00000A
+	.word svc_00000B

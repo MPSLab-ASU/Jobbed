@@ -88,16 +88,18 @@ static inline void* getirqstack(void)
 		asm volatile("svc #" syscall_h_expand_and_quote(sys_n) ::"r"(r0): "memory"); \
 		}
 
-#define SYS_YIELD        0
-#define SYS_TIME         1
-#define SYS_SCHED        2
-#define SYS_YIELD_HIGH   2
-#define SYS_ADD_THREAD   3
-#define SYS_LOCK         4
-#define SYS_UNLOCK       5
-#define SYS_SEMAPHORE_P  6
-#define SYS_SEMAPHORE_V  7
-#define SYS_SEMAPHORE_IV 8
-#define SYS_TIME_2       9
+#define SYS_YIELD        0x00000
+#define SYS_TIME         0x00001
+#define SYS_SCHED        0x00002
+#define SYS_YIELD_HIGH   0x00002
+#define SYS_ADD_THREAD   0x00003
+#define SYS_LOCK         0x00004
+#define SYS_UNLOCK       0x00005
+#define SYS_SEMAPHORE_P  0x00006
+#define SYS_SEMAPHORE_V  0x00007
+#define SYS_SEMAPHORE_IV 0x00008
+#define SYS_TIME_2       0x00009
+#define SYS_ENABLE_CNTV  0x0000A
+#define SYS_DISABLE_CNTV 0x0000B
 
 #endif
