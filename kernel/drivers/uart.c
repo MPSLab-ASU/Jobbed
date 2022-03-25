@@ -31,8 +31,8 @@ void uart_init(void)
 	// Clear pending interrupts
 	store32(0x7FF, UART0_ICR);
 	// Set to 3Mhz
-	store32(10, UART0_IBRD);
-	store32(20, UART0_FBRD);
+	store32(9, UART0_IBRD);
+	store32(49, UART0_FBRD);
 	// Enable FIFO and 8 bit transmission
 	store32((1<<4)|(1<<5)|(1<<6), UART0_LCRH);
 	// Mask all interrupts

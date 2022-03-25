@@ -114,6 +114,7 @@ unsigned long c_fiq_handler(void)
 	if (source & (1 << 3) && irqs[LOCAL_TIMER_IRQ].handler != 0) {
 		add_thread(irqs[LOCAL_TIMER_IRQ].handler, 0, 1);
 		write_cntv_tval(cntfrq);
+		return 1;
 	}
 	return 0;
 }
