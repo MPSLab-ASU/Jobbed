@@ -41,4 +41,8 @@ void main(void)
 	subscribe_irq(SYS_TIMER_2_IRQ, loopt, &stime_2);
 	subscribe_irq(SYS_TIMER_3_IRQ, loopt, &stime_3);
 	add_thread(loop, 0, 0);
+	unsigned long long counter;
+	asm volatile ("mrrc p15, 0, %0, c14" : "=r"(counter));
+	draw_hex32(0, 20, counter>>32);
+	draw_hex32(9, 20, counter);
 }
