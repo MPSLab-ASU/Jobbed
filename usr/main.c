@@ -75,13 +75,26 @@ void loopt(void)
 		unsubscribe_irq(SYS_TIMER_0_IRQ);
 }
 
-static unsigned long TICK_RATE_0 = 5000000;
-static unsigned long TICK_RATE_1 =  300000;
-static unsigned long UART_PRIORITY = 2;
+static struct SysTimerInfo stime_0 = {
+	.tick_rate = 5000000,
+	.priority = 0,
+	.arg = 0,
+};
+
+static struct SysTimerInfo stime_1 = {
+	.tick_rate = 300000,
+	.priority = 0,
+	.arg = 0,
+};
+
+static struct UartInfo UART_INFO = {
+	.priority = 2,
+};
+
 void main(void)
 {
-	subscribe_irq(UART_IRQ, handle_data, &UART_PRIORITY);
-	subscribe_irq(SYS_TIMER_0_IRQ, loopt, &TICK_RATE_0);
-	subscribe_irq(SYS_TIMER_1_IRQ, loopt, &TICK_RATE_1);
+	subscribe_irq(UART_IRQ, handle_data, &UART_INFO);
+	subscribe_irq(SYS_TIMER_0_IRQ, loopt, &stime_0);
+	subscribe_irq(SYS_TIMER_1_IRQ, loopt, &stime_1);
 	add_thread(loop, 0, 0);
 }

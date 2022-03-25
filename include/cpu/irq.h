@@ -14,6 +14,16 @@ struct IrqEntry {
 	void* handler_info;
 };
 
+struct UartInfo {
+	unsigned long priority;
+};
+
+struct SysTimerInfo {
+	unsigned long tick_rate;
+	unsigned long priority;
+	void* arg;
+};
+
 static inline void enableirq(void)
 {
 	asm volatile("cpsie i");

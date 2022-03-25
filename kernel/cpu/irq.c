@@ -36,7 +36,8 @@ unsigned long c_irq_handler(void)
 #endif
 				// Add task to handle the data
 				if (irqs[UART_IRQ].handler != 0) {
-					add_thread(irqs[UART_IRQ].handler, (void*)data, *(unsigned long*)irqs[UART_IRQ].handler_info);
+					struct UartInfo* uart_info = irqs[UART_IRQ].handler_info;
+					add_thread(irqs[UART_IRQ].handler, (void*)data, uart_info->priority);
 					return 1;
 				}
 			}
@@ -46,8 +47,9 @@ unsigned long c_irq_handler(void)
 			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C0;
-			add_thread(irqs[SYS_TIMER_0_IRQ].handler, 0, 1);
-			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_0_IRQ].handler_info;
+			struct SysTimerInfo* stinfo = irqs[SYS_TIMER_0_IRQ].handler_info;
+			add_thread(irqs[SYS_TIMER_0_IRQ].handler, stinfo->arg, stinfo->priority);
+			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M0;
 			return 1;
 		}
@@ -56,8 +58,9 @@ unsigned long c_irq_handler(void)
 			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C1;
-			add_thread(irqs[SYS_TIMER_1_IRQ].handler, 0, 1);
-			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_1_IRQ].handler_info;
+			struct SysTimerInfo* stinfo = irqs[SYS_TIMER_1_IRQ].handler_info;
+			add_thread(irqs[SYS_TIMER_1_IRQ].handler, stinfo->arg, stinfo->priority);
+			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M1;
 			return 1;
 		}
@@ -66,8 +69,9 @@ unsigned long c_irq_handler(void)
 			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C2;
-			add_thread(irqs[SYS_TIMER_2_IRQ].handler, 0, 1);
-			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_2_IRQ].handler_info;
+			struct SysTimerInfo* stinfo = irqs[SYS_TIMER_2_IRQ].handler_info;
+			add_thread(irqs[SYS_TIMER_2_IRQ].handler, stinfo->arg, stinfo->priority);
+			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M2;
 			return 1;
 		}
@@ -76,8 +80,9 @@ unsigned long c_irq_handler(void)
 			volatile unsigned long* timer_cs = (volatile unsigned long*)SYS_TIMER_CS;
 			volatile unsigned long* timer_chi = (volatile unsigned long*)SYS_TIMER_CHI;
 			volatile unsigned long* nexttime = (volatile unsigned long*)SYS_TIMER_C3;
-			add_thread(irqs[SYS_TIMER_3_IRQ].handler, 0, 1);
-			*nexttime = *timer_chi + *(unsigned long*)irqs[SYS_TIMER_3_IRQ].handler_info;
+			struct SysTimerInfo* stinfo = irqs[SYS_TIMER_3_IRQ].handler_info;
+			add_thread(irqs[SYS_TIMER_3_IRQ].handler, stinfo->arg, stinfo->priority);
+			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M3;
 			return 1;
 		}
