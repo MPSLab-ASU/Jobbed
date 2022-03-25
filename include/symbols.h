@@ -13,6 +13,12 @@ enum
 	// The offsets for reach register.
 	GPIO_BASE = (MMIO_BASE + 0x200000),
 
+	UART_FIFO_18 = 0,
+	UART_FIFO_14 = 1,
+	UART_FIFO_12 = 2,
+	UART_FIFO_34 = 3,
+	UART_FIFO_78 = 4,
+
 	//// The base address for UART.
 	UART0_BASE = (GPIO_BASE + 0x1000), // for raspi4 0xFE201000, raspi2 & 3 0x3F201000, and 0x20201000 for raspi1
 

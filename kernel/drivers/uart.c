@@ -37,6 +37,8 @@ void uart_init(void)
 	store32((1<<4)|(1<<5)|(1<<6), UART0_LCRH);
 	// Mask all interrupts
 	store32((1<<1)|(1<<4)|(1<<5)|(1<<6)|(1<<7)|(1<<8)|(1<<9)|(1<<10), UART0_IMSC);
+	// Interrupt when FIFO is 1/8 full
+	store32((UART_FIFO_18 << 3) | (UART_FIFO_12 << 0), UART0_IFLS);
 	// Enable UART0
 	store32((1<<0)|(1<<8)|(1<<9), UART0_CR);
 }
