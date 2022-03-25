@@ -1,4 +1,3 @@
-#include <cpu.h>
 #include <globals.h>
 #include <graphics/lfb.h>
 #include <symbols.h>
@@ -35,23 +34,19 @@ static struct UartInfo UART_INFO = {
 	.priority = 2,
 };
 
-static unsigned long simulated = 0;
+static struct GPIOInfo gpinfo = {
+	.pin = (1<<16),
+	.priority = 0,
+};
 
-void producer(void)
+void gptest(void)
 {
-	draw_string(0, 15, "Producing...");
-	sys1(SYS_SEMAPHORE_V, &simulated);
-	draw_string(0, 15, "Produced!   ");
-}
-
-void consumer(void)
-{
-	add_thread(producer, 0, 4);
-	while (1) {
-		draw_string(0, 16, "Consuming...");
-		sys1(SYS_SEMAPHORE_P, &simulated);
-		draw_string(0, 16, "Consumed!   ");
-	}
+	static unsigned long count = 0;
+	unsigned long gplev0 = *GPLEV0;
+	static char str[14];
+	draw_hex32(0, 30, gplev0);
+	char* start = ulong_to_string(count++, str);
+	draw_string(0, 31, start);
 }
 
 void main(void)
@@ -61,6 +56,7 @@ void main(void)
 	subscribe_irq(SYS_TIMER_1_IRQ, loopt, &stime_1);
 	subscribe_irq(SYS_TIMER_2_IRQ, loopt, &stime_2);
 	subscribe_irq(SYS_TIMER_3_IRQ, loopt, &stime_3);
+	subscribe_irq(GPIO_BANK_1_IRQ, gptest, &gpinfo);
 	add_thread(loop, 0, 8);
 	add_thread(consumer, 0, 3);
 }

@@ -20,7 +20,7 @@ unsigned long c_irq_handler(void)
 	// Check if GPU Interrupt
 	if (source & (1 << 8)) {
 		// Check if UART Interrupt
-		if(load32(IRQ_PENDING2) & (1 << 25)) {
+		if(load32(IRQ_PENDING2) & (1 << (UART_0_IRQ-32))) {
 			// Check if UART Interrupt is Masked
 			if(load32(UART0_MIS) & (1<<4)) {
 				// Get the UART data
@@ -40,6 +40,13 @@ unsigned long c_irq_handler(void)
 					add_thread(irqs[UART_IRQ].handler, (void*)data, uart_info->priority);
 					return 1;
 				}
+			}
+		}
+		if (load32(IRQ_PENDING2) & (1 << (GPIO_IRQ_0-32)) && irqs[GPIO_BANK_1_IRQ].handler != 0) {
+			struct GPIOInfo* g = irqs[GPIO_BANK_1_IRQ].handler_info;
+			if (*GPEDS0 & g->pin) {
+				add_thread(irqs[GPIO_BANK_1_IRQ].handler, 0, g->priority);
+				*GPEDS0 = g->pin;
 			}
 		}
 		// Check if System Time Compare 0 Triggered the Interrupt
@@ -114,7 +121,18 @@ void subscribe_irq(unsigned long irq_num, void* handler, void* handler_info)
 	if (irq_num >= MAX_IRQS)
 		return;
 	irqs[irq_num].handler = handler;
-	irqs[irq_num].handler_info = handler_info;
+	if (irq_num == GPIO_BANK_1_IRQ) {
+		if (irqs[irq_num].handler_info == 0)
+			irqs[irq_num].handler_info = handler_info;
+		else {
+			struct GPIOInfo* g = irqs[irq_num].handler_info;
+			struct GPIOInfo* new = handler_info;
+			g->pin |= new->pin;
+			g->priority = new->priority;
+		}
+	} else {
+		irqs[irq_num].handler_info = handler_info;
+	}
 	switch (irq_num) {
 		case UART_IRQ:
 			store32(1<<4, UART0_IMSC);
@@ -139,6 +157,11 @@ void subscribe_irq(unsigned long irq_num, void* handler, void* handler_info)
 		case LOCAL_TIMER_IRQ:
 			store32(0x80, CORE0_TIMER_IRQCNTL);
 			sys0(SYS_ENABLE_CNTV);
+			break;
+		case GPIO_BANK_1_IRQ:
+			store32((1 << (49-32)), IRQ_ENABLE2);
+			struct GPIOInfo* g = irqs[irq_num].handler_info;
+			*GPREN0 = g->pin;
 			break;
 	}
 }
@@ -168,6 +191,9 @@ void unsubscribe_irq(unsigned long irq_num)
 		case LOCAL_TIMER_IRQ:
 			store32(0x00, CORE0_TIMER_IRQCNTL);
 			sys0(SYS_DISABLE_CNTV);
+			break;
+		case GPIO_BANK_1_IRQ:
+			store32((1 << (49-32)), IRQ_DISABLE2);
 			break;
 	}
 }

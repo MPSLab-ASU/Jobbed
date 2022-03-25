@@ -1,10 +1,30 @@
 #define USR_TIMED_C
+#include <cpu.h>
 #include <globals.h>
 #include <graphics/lfb.h>
 #include <symbols.h>
 #include <usr/string.h>
 #include <usr/timed.h>
 #include <util/time.h>
+
+static unsigned long simulated = 0;
+
+void producer(void)
+{
+	draw_string(0, 15, "Producing...");
+	sys1(SYS_SEMAPHORE_V, &simulated);
+	draw_string(0, 15, "Produced!   ");
+}
+
+void consumer(void)
+{
+	add_thread(producer, 0, 4);
+	while (1) {
+		draw_string(0, 16, "Consuming...");
+		sys1(SYS_SEMAPHORE_P, &simulated);
+		draw_string(0, 16, "Consumed!   ");
+	}
+}
 
 void loop(void)
 {
@@ -22,7 +42,14 @@ void loop(void)
 	draw_string(0, 12, "            ");
 	draw_string(0, 12, start);
 	previous++;
-	wait_msec(3000);
+	//unsigned long gplev0 = *(volatile unsigned long*)GPLEV0;
+	//static unsigned long count = 0;
+	//draw_hex32(0, 13, gplev0);
+	//if (gplev0 & (1 << 16)) {
+	//	draw_hex32(0, 17, count++);
+	//	add_thread(producer, 0, 4);
+	//}
+	wait_msec(30000);
 	add_thread(loop, 0, 3);
 }
 

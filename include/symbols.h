@@ -50,7 +50,7 @@ enum
 	IRQ_BASIC_DISABLE = (IRQ_BASE + 0x224),
 
 	// Peripherals Interrupts
-	//UART_IRQ   = 57,
+	UART_0_IRQ   = 57,
 	GPIO_IRQ_0 = 49,
 	GPIO_IRQ_1 = 50,
 	GPIO_IRQ_2 = 51,
@@ -117,6 +117,14 @@ enum
 #define GPLEV1          ((volatile unsigned int*)(MMIO_BASE+0x00200038))
 #define GPEDS0          ((volatile unsigned int*)(MMIO_BASE+0x00200040))
 #define GPEDS1          ((volatile unsigned int*)(MMIO_BASE+0x00200044))
+#define GPREN0          ((volatile unsigned int*)(MMIO_BASE+0x0020004C))
+#define GPREN1          ((volatile unsigned int*)(MMIO_BASE+0x00200050))
+#define GPFEN0          ((volatile unsigned int*)(MMIO_BASE+0x00200058))
+#define GPFEN1          ((volatile unsigned int*)(MMIO_BASE+0x0020005C))
+#define GPAREN0          ((volatile unsigned int*)(MMIO_BASE+0x0020007C))
+#define GPAREN1          ((volatile unsigned int*)(MMIO_BASE+0x00200080))
+#define GPAFEN0          ((volatile unsigned int*)(MMIO_BASE+0x00200088))
+#define GPAFEN1          ((volatile unsigned int*)(MMIO_BASE+0x0020008C))
 #define GPHEN0          ((volatile unsigned int*)(MMIO_BASE+0x00200064))
 #define GPHEN1          ((volatile unsigned int*)(MMIO_BASE+0x00200068))
 // Controls actuation of pull up/down to ALL GPIO pins.

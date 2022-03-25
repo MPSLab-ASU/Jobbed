@@ -6,7 +6,9 @@
 #define SYS_TIMER_1_IRQ 2
 #define SYS_TIMER_2_IRQ 3
 #define SYS_TIMER_3_IRQ 4
-#define LOCAL_TIMER_IRQ 5
+#define GPIO_BANK_1_IRQ 5
+#define GPIO_BANK_2_IRQ 6
+#define LOCAL_TIMER_IRQ 7
 #define MAX_IRQS LOCAL_TIMER_IRQ+1
 
 struct IrqEntry {
@@ -22,6 +24,11 @@ struct SysTimerInfo {
 	unsigned long tick_rate;
 	unsigned long priority;
 	void* arg;
+};
+
+struct GPIOInfo {
+	unsigned long pin;
+	unsigned long priority;
 };
 
 static inline void enableirq(void)

@@ -3,5 +3,6 @@
 
 void loop(void);
 void loopt(void);
+void consumer(void);
 
 #endif
