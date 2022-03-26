@@ -72,9 +72,11 @@ svc_000005: // Release Lock
 	sev
 	// Awake any threads waiting for this lock
 	bl sched_mutex_resurrect
+	cmp r0, #0
+	beq 1f
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-	b svc_exit
+1:	b svc_exit
 svc_000006: // Semaphore decrease
 	ldr r0, [sp, #0] // struct Semaphore* s
 1:	clrex
@@ -106,9 +108,11 @@ svc_000007: // Semaphore increase
 	bne svc_exit
 	mov r1, #1
 	bl sched_semaphore_resurrect
+	cmp r0, #0
+	beq 1f
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-	b svc_exit
+1:	b svc_exit
 svc_000008: // Semaphore add #
 	ldr r0, [sp, #0] // struct Semaphore* s
 	ldr r3, [sp, #1] // unsigned long # times to increase
@@ -121,9 +125,11 @@ svc_000008: // Semaphore add #
 	dmb
 	mov r1, r3
 	bl sched_semaphore_resurrect
+	cmp r0, #0
+	beq 1f
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
-	b svc_exit
+1:	b svc_exit
 svc_000009: // SYS_TIME_2
 	mrc p15, 0, r0, c9, c13, 0
 	str r0, [sp, #0]

@@ -418,12 +418,12 @@ void sched_semaphore_yield(void* s)
 		push_thread_to_queue(rt->value, THREAD_SWAIT, priority);
 }
 
-void sched_mutex_resurrect(void* m)
+unsigned long sched_mutex_resurrect(void* m)
 {
 	// Find any mutex to resurrect
 	struct Entry* prev = find_mutex_wait_next(m);
 	if (prev == 0)
-		return;
+		return 0;
 	struct Entry* entry = prev->next;
 	struct Thread* thread = entry->value;
 	// Resurrect the thread
@@ -431,7 +431,7 @@ void sched_mutex_resurrect(void* m)
 	// Remove from wait queue
 	entry = remove_next_from_queue(prev);
 	if (entry == 0)
-		return;
+		return 1;
 	// Add to ready queue
 	push_thread_to_queue(entry->value, THREAD_READY, ((struct Thread*)entry->value)->priority);
 	// Demote current thread
@@ -445,15 +445,19 @@ void sched_mutex_resurrect(void* m)
 		((struct Thread*)tentry->value)->old_priority = 0xFF;
 		prepend_thread_to_queue(tentry->value, THREAD_READY, op);
 	}
+	return 1;
 }
 
-void sched_semaphore_resurrect(void* s, unsigned long count)
+unsigned long sched_semaphore_resurrect(void* s, unsigned long count)
 {
-	while (count--) {
+	unsigned long cnt = count;
+	while (cnt) {
 		// Find any signal/ semaphore to resurrect
 		struct Entry* prev = find_signal_wait_next(s);
-		if (prev == 0)
-			return;
+		if (prev == 0 && count == cnt)
+			return 0;
+		else if (prev == 0)
+			return 1;
 		struct Entry* entry = prev->next;
 		struct Thread* thread = entry->value;
 		// Resurrect the thread
@@ -461,8 +465,10 @@ void sched_semaphore_resurrect(void* s, unsigned long count)
 		// Remove from wait queue
 		entry = remove_next_from_queue(prev);
 		if (entry == 0)
-			return;
+			return 1;
 		// Add to ready queue
 		push_thread_to_queue(entry->value, THREAD_READY, ((struct Thread*)entry->value)->priority);
+		cnt--;
 	}
+	return 1;
 }

@@ -10,6 +10,7 @@
 #include <sys/core.h>
 #include <sys/power.h>
 #include <sys/schedule.h>
+#include <tests/test.h>
 #include <usr/main.h>
 #include <util/mutex.h>
 #include <util/status.h>
@@ -39,5 +40,6 @@ void sysinit(void)
 
 	// Start Scheduler
 	init_scheduler();
-	add_thread(main, 0, 0);
+	add_thread(test_entry, 0, 2);
+	//add_thread(main, 0, 0);
 }
