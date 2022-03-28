@@ -40,6 +40,6 @@ void sysinit(void)
 
 	// Start Scheduler
 	init_scheduler();
-	add_thread(test_entry, 0, 2);
-	//add_thread(main, 0, 0);
+	//add_thread(test_entry, 0, 2);
+	add_thread(main, 0, 0);
 }

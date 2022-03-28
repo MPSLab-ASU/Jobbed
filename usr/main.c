@@ -49,14 +49,17 @@ void gptest(void)
 	draw_string(0, 31, start);
 }
 
+void test_super(void);
+
 void main(void)
 {
-	subscribe_irq(UART_IRQ, handle_data, &UART_INFO);
-	subscribe_irq(SYS_TIMER_0_IRQ, loopt, &stime_0);
-	subscribe_irq(SYS_TIMER_1_IRQ, loopt, &stime_1);
-	subscribe_irq(SYS_TIMER_2_IRQ, loopt, &stime_2);
-	subscribe_irq(SYS_TIMER_3_IRQ, loopt, &stime_3);
-	subscribe_irq(GPIO_BANK_1_IRQ, gptest, &gpinfo);
-	add_thread(loop, 0, 8);
-	add_thread(consumer, 0, 3);
+	//subscribe_irq(UART_IRQ, handle_data, &UART_INFO);
+	//subscribe_irq(SYS_TIMER_0_IRQ, loopt, &stime_0);
+	//subscribe_irq(SYS_TIMER_1_IRQ, loopt, &stime_1);
+	//subscribe_irq(SYS_TIMER_2_IRQ, loopt, &stime_2);
+	//subscribe_irq(SYS_TIMER_3_IRQ, loopt, &stime_3);
+	//subscribe_irq(GPIO_BANK_1_IRQ, gptest, &gpinfo);
+	//add_thread(loop, 0, 8);
+	//add_thread(consumer, 0, 3);
+	add_thread(test_super, 0, 4);
 }
