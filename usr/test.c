@@ -1,6 +1,7 @@
 #include <cpu.h>
 #include <graphics/lfb.h>
 #include <sys/schedule.h>
+#include <usr/math.h>
 #include <usr/string.h>
 #include <util/mutex.h>
 
@@ -10,6 +11,7 @@
 static unsigned long ti, tf;
 static unsigned long times[MAX_ITER];
 static unsigned long idx = 0;
+
 
 void test_results(unsigned long off)
 {
@@ -24,14 +26,15 @@ void test_results(unsigned long off)
 		unsigned long term = (times[i]-mean)*(times[i]-mean)/MAX_ITER;
 		stdev += term;
 	}
-	static char str[13];
+	stdev = sqrt_rnd(stdev);
+	char str[] = "            ns\0";
 	char* start;
 	start = ulong_to_string(mean, str);
-	draw_string(off*13, 12, start);
+	draw_string(off*15, 12, start);
 	start = ulong_to_string(stdev, str);
-	draw_string(off*13, 13, start);
+	draw_string(off*15, 13, start);
 	start = ulong_to_string(max, str);
-	draw_string(off*13, 14, start);
+	draw_string(off*15, 14, start);
 }
 
 void nopfxn(void) {}
