@@ -27,7 +27,7 @@ static struct SysTimerInfo stime_2 = {
 };
 
 static struct SysTimerInfo stime_3 = {
-	.tick_rate = 70000,
+	.tick_rate = 6,
 	.priority = 0,
 	.arg = 0,
 };
@@ -47,12 +47,14 @@ void gptest(void)
 	static unsigned long long ts[4096*2+20];
 	sys0_64(SYS_TIME, &ts[count++]);
 	if (count == (4096*2+18)) {
-		unsubscribe_irq(GPIO_BANK_1_IRQ);
+		//unsubscribe_irq(GPIO_BANK_1_IRQ);
+		unsubscribe_irq(SYS_TIMER_3_IRQ);
 		static char str[14];
 		char* start;
 		unsigned long mean=0, stdev=0, max=0;
 		for (unsigned long i = 0; i < 4096; i++) {
 			unsigned long elapsed = ts[2*(i+2)+1]-ts[2*(i+2)];
+			elapsed *= 1000;
 			mean += elapsed;
 			if (elapsed > max)
 				max = elapsed;
@@ -60,6 +62,7 @@ void gptest(void)
 		mean /= 4096;
 		for (unsigned long i = 0; i < 4096; i++) {
 			unsigned long elapsed = ts[2*(i+2)+1]-ts[2*(i+2)];
+			elapsed *= 1000;
 			unsigned long term = (elapsed-mean)*(elapsed-mean)/4096;
 			stdev += term;
 		}
@@ -86,7 +89,8 @@ void main(void)
 	//subscribe_irq(SYS_TIMER_1_IRQ, loopt, &stime_1);
 	//subscribe_irq(SYS_TIMER_2_IRQ, loopt, &stime_2);
 	//subscribe_irq(SYS_TIMER_3_IRQ, loopt, &stime_3);
-	subscribe_irq(GPIO_BANK_1_IRQ, gptest, &gpinfo);
+	subscribe_irq(SYS_TIMER_3_IRQ, gptest, &stime_3);
+	//subscribe_irq(GPIO_BANK_1_IRQ, gptest, &gpinfo);
 	//add_thread(loop, 0, 8);
 	//add_thread(consumer, 0, 3);
 	//add_thread(test_super, 0, 4);

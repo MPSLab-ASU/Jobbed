@@ -140,6 +140,6 @@ test: clean build/kernel.elf
 	@./tests/run.sh
 
 copy: clean build/kernel7.img
-	sudo mount /mnt/sd0
+	sudo mount $(DISK) /mnt/sd0
 	sudo cp build/kernel7.img /mnt/sd0
 	sudo umount /mnt/sd0
