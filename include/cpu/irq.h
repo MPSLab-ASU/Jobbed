@@ -24,6 +24,7 @@ struct SysTimerInfo {
 	unsigned long tick_rate;
 	unsigned long priority;
 	void* arg;
+	unsigned long oneshot;
 };
 
 struct GPIOInfo {

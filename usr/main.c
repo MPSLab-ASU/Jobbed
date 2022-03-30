@@ -14,24 +14,28 @@ static struct SysTimerInfo stime_0 = {
 	.tick_rate = 5000000,
 	.priority = 0,
 	.arg = 0,
+	.oneshot = 0,
 };
 
 static struct SysTimerInfo stime_1 = {
 	.tick_rate = 700000,
 	.priority = 0,
 	.arg = 0,
+	.oneshot = 0,
 };
 
 static struct SysTimerInfo stime_2 = {
 	.tick_rate = 300000,
 	.priority = 0,
 	.arg = 0,
+	.oneshot = 0,
 };
 
 static struct SysTimerInfo stime_3 = {
 	.tick_rate = 10,
 	.priority = 0,
 	.arg = 0,
+	.oneshot = 0,
 };
 
 static struct UartInfo UART_INFO = {

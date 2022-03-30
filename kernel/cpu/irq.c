@@ -61,6 +61,8 @@ unsigned long c_irq_handler(void)
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M0;
 			scheduled = 1;
+			if (stinfo->oneshot)
+				store32(SYS_TIMER_SC_M0, IRQ_DISABLE1);
 		}
 		// Check if System Time Compare 1 Triggered the Interrupt
 		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M1 && irqs[SYS_TIMER_1_IRQ].handler != 0) {
@@ -72,6 +74,8 @@ unsigned long c_irq_handler(void)
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M1;
 			scheduled = 1;
+			if (stinfo->oneshot)
+				store32(SYS_TIMER_SC_M1, IRQ_DISABLE1);
 		}
 		// Check if System Time Compare 2 Triggered the Interrupt
 		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M2 && irqs[SYS_TIMER_2_IRQ].handler != 0) {
@@ -83,6 +87,8 @@ unsigned long c_irq_handler(void)
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M2;
 			scheduled = 1;
+			if (stinfo->oneshot)
+				store32(SYS_TIMER_SC_M2, IRQ_DISABLE1);
 		}
 		// Check if System Time Compare 3 Triggered the Interrupt
 		if (*(volatile unsigned long*)SYS_TIMER_CS & SYS_TIMER_SC_M3 && irqs[SYS_TIMER_3_IRQ].handler != 0) {
@@ -94,6 +100,8 @@ unsigned long c_irq_handler(void)
 			*nexttime = *timer_chi + stinfo->tick_rate;
 			*timer_cs = SYS_TIMER_SC_M3;
 			scheduled = 1;
+			if (stinfo->oneshot)
+				store32(SYS_TIMER_SC_M3, IRQ_DISABLE1);
 		}
 	}
 	// Check if CNTV triggered the interrupt
