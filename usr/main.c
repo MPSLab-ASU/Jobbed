@@ -4,10 +4,11 @@
 #include <graphics/lfb.h>
 #include <symbols.h>
 #include <sys/schedule.h>
+#include <usr/cxx.h>
+#include <usr/math.h>
 #include <usr/string.h>
 #include <usr/timed.h>
 #include <usr/uart.h>
-#include <usr/math.h>
 
 static struct SysTimerInfo stime_0 = {
 	.tick_rate = 5000000,
@@ -99,4 +100,5 @@ void main(void)
 	//add_thread(consumer, 0, 3);
 	//add_thread(test_super, 0, 4);
 	//subscribe_irq(SYS_TIMER_3_IRQ, gptest, &stime_3);
+	cpp_demo(53);
 }

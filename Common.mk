@@ -2,6 +2,9 @@
 C_SOURCEK = $(wildcard kernel/*.c kernel/**/*.c)
 C_OBJECTk = ${C_SOURCEK:.c=.co}
 C_OBJECTK = ${subst kernel/,obj/kernel/,${C_OBJECTk}}
+CXX_SOURCEK = $(wildcard kernel/*.cpp kernel/**/*.cpp)
+CXX_OBJECTk = ${CXX_SOURCEK:.cpp=.cppo}
+CXX_OBJECTK = ${subst kernel/,obj/kernel/,${CXX_OBJECTk}}
 A_SOURCEK = $(wildcard kernel/*.S kernel/**/*.S)
 A_OBJECTk = ${A_SOURCEK:.S=.ao}
 A_OBJECTK = ${subst kernel/,obj/kernel/,${A_OBJECTk}}
@@ -9,11 +12,15 @@ A_OBJECTK = ${subst kernel/,obj/kernel/,${A_OBJECTk}}
 C_SOURCEU = $(wildcard usr/*.c usr/**/*.c)
 C_OBJECTu = ${C_SOURCEU:.c=.co}
 C_OBJECTU = ${subst usr/,obj/usr/,${C_OBJECTu}}
+CXX_SOURCEU = $(wildcard usr/*.cpp usr/**/*.cpp)
+CXX_OBJECTu = ${CXX_SOURCEU:.cpp=.cppo}
+CXX_OBJECTU = ${subst usr/,obj/usr/,${CXX_OBJECTu}}
 A_SOURCEU = $(wildcard usr/*.S usr/**/*.S)
 A_OBJECTu = ${A_SOURCEU:.S=.ao}
 A_OBJECTU = ${subst usr/,obj/usr/,${A_OBJECTu}}
 # Combined Objects
 C_OBJECTD = $(C_OBJECTK) $(C_OBJECTU)
+CXX_OBJECTD = $(CXX_OBJECTK) $(CXX_OBJECTU)
 A_OBJECTD = $(A_OBJECTK) $(A_OBJECTU)
 
 ATTACH_USB ?= 0
@@ -26,12 +33,14 @@ DISK ?= /dev/sdc1
 
 CROSS = arm-none-eabi
 CC = ${CROSS}-gcc
+CCPP = ${CROSS}-g++
 AS = ${CROSS}-as
 OBJCOPY = ${CROSS}-objcopy
 OBJDUMP = ${CROSS}-objdump
 QEMU = qemu-system-arm
 GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O3 -Wall -Wextra -nostdlib -Iinclude -g
+CXXFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -O3 -Wall -Wextra -nostdlib -Iinclude -g
 CFLAGS += -DVERSION="\"0.9z\""
 AFLAGS = -mcpu=cortex-a7 -Iinclude -g
 QFLAGS = -M raspi2b -cpu cortex-a7 -m 1G
@@ -92,7 +101,7 @@ build/kernel.list: build/kernel.elf
 
 dump: build/kernel.list
 
-build/kernel.elf: ${A_OBJECTD} ${C_OBJECTD}
+build/kernel.elf: ${A_OBJECTD} ${CXX_OBJECTD} ${C_OBJECTD}
 	@tput setaf 6 2> /dev/null || true; echo Linking Kernel; tput sgr0 2> /dev/null || true
 	@mkdir -p $(@D)
 	@echo ${C_SOURCEK}
@@ -109,6 +118,10 @@ obj/kernel/%.ao: kernel/%.S
 obj/usr/%.co: usr/%.c
 	@mkdir -p $(@D)
 	${CC} ${CFLAGS} -c $< -o $@
+
+obj/usr/%.cppo: usr/%.cpp
+	@mkdir -p $(@D)
+	${CCPP} ${CXXFLAGS} -c $< -o $@
 
 obj/usr/%.ao: usr/%.S
 	@mkdir -p $(@D)
