@@ -2,9 +2,6 @@
 C_SOURCEK = $(wildcard kernel/*.c kernel/**/*.c)
 C_OBJECTk = ${C_SOURCEK:.c=.co}
 C_OBJECTK = ${subst kernel/,obj/kernel/,${C_OBJECTk}}
-CXX_SOURCEK = $(wildcard kernel/*.cpp kernel/**/*.cpp)
-CXX_OBJECTk = ${CXX_SOURCEK:.cpp=.cppo}
-CXX_OBJECTK = ${subst kernel/,obj/kernel/,${CXX_OBJECTk}}
 A_SOURCEK = $(wildcard kernel/*.S kernel/**/*.S)
 A_OBJECTk = ${A_SOURCEK:.S=.ao}
 A_OBJECTK = ${subst kernel/,obj/kernel/,${A_OBJECTk}}
@@ -20,7 +17,7 @@ A_OBJECTu = ${A_SOURCEU:.S=.ao}
 A_OBJECTU = ${subst usr/,obj/usr/,${A_OBJECTu}}
 # Combined Objects
 C_OBJECTD = $(C_OBJECTK) $(C_OBJECTU)
-CXX_OBJECTD = $(CXX_OBJECTK) $(CXX_OBJECTU)
+CXX_OBJECTD = $(CXX_OBJECTU)
 A_OBJECTD = $(A_OBJECTK) $(A_OBJECTU)
 
 ATTACH_USB ?= 0
