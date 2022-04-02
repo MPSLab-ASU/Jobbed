@@ -46,7 +46,7 @@ unsigned long c_irq_handler(void)
 		if (load32(IRQ_PENDING2) & (1 << (GPIO_IRQ_0-32)) && irqs[GPIO_BANK_1_IRQ].handler != 0) {
 			struct GPIOInfo* g = irqs[GPIO_BANK_1_IRQ].handler_info;
 			if (*GPEDS0 & g->pin) {
-				add_thread(irqs[GPIO_BANK_1_IRQ].handler, 0, g->priority);
+				add_thread(irqs[GPIO_BANK_1_IRQ].handler, (void*)*GPEDS0, g->priority);
 				*GPEDS0 = g->pin;
 				scheduled = 1;
 			}
