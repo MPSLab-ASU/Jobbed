@@ -1,6 +1,7 @@
 extern "C" {
 #include <graphics/lfb.h>
 #include <usr/string.h>
+#include <drivers/uart.h>
 };
 
 class Substation {
@@ -25,4 +26,5 @@ extern "C" void cpp_demo(unsigned long v)
 	char str[14];
 	char* start = ulong_to_string(s.max_production, str);
 	draw_string(0, 15, start);
+	uart_string(start);
 }

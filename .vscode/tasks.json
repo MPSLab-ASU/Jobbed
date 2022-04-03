@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run-qemu-silent",
+            "type": "shell",
+            "command": "SILENT=1 make clean run",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "export-to-sd",
+            "type": "shell",
+            "command": "make copy"
+        },
+        {
+            "label": "run-qemu",
+            "type": "shell",
+            "command": "make clean run"
+        },
+        {
+            "label": "default",
+            "type": "shell",
+            "command": "make"
+        }
+    ]
+}
