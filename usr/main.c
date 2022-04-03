@@ -1,4 +1,3 @@
-#include <setjmp.h>
 #include <cpu.h>
 #include <globals.h>
 #include <graphics/lfb.h>
