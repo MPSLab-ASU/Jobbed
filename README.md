@@ -1,21 +1,9 @@
 # Jobbed
 
-## Supplemental Links
- - https://www.raspberrypi.com/documentation/computers/processors.html
- - https://datasheets.raspberrypi.com/bcm2835/bcm2835-peripherals.pdf
- - https://datasheets.raspberrypi.com/bcm2836/bcm2836-peripherals.pdf
- - https://github.com/eggman/raspberrypi/tree/master/qemu-raspi2
- - https://github.com/eggman/FreeRTOS-raspi3/blob/master/Demo/FreeRTOS_tick_config.c
- - https://developer.arm.com/documentation/dui0802/b/A64-General-Instructions/A64-general-instructions-in-alphabetical-order?lang=en
- - https://wiki.osdev.org/ARM_RaspberryPi
- - https://elinux.org/RPi_Framebuffer
- - https://github.com/bztsrc/raspi3-tutorial
- - https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials
-
- - // PRIV LEVL: https://developer.arm.com/documentation/den0013/d/ARM-Processor-Modes-and-Registers
- - // MODES: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-processor-modes?lang=en
- - // EXCEPTION HANDLING: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/Exception-handling?lang=en
- - // MODE REGISTERS: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
+## Building (Debian)
+ - Clone the repository.
+ - Ensure you have the `arm-none-eabi-gcc` cross compiler installed.
+ - From the root of the directory, i.e. in `Jobbed`, execute `make`
 
 ## Todo
  - Finish Build Instructions
@@ -29,16 +17,19 @@
  - SPI Driver
  - GPIO Falling Edge IRQ
 
-## SVC Calls
- - Sysinfo
- - Reboot?
- - Mutex Create
- - Mutex Lock
- - Mutex Release
- - Schedule
- - Yield
- - Fork
- - Uart Write Buffer Add (Add reoccuring task to flush write buffer - RotatingBuffer)
+## SVC Calls (In order)
+ - 0: Yield to threads in same priority
+ - 1: System Clock Time
+ - 2: Schedule
+ - 3: Add thread
+ - 4: Mutex Lock
+ - 5: Mutex Unlock
+ - 6: Semaphore Decrease
+ - 7: Semaphore Increase
+ - 8: Semaphore Increase by N
+ - 9: Cycle Counter
+ - A: Enable ARM Timer
+ - B: Disable ARM Timer
 
 
 Note: SYS and USER share registers but differ in privilege
@@ -65,9 +56,6 @@ Note: SYS and USER share registers but differ in privilege
  - UND: sp_und,lr_und,SPSR_und
  - SYS: Same as user
 
-# Program Status Registers
- - https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/Program-Status-Registers--PSRs-?lang=en#CIHJBHJA
-
 # Memory Layout
  - 0x00004000 - 0x00008000 MMU Entries
  - 0x00008000 - 0x0000F000 Code
@@ -76,3 +64,23 @@ Note: SYS and USER share registers but differ in privilege
  - 0x18000000 - 0x20000000 Thread Stacks
  - 0x3F000000 - 0x40000000 MMIO
  - 0x40000000 - 0xFFFFFFFF Local Peripherals
+
+## Supplemental Links
+ - https://www.raspberrypi.com/documentation/computers/processors.html
+ - https://datasheets.raspberrypi.com/bcm2835/bcm2835-peripherals.pdf
+ - https://datasheets.raspberrypi.com/bcm2836/bcm2836-peripherals.pdf
+ - https://github.com/eggman/raspberrypi/tree/master/qemu-raspi2
+ - https://github.com/eggman/FreeRTOS-raspi3/blob/master/Demo/FreeRTOS_tick_config.c
+ - https://developer.arm.com/documentation/dui0802/b/A64-General-Instructions/A64-general-instructions-in-alphabetical-order?lang=en
+ - https://wiki.osdev.org/ARM_RaspberryPi
+ - https://elinux.org/RPi_Framebuffer
+ - https://github.com/bztsrc/raspi3-tutorial
+ - https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials
+
+ - // PRIV LEVL: https://developer.arm.com/documentation/den0013/d/ARM-Processor-Modes-and-Registers
+ - // MODES: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-processor-modes?lang=en
+ - // EXCEPTION HANDLING: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/Exception-handling?lang=en
+ - // MODE REGISTERS: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
+
+# Program Status Registers
+ - https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/Program-Status-Registers--PSRs-?lang=en#CIHJBHJA
