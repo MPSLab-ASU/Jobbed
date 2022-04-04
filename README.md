@@ -1,4 +1,8 @@
 # Jobbed
+## Notice
+ - Currently `make copy` has a default disk /dev/sdc1. If you run it, it will mount this, copy the built image, and then unmount it.
+ - While this wouldn't overwrite any data, the unmounting of this disk may be errant on your computer configuration, causing you to lose access to files until you remount the disk.
+ - This will be changed in a few releases, but as it stands currently, this warning is here to prevent any transient problems
 
 ## Building (Debian)
  - Clone the repository.
