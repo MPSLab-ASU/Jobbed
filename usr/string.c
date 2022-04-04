@@ -10,6 +10,7 @@ char* ulong_to_string(unsigned long value, char* data)
 		if (t==0)
 			break;
 		dptr -= 1;
+		// Add decimal point to distinguish orders more easily
 		if (i == 2) {
 			*dptr = '.';
 			dptr -= 1;
