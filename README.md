@@ -18,8 +18,16 @@
  - // MODE REGISTERS: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
 
 ## Todo
- - Write Thesis Paper
- - Modularize
+ - Finish Build Instructions
+ - Deterministic Graphics
+ - Move UART Polling Write to another method
+ - Make UART Write run as an event-based system
+
+## Future
+ - USB Driver
+ - Ethernet Driver
+ - SPI Driver
+ - GPIO Falling Edge IRQ
 
 ## SVC Calls
  - Sysinfo
