@@ -8,6 +8,7 @@
  - Clone the repository.
  - Ensure you have the `arm-none-eabi-gcc` cross compiler installed.
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
+ - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
 ## Building (Google Colab)
  - `!git clone https://github.com/TerminalCursor/Jobbed.git`
@@ -17,6 +18,22 @@
 
 ## Getting Cross Compiler
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
+
+# Building RTOS Applications
+RTOS Applications are written in the `usr/` directory.
+Jobbed, in `kernel/core.c` adds in the `main` function at the highest priority, expected to be defined in `usr/main.c`.
+This `main` function, can serve as the initialization function for the RTOS application.
+IRQ handles can be initialized with the `irq_subscribe(IRQ_NAME, callback_function, pointer to additional IRQ information)`.
+Examples can be found in the provided `usr/main.c`.
+
+Currently, if you build Jobbed without modifying anything, it will generate the RTOS core testing suite.
+This testing suite outputs the tracing, thread switch, low and high priority thread creation, mutex creation, mutex destruction, mutex locking contention, mutex locking non-contention, mutex unlocking, semaphore waiting, semaphore signalling at zero, semaphore signalling non-zero timings to a 1920x1080 display output.
+Currently the graphics driver expects this resolution of display. If you have another resolution, this can be changed in `kernel/graphics/lfb.c` by modifying `SCR_WIDTH` and `SCR_HEIGHT`.
+
+## C++
+C++ sources in this directory are expected to work with a few missing features such as the `new` and `delete` keywords since memory is not dynamically allocated on the system.
+
+# Misc Information
 
 ## Todo
  - Finish Build Instructions
