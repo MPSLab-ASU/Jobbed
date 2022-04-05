@@ -19,6 +19,7 @@
  ## Running
  - Ensure you have QEMU's ARM package installed on your system
  - Minimum command line arguments to run: `qemu-system-arm -M raspi2b -cpu cortex-a7 -m 1G -kernel build/kernel.elf`
+ - When building `build/kernel7.img`, `build/kernel.elf` will also be built and is used to emulate the Raspberry Pi 2B
 
 ## Getting Cross Compiler
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
