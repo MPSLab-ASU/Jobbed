@@ -6,7 +6,7 @@
 
 ## Building (Debian)
  - Clone the repository.
- - Ensure you have the `arm-none-eabi-gcc` cross compiler installed.
+ - Ensure you have the `gcc-arm-none-eabi` cross compiler installed `# apt install gcc-arm-none-eabi`.
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
  - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
@@ -15,6 +15,10 @@
  - `!apt install gcc-arm-none-eabi`
  - `!cd Jobbed; make -f Unix.mk`
  - The built image is found in `Jobbed/build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
+
+ ## Running
+ - Ensure you have QEMU's ARM package installed on your system
+ - Minimum command line arguments to run: `qemu-system-arm -M raspi2b -cpu cortex-a7 -m 1G -kernel build/kernel.elf`
 
 ## Getting Cross Compiler
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
