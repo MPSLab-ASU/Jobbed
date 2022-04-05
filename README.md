@@ -1,13 +1,13 @@
 # Jobbed
 ## Notice
- - Currently `make copy` has a default disk /dev/sdc1. If you run it, it will mount this, copy the built image, and then unmount it.
+ - Currently `make -f Unix.mk copy` has a default disk /dev/sdc1. If you run it, it will mount this, copy the built image, and then unmount it.
  - While this wouldn't overwrite any data, the unmounting of this disk may be errant on your computer configuration, causing you to lose access to files until you remount the disk.
  - This will be changed in a few releases, but as it stands currently, this warning is here to prevent any transient problems
 
 ## Building (Debian)
  - Clone the repository.
  - Ensure you have the `arm-none-eabi-gcc` cross compiler installed.
- - From the root of the directory, i.e. in `Jobbed`, execute `make`
+ - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
 
 ## Getting Cross Compiler
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
