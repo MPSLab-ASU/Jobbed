@@ -26,7 +26,6 @@ BSP ?= 2
 GDEBUG ?= 0
 DEBUG ?= 0
 SILENT ?= 0
-DISK ?= /dev/sdc1
 
 CROSS = arm-none-eabi
 CC = ${CROSS}-gcc
@@ -149,7 +148,12 @@ test: clean build/kernel.elf
 	@tput setaf 6 2> /dev/null || true; echo Running Tests; tput sgr0 2> /dev/null || true
 	@./tests/run.sh
 
+ifndef $(DISK)
+copy:
+	@tput setaf 1 2> /dev/null || true; echo ERROR: No disk specified!; tput sgr0 2> /dev/null || true
+else
 copy: clean build/kernel7.img
 	sudo mount $(DISK) /mnt/sd0
 	sudo cp build/kernel7.img /mnt/sd0
 	sudo umount /mnt/sd0
+endif
