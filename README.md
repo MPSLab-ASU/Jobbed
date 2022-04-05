@@ -10,10 +10,10 @@
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
 
 ## Building (Google Colab)
- - !git clone https://github.com/TerminalCursor/Jobbed.git
- - !apt install gcc-arm-none-eabi
- - !cd Jobbed; make -f Unix.mk
- - The built image is found in Jobbed/build/kernel7.img and can be copied to the root of the Raspberry Pi SD card's first parition
+ - `!git clone https://github.com/TerminalCursor/Jobbed.git`
+ - `!apt install gcc-arm-none-eabi`
+ - `!cd Jobbed; make -f Unix.mk`
+ - The built image is found in `Jobbed/build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
 ## Getting Cross Compiler
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
