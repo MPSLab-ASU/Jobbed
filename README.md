@@ -1,26 +1,27 @@
 # Jobbed
 
-## Building (Debian)
+## Build Information
+### Building (Debian)
  - Clone the repository.
  - Ensure you have the `gcc-arm-none-eabi` cross compiler installed `# apt install gcc-arm-none-eabi`.
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
  - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
-## Building (Google Colab)
+### Building (Google Colab)
  - `!git clone https://github.com/TerminalCursor/Jobbed.git`
  - `!apt install gcc-arm-none-eabi`
  - `!cd Jobbed; make -f Unix.mk`
  - The built image is found in `Jobbed/build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
- ## Running
+### Running
  - Ensure you have QEMU's ARM package installed on your system
  - Minimum command line arguments to run: `qemu-system-arm -M raspi2b -cpu cortex-a7 -m 1G -kernel build/kernel.elf`
  - When building `build/kernel7.img`, `build/kernel.elf` will also be built and is used to emulate the Raspberry Pi 2B
 
-## Getting Cross Compiler
+### Getting Cross Compiler
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
 
-# Building RTOS Applications
+## Building RTOS Applications
 RTOS Applications are written in the `usr/` directory.
 Jobbed, in `kernel/core.c` adds in the `main` function at the highest priority, expected to be defined in `usr/main.c`.
 This `main` function, can serve as the initialization function for the RTOS application.
@@ -31,24 +32,24 @@ Currently, if you build Jobbed without modifying anything, it will generate the 
 This testing suite outputs the tracing, thread switch, low and high priority thread creation, mutex creation, mutex destruction, mutex locking contention, mutex locking non-contention, mutex unlocking, semaphore waiting, semaphore signalling at zero, semaphore signalling non-zero timings to a 1920x1080 display output.
 Currently the graphics driver expects this resolution of display. If you have another resolution, this can be changed in `kernel/graphics/lfb.c` by modifying `SCR_WIDTH` and `SCR_HEIGHT`.
 
-## C++
+### C++
 C++ sources in this directory are expected to work with a few missing features such as the `new` and `delete` keywords since memory is not dynamically allocated on the system.
 
-# Misc Information
+## Misc Information
 
-## Todo
+### Todo
  - Finish Build Instructions
  - Deterministic Graphics
  - Move UART Polling Write to another method
  - Make UART Write run as an event-based system
 
-## Future
+### Future
  - USB Driver
  - Ethernet Driver
  - SPI Driver
  - GPIO Falling Edge IRQ
 
-## SVC Calls (In order)
+### SVC Calls (In order)
  - 0: Yield to threads in same priority
  - 1: System Clock Time
  - 2: Schedule
@@ -66,7 +67,7 @@ C++ sources in this directory are expected to work with a few missing features s
 Note: SYS and USER share registers but differ in privilege
 
 
-# Modes
+### Modes
  - From https://developer.arm.com/documentation/den0013/d/ARM-Processor-Modes-and-Registers
  - User: 10:10000 PL0
  - FIQ : 11:10001 PL1
@@ -77,7 +78,7 @@ Note: SYS and USER share registers but differ in privilege
  - UND : 1B:11011 PL1
  - SYS : 1F:11111 PL1
 
-# Registers
+### Registers
  - From https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
  - User: r0-12_usr,sp_usr,lr_usr,CPSR
  - FIQ: r8-r12_fiq,sp_fiq,lr_fiq,SPSR_fiq
@@ -87,7 +88,10 @@ Note: SYS and USER share registers but differ in privilege
  - UND: sp_und,lr_und,SPSR_und
  - SYS: Same as user
 
-# Memory Layout
+### Program Status Registers
+ - https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/Program-Status-Registers--PSRs-?lang=en#CIHJBHJA
+
+### Memory Layout
  - 0x00004000 - 0x00008000 MMU Entries
  - 0x00008000 - 0x0000F000 Code
  - 0x0000F000 - 0x00010000 Data
@@ -96,7 +100,7 @@ Note: SYS and USER share registers but differ in privilege
  - 0x3F000000 - 0x40000000 MMIO
  - 0x40000000 - 0xFFFFFFFF Local Peripherals
 
-## Supplemental Links
+### Supplemental Links
  - https://www.raspberrypi.com/documentation/computers/processors.html
  - https://datasheets.raspberrypi.com/bcm2835/bcm2835-peripherals.pdf
  - https://datasheets.raspberrypi.com/bcm2836/bcm2836-peripherals.pdf
@@ -112,6 +116,3 @@ Note: SYS and USER share registers but differ in privilege
  - // MODES: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-processor-modes?lang=en
  - // EXCEPTION HANDLING: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/Exception-handling?lang=en
  - // MODE REGISTERS: https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/ARM-core-registers?lang=en
-
-# Program Status Registers
- - https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/Program-Status-Registers--PSRs-?lang=en#CIHJBHJA
