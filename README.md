@@ -9,6 +9,9 @@
  - Ensure you have the `arm-none-eabi-gcc` cross compiler installed.
  - From the root of the directory, i.e. in `Jobbed`, execute `make`
 
+## Getting Cross Compiler
+ - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
+
 ## Todo
  - Finish Build Instructions
  - Deterministic Graphics
