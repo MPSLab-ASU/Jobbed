@@ -21,7 +21,7 @@ svc_000000: // SYS_YIELD
 	ldmfd sp!, {r0-r12,lr}
 	b schedule
 svc_000001: // SYS_TIME
-	mov r2, #0x3004
+	movw r2, #0x3004
 	movt r2, #0x3F00
 	ldr r0, [r2, #4] // <- SYS_TIMER_CLO
 	ldr r1, [r2, #0] // <- SYS_TIMER_CHI
