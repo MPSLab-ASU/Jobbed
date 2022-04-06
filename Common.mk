@@ -148,7 +148,7 @@ test: clean build/kernel.elf
 	@tput setaf 6 2> /dev/null || true; echo Running Tests; tput sgr0 2> /dev/null || true
 	@./tests/run.sh
 
-ifndef $(DISK)
+ifndef DISK
 copy:
 	@tput setaf 1 2> /dev/null || true; echo ERROR: No disk specified!; tput sgr0 2> /dev/null || true
 else
