@@ -1,9 +1,15 @@
 # Jobbed
 
 ## Build Information
-### Building (Debian)
+### Building (Debian, WSL)
  - Clone the repository.
  - Ensure you have the `gcc-arm-none-eabi` cross compiler installed `# apt install gcc-arm-none-eabi`.
+ - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
+ - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
+
+### Building MacOS
+ - Clone the repository
+ - Ensure you have the `gcc-arm-embedded` formulae installed `$ brew install gcc-arm-embedded`.
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
  - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
