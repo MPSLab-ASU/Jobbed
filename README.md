@@ -19,7 +19,7 @@
  - `!cd Jobbed; make -f Unix.mk`
  - The built image is found in `Jobbed/build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
-### Building a Boot Image for the Raspberry Pi 2B
+### Creating a Bootable SD Card for the Raspberry Pi 2B
  - The Raspberry Pi SD Card Imager can be obtained at `https://www.raspberrypi.com/software/`
  - After imaging the SD card with the imaging software, delete all of the `kernel*.img` files in the root directory of the first partition of the SD card
  - After removing all of the image files, copy the built `build/kernel7.img` file to the root directory of the first partition of the SD card
