@@ -7,13 +7,10 @@
 
 unsigned char *lfb;                         /* raw frame buffer address */
 
-#define SCR_WIDTH  1920
-#define SCR_HEIGHT 1080
-
 /**
  * Set screen resolution
  */
-void lfb_init(void)
+void lfb_init(unsigned long w, unsigned long h)
 {
 	mbox[0] = 35*4;
 	mbox[1] = MBOX_REQUEST;
@@ -21,14 +18,14 @@ void lfb_init(void)
 	mbox[2] = 0x48003;  //set phy wh
 	mbox[3] = 8;
 	mbox[4] = 8;
-	mbox[5] = SCR_WIDTH;         //FrameBufferInfo.width
-	mbox[6] = SCR_HEIGHT;          //FrameBufferInfo.height
+	mbox[5] = w;         //FrameBufferInfo.width
+	mbox[6] = h;          //FrameBufferInfo.height
 
 	mbox[7] = 0x48004;  //set virt wh
 	mbox[8] = 8;
 	mbox[9] = 8;
-	mbox[10] = SCR_WIDTH;        //FrameBufferInfo.virtual_width
-	mbox[11] = SCR_HEIGHT;         //FrameBufferInfo.virtual_height
+	mbox[10] = w;        //FrameBufferInfo.virtual_width
+	mbox[11] = h;         //FrameBufferInfo.virtual_height
 
 	mbox[12] = 0x48009; //set virt offset
 	mbox[13] = 8;
@@ -92,8 +89,8 @@ void lfb_showpicture(void)
 	clear_screen();
 #define FWIDTH 240
 #define FHEIGHT 80
-	draw_cbox(SCR_WIDTH-FWIDTH, SCR_HEIGHT-FHEIGHT*2, FWIDTH, FHEIGHT, 0x0057b7);
-	draw_cbox(SCR_WIDTH-FWIDTH, SCR_HEIGHT-FHEIGHT, FWIDTH, FHEIGHT, 0xffd700);
+	draw_cbox(gwidth-FWIDTH, gheight-FHEIGHT*2, FWIDTH, FHEIGHT, 0x0057b7);
+	draw_cbox(gwidth-FWIDTH, gheight-FHEIGHT, FWIDTH, FHEIGHT, 0xffd700);
 }
 
 void draw_cpixel(unsigned int lx, unsigned int ly, unsigned int c)

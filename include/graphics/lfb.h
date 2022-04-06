@@ -6,7 +6,7 @@
 
 #define DRAW64(x,y,v) draw_hex32(x,y,v>>32);draw_hex32(x+8,y,v);
 
-void lfb_init(void);
+void lfb_init(unsigned long w, unsigned long h);
 void lfb_showpicture(void);
 
 void clear_screen(void);

@@ -29,7 +29,7 @@ void sysinit(void)
 	store32(0x00, GPU_INTERRUPTS_ROUTING);
 
 	// Graphics Initialize
-	lfb_init();
+	lfb_init(1920, 1080);
 	lfb_showpicture();
 
 	// Initialize Memory Management Unit

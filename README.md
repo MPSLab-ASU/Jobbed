@@ -44,7 +44,8 @@ Headers for files in `usr/` are expected in `include/usr/`. They can then be inc
 
 Currently, if you build Jobbed without modifying anything, it will generate the RTOS core testing suite.
 This testing suite outputs the tracing, thread switch, low and high priority thread creation, mutex creation, mutex destruction, mutex locking contention, mutex locking non-contention, mutex unlocking, semaphore waiting, semaphore signalling at zero, semaphore signalling non-zero timings to a 1920x1080 display output.
-Currently the graphics driver expects this resolution of display. If you have another resolution, this can be changed in `kernel/graphics/lfb.c` by modifying `SCR_WIDTH` and `SCR_HEIGHT`.
+Currently the graphics driver expects this resolution of display.
+If you have another resolution, this can be changed in `kernel/sys/core.c` by modifying `lfb_init(1920, 1080)` to `lfb_init(YOUR WIDTH, YOUR HEIGHT)`.
 
 ### C++
 C++ sources in this directory are expected to work with a few missing features such as the `new` and `delete` keywords since memory is not dynamically allocated on the system.
