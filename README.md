@@ -54,13 +54,13 @@ C++ sources in this directory are expected to work with a few missing features s
 
 ### Todo
  - Finish Build Instructions
- - Deterministic Graphics
- - Move UART Polling Write to another method
- - Make UART Write run as an event-based system
 
 ### Future
  - USB Driver
  - Ethernet Driver
+ - Move UART Polling Write to another method
+ - Make UART Write run as an event-based system
+ - Deterministic Graphics
  - SPI Driver
  - GPIO Falling Edge IRQ
 
