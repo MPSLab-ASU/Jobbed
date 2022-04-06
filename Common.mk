@@ -26,6 +26,7 @@ BSP ?= 2
 GDEBUG ?= 0
 DEBUG ?= 0
 SILENT ?= 0
+LARGE ?= 1
 
 CROSS = arm-none-eabi
 CC = ${CROSS}-gcc
@@ -63,6 +64,10 @@ endif
 # Pause and wait for GDB if requested
 ifneq ($(GDEBUG),0)
 	QFLAGS += -s -S
+endif
+
+ifeq ($(LARGE),1)
+	CFLAGS += -DLARGE_LETTERS
 endif
 
 # Debugging Flag

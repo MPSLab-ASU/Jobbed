@@ -124,7 +124,7 @@ void draw_cbyte(unsigned int lx, unsigned int ly, unsigned char letter, unsigned
 	}
 	for(y=0; y<GLYPH_Y; y++) {
 		for(x=0; x<GLYPH_X; x++) {
-			if((0x80 >> ((GLYPH_X-1)-x)) & glyphs[y+GLYPH_Y*(ltr)]) {
+			if((0x80 >> ((GLYPH_X-1)-x)) & font[ltr][y]) {
 				*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 			} else {
 				*((unsigned int*)ptr) = 0x000000;
@@ -148,7 +148,7 @@ void draw_cletter(unsigned int lx, unsigned int ly, unsigned char letter, unsign
 	unsigned char ltr = letter & 0x7F;
 	for(y=0; y<GLYPH_Y; y++) {
 		for(x=0; x<GLYPH_X; x++) {
-			if((0x80 >> ((GLYPH_X-1)-x)) & glyphs[y+GLYPH_Y*(ltr)]) {
+			if((0x80 >> ((GLYPH_X-1)-x)) & font[ltr][y]) {
 				*((unsigned int*)ptr) = gisrgb ? (unsigned int)((c&0xFF)<<16 | (c&0xFF00) | (c&0xFF0000)>>16) : c;
 			} else {
 				*((unsigned int*)ptr) = 0x000000;
