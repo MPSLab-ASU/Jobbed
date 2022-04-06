@@ -129,31 +129,37 @@ void test_super(void)
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(trace_test, 0, 2);
 	}
+	draw_string(0*15, 11, "Trace");
 	add_thread(test_results,(void*) 0, 0);idx = 0;
 
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(switch_test, 0, 2);
 	}
+	draw_string(1*15, 11, "Thread Switch");
 	add_thread(test_results,(void*) 1, 0);idx = 0;
 
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(add_low_test, 0, 2);
 	}
+	draw_string(2*15, 11, "LThread Create");
 	add_thread(test_results,(void*) 2, 0);idx = 0;
 
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(add_high_test, 0, 2);
 	}
+	draw_string(3*15, 11, "HThread Create");
 	add_thread(test_results,(void*) 3, 0);idx = 0;
 
 	struct Mutex* m;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(mutex_create_test, 0, 2);
 	}
+	draw_string(4*15, 11, "Mutex Create");
 	add_thread(test_results,(void*) 4, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(mutex_delete_test, 0, 2);
 	}
+	draw_string(5*15, 11, "Mutex Delete");
 	add_thread(test_results,(void*) 5, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
@@ -162,18 +168,21 @@ void test_super(void)
 		unlock_mutex(m);
 		delete_mutex(m);
 	}
+	draw_string(6*15, 11, "Mutex Lock(C)");
 	add_thread(test_results,(void*) 6, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
 		add_thread(mutex_lock_test, 0, 2);
 		delete_mutex(m);
 	}
+	draw_string(7*15, 11, "Mutex Lock");
 	add_thread(test_results,(void*) 7, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
 		add_thread(mutex_unlock_test, 0, 2);
 		delete_mutex(m);
 	}
+	draw_string(8*15, 11, "Mutex Unlock");
 	add_thread(test_results,(void*) 8, 0);idx = 0;
 
 	static unsigned long semp = 0;
@@ -181,16 +190,19 @@ void test_super(void)
 		semp = 1;
 		add_thread(semaphore_p_test, &semp, 2);
 	}
+	draw_string(9*15, 11, "Semaphore P");
 	add_thread(test_results,(void*) 9, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		semp = 0;
 		add_thread(semaphore_v_test, &semp, 2);
 	}
+	draw_string(10*15, 11, "Semaphore0 V");
 	add_thread(test_results,(void*) 10, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		semp = 1;
 		add_thread(semaphore_v_test, &semp, 2);
 	}
+	draw_string(11*15, 11, "Semaphore V");
 	add_thread(test_results,(void*) 11, 0);idx = 0;
 }
 
