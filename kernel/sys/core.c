@@ -30,7 +30,7 @@ void sysinit(void)
 
 	// Graphics Initialize
 	lfb_init(1920, 1080);
-	lfb_showpicture();
+	clear_screen();
 
 	// Initialize Memory Management Unit
 	mmu_init();
