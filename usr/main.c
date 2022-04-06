@@ -17,83 +17,8 @@ static struct SysTimerInfo stime_3 = { .tick_rate = 10, .priority = 0, .arg = 0,
 static struct UartInfo UART_INFO = { .priority = 2, };
 static struct GPIOInfo gpinfo = { .pin = (1<<16 | 1<<12), .priority = 0, };
 
-void delaytest(void)
-{
-	static unsigned long count = 0;
-	static unsigned long long ts[4096*2+20];
-	sys0_64(SYS_TIME, &ts[count++]);
-	if (count == (4096*2+18)) {
-		unsubscribe_irq(SYS_TIMER_3_IRQ);
-		static char str[14];
-		char* start;
-		unsigned long mean=0, stdev=0, max=0, min=0xFFFFFFFF;
-		for (unsigned long i = 0; i < 4096; i++) {
-			unsigned long elapsed = ts[2*(i+2)+1]-ts[2*(i+2)];
-			elapsed *= 1000;
-			mean += elapsed;
-			if (elapsed > max)
-				max = elapsed;
-			if (elapsed < min)
-				min = elapsed;
-		}
-		mean /= 4096;
-		for (unsigned long i = 0; i < 4096; i++) {
-			unsigned long elapsed = ts[2*(i+2)+1]-ts[2*(i+2)];
-			elapsed *= 1000;
-			unsigned long term = (elapsed-mean)*(elapsed-mean)/4096;
-			stdev += term;
-		}
-		stdev = sqrt_rnd(stdev);
-		start = ulong_to_string(mean, str);
-		draw_string(0, 10, start);
-		start = ulong_to_string(stdev, str);
-		draw_string(0, 11, start);
-		start = ulong_to_string(min, str);
-		draw_string(0, 12, start);
-		start = ulong_to_string(max, str);
-		draw_string(0, 13, start);
-	}
-}
-
-void gptest(void)
-{
-	static unsigned long count = 0;
-	static unsigned long long ts[4096*2+20];
-	sys0_64(SYS_TIME, &ts[count++]);
-	if (count == (4096*2+18)) {
-		unsubscribe_irq(GPIO_BANK_1_IRQ);
-		//unsubscribe_irq(SYS_TIMER_3_IRQ);
-		static char str[14];
-		char* start;
-		unsigned long mean=0, stdev=0, max=0, min=0xFFFFFFFF;
-		for (unsigned long i = 0; i < 4096; i++) {
-			unsigned long elapsed = ts[2*(i+2)+1]-ts[2*(i+2)];
-			elapsed *= 1000;
-			mean += elapsed;
-			if (elapsed > max)
-				max = elapsed;
-			if (elapsed < min)
-				min = elapsed;
-		}
-		mean /= 4096;
-		for (unsigned long i = 0; i < 4096; i++) {
-			unsigned long elapsed = ts[2*(i+2)+1]-ts[2*(i+2)];
-			elapsed *= 1000;
-			unsigned long term = (elapsed-mean)*(elapsed-mean)/4096;
-			stdev += term;
-		}
-		stdev = sqrt_rnd(stdev);
-		start = ulong_to_string(mean, str);
-		draw_string(0, 10, start);
-		start = ulong_to_string(stdev, str);
-		draw_string(0, 11, start);
-		start = ulong_to_string(min, str);
-		draw_string(0, 12, start);
-		start = ulong_to_string(max, str);
-		draw_string(0, 13, start);
-	}
-}
-
+void delaytest(void);
+void gptest(void);
 void test_super(void);
 
 void main(void)
