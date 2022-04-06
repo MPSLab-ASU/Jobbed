@@ -23,6 +23,7 @@
  - The Raspberry Pi SD Card Imager can be obtained at `https://www.raspberrypi.com/software/`
  - After imaging the SD card with the imaging software, delete all of the `kernel*.img` files in the root directory of the first partition of the SD card
  - After removing all of the image files, copy the built `build/kernel7.img` file to the root directory of the first partition of the SD card
+ - Unmount the SD card, insert the SD into the Raspberry Pi, and apply power to run **Jobbed**
 
 ### Running in QEMU Emulator
  - Ensure you have QEMU's ARM package installed on your system
