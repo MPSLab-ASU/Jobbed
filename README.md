@@ -79,9 +79,6 @@ C++ sources in this directory are expected to work with a few missing features s
  - B: Disable ARM Timer
 
 
-Note: SYS and USER share registers but differ in privilege
-
-
 ### Modes
  - From https://developer.arm.com/documentation/den0013/d/ARM-Processor-Modes-and-Registers
  - User: 10:10000 PL0
@@ -102,6 +99,8 @@ Note: SYS and USER share registers but differ in privilege
  - ABT: sp_abt,lr_abt,SPSR_abt
  - UND: sp_und,lr_und,SPSR_und
  - SYS: Same as user
+
+Note: SYS and USER share registers but differ in privilege
 
 ### Program Status Registers
  - https://developer.arm.com/documentation/ddi0406/c/System-Level-Architecture/The-System-Level-Programmers--Model/ARM-processor-modes-and-ARM-core-registers/Program-Status-Registers--PSRs-?lang=en#CIHJBHJA
