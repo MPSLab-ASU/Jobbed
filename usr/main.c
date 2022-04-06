@@ -6,6 +6,7 @@
 #include <usr/cxx.h>
 #include <usr/math.h>
 #include <usr/string.h>
+#include <usr/test.h>
 #include <usr/timed.h>
 #include <usr/uart.h>
 
@@ -16,10 +17,6 @@ static struct SysTimerInfo stime_2 = { .tick_rate = 300000, .priority = 0, .arg 
 static struct SysTimerInfo stime_3 = { .tick_rate = 10, .priority = 0, .arg = 0, .oneshot = 0, };
 static struct UartInfo UART_INFO = { .priority = 2, };
 static struct GPIOInfo gpinfo = { .pin = (1<<16 | 1<<12), .priority = 0, };
-
-void delaytest(void);
-void gptest(void);
-void test_super(void);
 
 void main(void)
 {
