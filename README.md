@@ -19,6 +19,11 @@
  - `!cd Jobbed; make -f Unix.mk`
  - The built image is found in `Jobbed/build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
+### Building a Boot Image for the Raspberry Pi 2B
+ - The Raspberry Pi SD Card Imager can be obtained at `https://www.raspberrypi.com/software/`
+ - After imaging the SD card with the imaging software, delete all of the `kernel*.img` files in the root directory of the first partition of the SD card
+ - After removing all of the image files, copy the built `build/kernel7.img` file to the root directory of the first partition of the SD card
+
 ### Running in QEMU Emulator
  - Ensure you have QEMU's ARM package installed on your system
  - Minimum command line arguments to run: `qemu-system-arm -M raspi2b -cpu cortex-a7 -m 1G -kernel build/kernel.elf`
@@ -51,9 +56,6 @@ If you have another resolution, this can be changed in `kernel/sys/core.c` by mo
 C++ sources in this directory are expected to work with a few missing features such as the `new` and `delete` keywords since memory is not dynamically allocated on the system.
 
 ## Misc Information
-
-### Todo
- - Finish Build Instructions
 
 ### Future
  - USB Driver
