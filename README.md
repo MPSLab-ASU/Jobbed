@@ -19,14 +19,14 @@
  - `!cd Jobbed; make -f Unix.mk`
  - The built image is found in `Jobbed/build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
-### Running
+### Running in QEMU Emulator
  - Ensure you have QEMU's ARM package installed on your system
  - Minimum command line arguments to run: `qemu-system-arm -M raspi2b -cpu cortex-a7 -m 1G -kernel build/kernel.elf`
  - When building `build/kernel7.img`, `build/kernel.elf` will also be built and is used to emulate the Raspberry Pi 2B
  - If QEMU is installed, you can run **Jobbed** with `make -f Unix.mk clean run`
  - You can also disable the QEMU window from appearing if you only have UART communication in your application with `SILENT=1 make -f Unix.mk clean run`
 
-### Running on WSL
+### Running in QEMU Emulator on WSL
  - Download the QEMU ARM System Package and install it under `C:\qemu`
  - Run **Jobbed** in QEMU from WSL with `make -f Win.mk clean run`
 
