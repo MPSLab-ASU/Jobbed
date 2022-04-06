@@ -33,7 +33,7 @@
 ### Getting Cross Compiler
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
 
-## Building RTOS Applications
+## Creating RTOS Applications
 RTOS Applications are written in the `usr/` directory.
 Jobbed, in `kernel/core.c` adds in the `main` function at the highest priority, expected to be defined in `usr/main.c`.
 This `main` function, can serve as the initialization function for the RTOS application.
