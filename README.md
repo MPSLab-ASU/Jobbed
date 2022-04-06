@@ -28,6 +28,8 @@ This `main` function, can serve as the initialization function for the RTOS appl
 IRQ handles can be initialized with the `irq_subscribe(IRQ_NAME, callback_function, pointer to additional IRQ information)`.
 Examples can be found in the provided `usr/main.c`.
 
+Headers for files in `usr/` are expected in `include/usr/`. They can then be included in source files with `#include <usr/path/to/file.h>`.
+
 Currently, if you build Jobbed without modifying anything, it will generate the RTOS core testing suite.
 This testing suite outputs the tracing, thread switch, low and high priority thread creation, mutex creation, mutex destruction, mutex locking contention, mutex locking non-contention, mutex unlocking, semaphore waiting, semaphore signalling at zero, semaphore signalling non-zero timings to a 1920x1080 display output.
 Currently the graphics driver expects this resolution of display. If you have another resolution, this can be changed in `kernel/graphics/lfb.c` by modifying `SCR_WIDTH` and `SCR_HEIGHT`.
