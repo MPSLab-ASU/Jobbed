@@ -6,10 +6,17 @@
 #include <usr/string.h>
 #include <util/mutex.h>
 
-#define MAX_ITER 8192
-#define MULTIPLIER 1000000/900
+#define MAX_ITER 4096
+//Multiplier for SYS_TIME_2
+//#define MULTIPLIER 1000000/900
+//#define TIMER(x) sys0_32(SYS_TIME_2, &x)
+//static unsigned long ti, tf;
 
-static unsigned long ti, tf;
+//Multiplier for SYS_TIME
+#define MULTIPLIER 1000
+#define TIMER(x) sys0_64(SYS_TIME, &x)
+static unsigned long long ti, tf;
+
 static unsigned long times[MAX_ITER];
 static unsigned long idx = 0;
 
@@ -28,7 +35,7 @@ void test_results(unsigned long off)
 		stdev += term;
 	}
 	stdev = sqrt_rnd(stdev);
-	char str[] = "            ns\0";
+	char str[] = "            us\0";
 	char* start;
 	start = ulong_to_string(mean, str);
 	draw_string(off*15, 12, start);
@@ -42,41 +49,41 @@ void nopfxn(void) {}
 
 void trace_test(void)
 {
-	sys0_32(SYS_TIME_2, &ti);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(ti);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
 void switch_test(void)
 {
-	sys0_32(SYS_TIME_2, &ti);
+	TIMER(ti);
 	sys0(SYS_YIELD);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
 void add_low_test(void)
 {
-	sys0_32(SYS_TIME_2, &ti);
-	add_thread(nopfxn, 0, 6);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(ti);
+	add_thread(nopfxn, 0, 4);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
 void add_high_test(void)
 {
-	sys0_32(SYS_TIME_2, &ti);
-	add_thread(nopfxn, 0, 1);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(ti);
+	add_thread(nopfxn, 0, 0);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
 void mutex_create_test(void)
 {
 	struct Mutex* m;
-	sys0_32(SYS_TIME_2, &ti);
+	TIMER(ti);
 	m = create_mutex(0);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(tf);
 	delete_mutex(m);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
@@ -84,17 +91,17 @@ void mutex_create_test(void)
 void mutex_delete_test(void)
 {
 	struct Mutex* m = create_mutex(0);
-	sys0_32(SYS_TIME_2, &ti);
+	TIMER(ti);
 	delete_mutex(m);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
 void mutex_lock_test(struct Mutex* m)
 {
-	sys0_32(SYS_TIME_2, &ti);
+	TIMER(ti);
 	lock_mutex(m);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(tf);
 	unlock_mutex(m);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
@@ -102,25 +109,25 @@ void mutex_lock_test(struct Mutex* m)
 void mutex_unlock_test(struct Mutex* m)
 {
 	lock_mutex(m);
-	sys0_32(SYS_TIME_2, &ti);
+	TIMER(ti);
 	unlock_mutex(m);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
 void semaphore_p_test(unsigned long* sem)
 {
-	sys0_32(SYS_TIME_2, &ti);
+	TIMER(ti);
 	sys1(SYS_SEMAPHORE_P, sem);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
 void semaphore_v_test(unsigned long* sem)
 {
-	sys0_32(SYS_TIME_2, &ti);
+	TIMER(ti);
 	sys1(SYS_SEMAPHORE_V, sem);
-	sys0_32(SYS_TIME_2, &tf);
+	TIMER(tf);
 	times[idx++] = (tf-ti)*MULTIPLIER;
 }
 
@@ -251,7 +258,7 @@ void gptest(void)
 	sys0_64(SYS_TIME, &ts[count++]);
 	if (count == (4096*2+18)) {
 		unsubscribe_irq(GPIO_BANK_1_IRQ);
-		//unsubscribe_irq(SYS_TIMER_3_IRQ);
+		//unsubscribe_irq(SYS_TIMER(_3_IRQ);
 		static char str[14];
 		char* start;
 		unsigned long mean=0, stdev=0, max=0, min=0xFFFFFFFF;
