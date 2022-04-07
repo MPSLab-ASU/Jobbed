@@ -20,6 +20,7 @@ static unsigned long long ti, tf;
 static unsigned long times[MAX_ITER];
 static unsigned long idx = 0;
 
+#define TEST_PER_LINE 4
 
 void test_results(unsigned long off)
 {
@@ -38,11 +39,11 @@ void test_results(unsigned long off)
 	char str[] = "            us\0";
 	char* start;
 	start = ulong_to_string(mean, str);
-	draw_string(off*15, 12, start);
+	draw_string((off%TEST_PER_LINE)*15, 12+5*(off/TEST_PER_LINE), start);
 	start = ulong_to_string(stdev, str);
-	draw_string(off*15, 13, start);
+	draw_string((off%TEST_PER_LINE)*15, 13+5*(off/TEST_PER_LINE), start);
 	start = ulong_to_string(max, str);
-	draw_string(off*15, 14, start);
+	draw_string((off%TEST_PER_LINE)*15, 14+5*(off/TEST_PER_LINE), start);
 }
 
 void nopfxn(void) {}
@@ -136,37 +137,37 @@ void test_super(void)
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(trace_test, 0, 2);
 	}
-	draw_string(0*15, 11, "Trace");
+	draw_string((0%TEST_PER_LINE)*15, 11+5*(0/TEST_PER_LINE), "Trace");
 	add_thread(test_results,(void*) 0, 0);idx = 0;
 
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(switch_test, 0, 2);
 	}
-	draw_string(1*15, 11, "Thread Switch");
+	draw_string((1%TEST_PER_LINE)*15, 11+5*(1/TEST_PER_LINE), "Thread Switch");
 	add_thread(test_results,(void*) 1, 0);idx = 0;
 
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(add_low_test, 0, 2);
 	}
-	draw_string(2*15, 11, "LThread Create");
+	draw_string((2%TEST_PER_LINE)*15, 11+5*(2/TEST_PER_LINE), "LThread Create");
 	add_thread(test_results,(void*) 2, 0);idx = 0;
 
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(add_high_test, 0, 2);
 	}
-	draw_string(3*15, 11, "HThread Create");
+	draw_string((3%TEST_PER_LINE)*15, 11+5*(3/TEST_PER_LINE), "HThread Create");
 	add_thread(test_results,(void*) 3, 0);idx = 0;
 
 	struct Mutex* m;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(mutex_create_test, 0, 2);
 	}
-	draw_string(4*15, 11, "Mutex Create");
+	draw_string((4%TEST_PER_LINE)*15, 11+5*(4/TEST_PER_LINE), "Mutex Create");
 	add_thread(test_results,(void*) 4, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		add_thread(mutex_delete_test, 0, 2);
 	}
-	draw_string(5*15, 11, "Mutex Delete");
+	draw_string((5%TEST_PER_LINE)*15, 11+5*(5/TEST_PER_LINE), "Mutex Delete");
 	add_thread(test_results,(void*) 5, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
@@ -175,21 +176,21 @@ void test_super(void)
 		unlock_mutex(m);
 		delete_mutex(m);
 	}
-	draw_string(6*15, 11, "Mutex Lock(C)");
+	draw_string((6%TEST_PER_LINE)*15, 11+5*(6/TEST_PER_LINE), "Mutex Lock(C)");
 	add_thread(test_results,(void*) 6, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
 		add_thread(mutex_lock_test, m, 2);
 		delete_mutex(m);
 	}
-	draw_string(7*15, 11, "Mutex Lock");
+	draw_string((7%TEST_PER_LINE)*15, 11+5*(7/TEST_PER_LINE), "Mutex Lock");
 	add_thread(test_results,(void*) 7, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
 		add_thread(mutex_unlock_test, m, 2);
 		delete_mutex(m);
 	}
-	draw_string(8*15, 11, "Mutex Unlock");
+	draw_string((8%TEST_PER_LINE)*15, 11+5*(8/TEST_PER_LINE), "Mutex Unlock");
 	add_thread(test_results,(void*) 8, 0);idx = 0;
 
 	static unsigned long semp = 0;
@@ -197,19 +198,19 @@ void test_super(void)
 		semp = 1;
 		add_thread(semaphore_p_test, &semp, 2);
 	}
-	draw_string(9*15, 11, "Semaphore P");
+	draw_string((9%TEST_PER_LINE)*15, 11+5*(9/TEST_PER_LINE), "Semaphore P");
 	add_thread(test_results,(void*) 9, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		semp = 0;
 		add_thread(semaphore_v_test, &semp, 2);
 	}
-	draw_string(10*15, 11, "Semaphore0 V");
+	draw_string((10%TEST_PER_LINE)*15, 11+5*(10/TEST_PER_LINE), "Semaphore0 V");
 	add_thread(test_results,(void*) 10, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		semp = 1;
 		add_thread(semaphore_v_test, &semp, 2);
 	}
-	draw_string(11*15, 11, "Semaphore V");
+	draw_string((11%TEST_PER_LINE)*15, 11+5*(11/TEST_PER_LINE), "Semaphore V");
 	add_thread(test_results,(void*) 11, 0);idx = 0;
 }
 
