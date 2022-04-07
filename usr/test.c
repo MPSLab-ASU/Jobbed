@@ -23,7 +23,7 @@ static unsigned long idx = 0;
 
 void test_results(unsigned long off)
 {
-	unsigned long mean=0, stdev=0, max=0;
+	unsigned long long mean=0, stdev=0, max=0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		mean += times[i];
 		if (times[i] > max)
@@ -171,7 +171,7 @@ void test_super(void)
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
 		lock_mutex(m);
-		add_thread(mutex_lock_test, 0, 2);
+		add_thread(mutex_lock_test, m, 2);
 		unlock_mutex(m);
 		delete_mutex(m);
 	}
@@ -179,14 +179,14 @@ void test_super(void)
 	add_thread(test_results,(void*) 6, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
-		add_thread(mutex_lock_test, 0, 2);
+		add_thread(mutex_lock_test, m, 2);
 		delete_mutex(m);
 	}
 	draw_string(7*15, 11, "Mutex Lock");
 	add_thread(test_results,(void*) 7, 0);idx = 0;
 	for (unsigned long i = 0; i < MAX_ITER; i++) {
 		m = create_mutex(0);
-		add_thread(mutex_unlock_test, 0, 2);
+		add_thread(mutex_unlock_test, m, 2);
 		delete_mutex(m);
 	}
 	draw_string(8*15, 11, "Mutex Unlock");
