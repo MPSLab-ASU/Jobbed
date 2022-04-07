@@ -7,7 +7,7 @@
 #include <util/mutex.h>
 
 #define MAX_ITER 4096
-//Multiplier for SYS_TIME_2
+//Multiplier for SYS_TIME_2 but note that times are reported in ns rather than us
 //#define MULTIPLIER 1000000/900
 //#define TIMER(x) sys0_32(SYS_TIME_2, &x)
 //static unsigned long ti, tf;
