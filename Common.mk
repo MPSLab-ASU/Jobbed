@@ -94,46 +94,52 @@ build/kernel7.img: CFLAGS := $(filter-out -g,$(CFLAGS))
 build/kernel7.img: AFLAGS := $(filter-out -g,$(AFLAGS))
 build/kernel7.img: build/kernel.elf
 	@mkdir -p $(@D)
-	${OBJCOPY} $< -O binary $@
+	@echo "IMAGE   BUILD  $@"
+	@${OBJCOPY} $< -O binary $@
 
 build/kernel.list: build/kernel.elf
 	@mkdir -p $(@D)
-	${OBJDUMP} -D $< > $@
+	@echo "IMAGE  LIST   $@"
+	@${OBJDUMP} -D $< > $@
 
 dump: build/kernel.list
 
 build/kernel.elf: ${A_OBJECTD} ${CXX_OBJECTD} ${C_OBJECTD}
-	@tput setaf 6 2> /dev/null || true; echo Linking Kernel; tput sgr0 2> /dev/null || true
 	@mkdir -p $(@D)
-	@echo ${C_SOURCEK}
-	${CC} -T linker.ld -o $@ -ffreestanding -O3 -nostdlib $^
+	@echo "IMAGE   LD     $@"
+	@${CC} -T linker.ld -o $@ -ffreestanding -O3 -nostdlib $^
 
 obj/kernel/%.co: kernel/%.c
 	@mkdir -p $(@D)
-	${CC} ${CFLAGS} -c $< -o $@
+	@echo "KERNEL  CC     $@"
+	@${CC} ${CFLAGS} -c $< -o $@
 
 obj/kernel/%.ao: kernel/%.S
 	@mkdir -p $(@D)
-	${AS} ${AFLAGS} -c $< -o $@
+	@echo "KERNEL  AS     $@"
+	@${AS} ${AFLAGS} -c $< -o $@
 
 obj/usr/%.co: usr/%.c
 	@mkdir -p $(@D)
-	${CC} ${CFLAGS} -c $< -o $@
+	@echo "USER    CC     $@"
+	@${CC} ${CFLAGS} -c $< -o $@
 
 obj/usr/%.cppo: usr/%.cpp
 	@mkdir -p $(@D)
-	${CCPP} ${CXXFLAGS} -c $< -o $@
+	@echo "USER    CPP    $@"
+	@${CCPP} ${CXXFLAGS} -c $< -o $@
 
 obj/usr/%.ao: usr/%.S
 	@mkdir -p $(@D)
-	${AS} ${AFLAGS} -c $< -o $@
+	@echo "USER    AS     $@"
+	@${AS} ${AFLAGS} -c $< -o $@
 
 run: build/kernel.elf
-	@tput setaf 6 2> /dev/null || true; echo Starting QEMU; tput sgr0 2> /dev/null || true
+	@tput setaf 6 2> /dev/null || true; echo RUNNING IN QEMU; tput sgr0 2> /dev/null || true
 	@${QEMU} -kernel $< ${QFLAGS}
 
 debug: build/kernel.list
-	@tput setaf 6 2> /dev/null || true; echo Starting GDB; tput sgr0 2> /dev/null || true
+	@tput setaf 6 2> /dev/null || true; echo STARTING GDB; tput sgr0 2> /dev/null || true
 	@${GDB} $< -command=gdbinit
 
 sd.hda:
@@ -143,8 +149,7 @@ sd.hda:
 disk: sd.hda
 
 clean:
-	@tput setaf 6 2> /dev/null || true; echo Clearing Build; tput sgr0 2> /dev/null || true
-	rm -rf obj/* build/*
+	@-rm -r obj/* build/*
 
 tree:
 	@tree -a -I obj\|build\|.git\|.gitignore
