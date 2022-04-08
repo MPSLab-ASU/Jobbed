@@ -40,14 +40,49 @@
  - https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
 
 ## Creating RTOS Applications
+
+**Jobbed**'s scheduler puts threads on FIFO queues of various priorities.
+The number of priorities available can be changed in `include/sys/schedule.h`.
+
+### RTOS Application Source Location
 RTOS Applications are written in the `usr/` directory.
 Jobbed, in `kernel/core.c` adds in the `main` function at the highest priority, expected to be defined in `usr/main.c`.
 This `main` function, can serve as the initialization function for the RTOS application.
-IRQ handles can be initialized with the `irq_subscribe(IRQ_NAME, callback_function, pointer to additional IRQ information)`.
-Examples can be found in the provided `usr/main.c`.
 
+### RTOS Application Header Location
 Headers for files in `usr/` are expected in `include/usr/`. They can then be included in source files with `#include <usr/path/to/file.h>`.
 
+### Setting IRQ Callbacks
+IRQ handles can be initialized with the `subscribe_irq(IRQ_NAME, callback_function, pointer to additional IRQ information)`.
+Examples can be found in the provided `usr/main.c`.
+ - `subscribe_irq(IRQ name, callback, pointer to information)` include `<cpu/irq.h>`
+ - `unsubscribe_irq(IRQ name)` include `<cpu/irq.h>`
+
+### Thread Functions
+ - Allow another thread with the same priority to run (i.e. push this thread to the end of the FIFO queue): `sys0(SYS_YIELD)` include `<cpu.h>`
+ - Add a function to a priority level: `add_thread(function, argument, priority)` include `<sys/schedule.h>`
+
+### Mutex Functions
+ - Create a mutex: `create_mutex(address of resource)` include `<util/mutex.h>`
+ - Delete a mutex: `delete_mutex(address of mutex)` include `<util/mutex.h>`
+ - Lock a mutex: `lock_mutex(address of mutex)` include `<util/mutex.h>`
+ - Unlock a mutex: `unlock_mutex(address of mutex)` include `<util/mutex.h>`
+
+### Lock Functions
+Locks are like mutexes, but they don't carry any reference to a resource and the system does not manage references to them.
+For the RTOS application designer, this means that there are conditions that locks can cause deadlocks.
+Thus, it is recommended to use the Mutex objects instead of locks.
+ - Lock: `lock(address of lock)` include `<util/lock.h>`
+ - Unlock: `unlock(address of lock)` include `<util/lock.h>`
+
+### Semaphore Functions
+ - Signal a semaphore: `sys1(SYS_SEMAPHORE_V, address of semaphore)` include `<cpu.h>`
+ - Wait on a semaphore: `sys1(SYS_SEMAPHORE_P, address of semaphore)` include `<cpu.h>`
+
+### Other Functions
+ - Get time since boot: `sys0_64(SYS_TIME, address of uint64 to store the time)` include `<cpu.h>`
+
+### Default RTOS Application
 Currently, if you build Jobbed without modifying anything, it will generate the RTOS core testing suite.
 This testing suite outputs the tracing, thread switch, low and high priority thread creation, mutex creation, mutex destruction, mutex locking contention, mutex locking non-contention, mutex unlocking, semaphore waiting, semaphore signalling at zero, semaphore signalling non-zero timings to a 1920x1080 display output.
 Currently the graphics driver expects this resolution of display.
