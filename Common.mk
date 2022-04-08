@@ -1,24 +1,23 @@
 # Kernel Sources/Objects
 C_SOURCEK = $(wildcard kernel/*.c kernel/**/*.c)
-C_OBJECTk = ${C_SOURCEK:.c=.co}
-C_OBJECTK = ${subst kernel/,obj/kernel/,${C_OBJECTk}}
+C_OBJECTk = $(C_SOURCEK:.c=.co)
+C_OBJECTK = $(subst kernel/,obj/kernel/,$(C_OBJECTk))
 A_SOURCEK = $(wildcard kernel/*.S kernel/**/*.S)
-A_OBJECTk = ${A_SOURCEK:.S=.ao}
-A_OBJECTK = ${subst kernel/,obj/kernel/,${A_OBJECTk}}
+A_OBJECTk = $(A_SOURCEK:.S=.ao)
+A_OBJECTK = $(subst kernel/,obj/kernel/,$(A_OBJECTk))
 # User Sources/Objects
 C_SOURCEU = $(wildcard usr/*.c usr/**/*.c)
-C_OBJECTu = ${C_SOURCEU:.c=.co}
-C_OBJECTU = ${subst usr/,obj/usr/,${C_OBJECTu}}
+C_OBJECTu = $(C_SOURCEU:.c=.co)
+C_OBJECTU = $(subst usr/,obj/usr/,$(C_OBJECTu))
 CXX_SOURCEU = $(wildcard usr/*.cpp usr/**/*.cpp)
-CXX_OBJECTu = ${CXX_SOURCEU:.cpp=.cppo}
-CXX_OBJECTU = ${subst usr/,obj/usr/,${CXX_OBJECTu}}
+CXX_OBJECTu = $(CXX_SOURCEU:.cpp=.cppo)
+CXX_OBJECTU = $(subst usr/,obj/usr/,$(CXX_OBJECTu))
 A_SOURCEU = $(wildcard usr/*.S usr/**/*.S)
-A_OBJECTu = ${A_SOURCEU:.S=.ao}
-A_OBJECTU = ${subst usr/,obj/usr/,${A_OBJECTu}}
+A_OBJECTu = $(A_SOURCEU:.S=.ao)
+A_OBJECTU = $(subst usr/,obj/usr/,$(A_OBJECTu))
 # Combined Objects
-C_OBJECTD = $(C_OBJECTK) $(C_OBJECTU)
-CXX_OBJECTD = $(CXX_OBJECTU)
-A_OBJECTD = $(A_OBJECTK) $(A_OBJECTU)
+K_OBJECTS = $(A_OBJECTK) $(C_OBJECTK)
+U_OBJECTS = $(A_OBJECTU) $(C_OBJECTU) $(CXX_OBJECTU)
 
 ATTACH_USB ?= 0
 AUTO ?= 0
@@ -29,11 +28,12 @@ SILENT ?= 0
 LARGE ?= 1
 
 CROSS = arm-none-eabi
-CC = ${CROSS}-gcc
-CCPP = ${CROSS}-g++
-AS = ${CROSS}-as
-OBJCOPY = ${CROSS}-objcopy
-OBJDUMP = ${CROSS}-objdump
+AR = $(CROSS)-ar
+CC = $(CROSS)-gcc
+CPP = $(CROSS)-g++
+AS = $(CROSS)-as
+OBJCOPY = $(CROSS)-objcopy
+OBJDUMP = $(CROSS)-objdump
 QEMU = qemu-system-arm
 GDB = gdb-multiarch
 CFLAGS = -mcpu=cortex-a7 -fpic -ffreestanding -std=gnu99 -O3 -Wall -Wextra -nostdlib -Iinclude -g
@@ -95,56 +95,61 @@ build/kernel7.img: AFLAGS := $(filter-out -g,$(AFLAGS))
 build/kernel7.img: build/kernel.elf
 	@mkdir -p $(@D)
 	@echo "IMAGE   BUILD  $@"
-	@${OBJCOPY} $< -O binary $@
+	@$(OBJCOPY) $< -O binary $@
 
 build/kernel.list: build/kernel.elf
 	@mkdir -p $(@D)
 	@echo "IMAGE  LIST   $@"
-	@${OBJDUMP} -D $< > $@
+	@$(OBJDUMP) -D $< > $@
 
 dump: build/kernel.list
 
-build/kernel.elf: ${A_OBJECTD} ${CXX_OBJECTD} ${C_OBJECTD}
+build/kernel.elf: build/libjobbed.a $(U_OBJECTS)
 	@mkdir -p $(@D)
 	@echo "IMAGE   LD     $@"
-	@${CC} -T linker.ld -o $@ -ffreestanding -O3 -nostdlib $^
+	@$(CC) -T linker.ld -o $@ -Lbuild -l jobbed -ffreestanding -O3 -nostdlib $^
 
 obj/kernel/%.co: kernel/%.c
 	@mkdir -p $(@D)
 	@echo "KERNEL  CC     $@"
-	@${CC} ${CFLAGS} -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 obj/kernel/%.ao: kernel/%.S
 	@mkdir -p $(@D)
 	@echo "KERNEL  AS     $@"
-	@${AS} ${AFLAGS} -c $< -o $@
+	@$(AS) $(AFLAGS) -c $< -o $@
 
 obj/usr/%.co: usr/%.c
 	@mkdir -p $(@D)
 	@echo "USER    CC     $@"
-	@${CC} ${CFLAGS} -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 obj/usr/%.cppo: usr/%.cpp
 	@mkdir -p $(@D)
 	@echo "USER    CPP    $@"
-	@${CCPP} ${CXXFLAGS} -c $< -o $@
+	@$(CPP) $(CXXFLAGS) -c $< -o $@
 
 obj/usr/%.ao: usr/%.S
 	@mkdir -p $(@D)
 	@echo "USER    AS     $@"
-	@${AS} ${AFLAGS} -c $< -o $@
+	@$(AS) $(AFLAGS) -c $< -o $@
 
 run: build/kernel.elf
 	@tput setaf 6 2> /dev/null || true; echo RUNNING IN QEMU; tput sgr0 2> /dev/null || true
-	@${QEMU} -kernel $< ${QFLAGS}
+	@$(QEMU) -kernel $< $(QFLAGS)
 
 debug: build/kernel.list
 	@tput setaf 6 2> /dev/null || true; echo STARTING GDB; tput sgr0 2> /dev/null || true
-	@${GDB} $< -command=gdbinit
+	@$(GDB) $< -command=gdbinit
 
 sd.hda:
 	@cp README.md sd.hda
 	@dd if=/dev/zero of=sd.hda count=1 bs=1 seek=16383
+
+build/libjobbed.a: $(K_OBJECTS)
+	@-rm -f $@
+	@echo "JOBBED  LIB    $@"
+	@$(AR) rc $@ $^
 
 disk: sd.hda
 
