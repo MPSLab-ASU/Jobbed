@@ -29,6 +29,7 @@ LARGE ?= 1
 
 CROSS = arm-none-eabi
 AR = $(CROSS)-ar
+LD = $(CROSS)-ld
 CC = $(CROSS)-gcc
 CPP = $(CROSS)-g++
 AS = $(CROSS)-as
@@ -107,7 +108,7 @@ dump: build/kernel.list
 build/kernel.elf: build/libjobbed.a $(U_OBJECTS)
 	@mkdir -p $(@D)
 	@echo "IMAGE   LD     $@"
-	@$(CC) -T linker.ld -o $@ -Lbuild -l jobbed -ffreestanding -O3 -nostdlib $^
+	@$(LD) -T linker.ld -o $@ -Lbuild -l jobbed -Map build/kernel.map -O3 -nostdlib $^
 
 obj/kernel/%.co: kernel/%.c
 	@mkdir -p $(@D)
@@ -147,6 +148,7 @@ sd.hda:
 	@dd if=/dev/zero of=sd.hda count=1 bs=1 seek=16383
 
 build/libjobbed.a: $(K_OBJECTS)
+	@mkdir -p $(@D)
 	@-rm -f $@
 	@echo "JOBBED  LIB    $@"
 	@$(AR) rc $@ $^
