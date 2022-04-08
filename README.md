@@ -81,6 +81,11 @@ Thus, it is recommended to use the Mutex objects instead of locks.
 
 ### Other Functions
  - Get time since boot: `sys0_64(SYS_TIME, address of uint64 to store the time)` include `<cpu.h>`
+ - Draw to the screen (include `<graphics/lfb.h>`)
+   - Strings: `draw_string(x, y, string)`
+   - 32-bit words: `draw_hex32(x, y, value)`
+   - Pixel: `draw_cpixel(x, y, RGB color)`
+   - Box: `draw_cbox(x, y, dx, dy, RGB color)`
 
 ### Default RTOS Application
 Currently, if you build Jobbed without modifying anything, it will generate the RTOS core testing suite.
