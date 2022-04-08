@@ -26,6 +26,8 @@ GDEBUG ?= 0
 DEBUG ?= 0
 SILENT ?= 0
 LARGE ?= 1
+IMAGE = build/kernel7.img
+MOUNT_POINT = /mnt/sd0
 
 CROSS = arm-none-eabi
 AR = $(CROSS)-ar
@@ -88,12 +90,12 @@ endif
 
 .PHONY: clean debug disk dump run test tree
 
-default: clean build/kernel7.img
+default: clean $(IMAGE)
 
-build/kernel7.img: CFLAGS += -DRPI_BUILD
-build/kernel7.img: CFLAGS := $(filter-out -g,$(CFLAGS))
-build/kernel7.img: AFLAGS := $(filter-out -g,$(AFLAGS))
-build/kernel7.img: build/kernel.elf
+$(IMAGE): CFLAGS += -DRPI_BUILD
+$(IMAGE): CFLAGS := $(filter-out -g,$(CFLAGS))
+$(IMAGE): AFLAGS := $(filter-out -g,$(AFLAGS))
+$(IMAGE): build/kernel.elf
 	@mkdir -p $(@D)
 	@echo "IMAGE   BUILD  $@"
 	@$(OBJCOPY) $< -O binary $@
@@ -167,10 +169,13 @@ test: clean build/kernel.elf
 
 ifndef DISK
 copy:
-	@tput setaf 1 2> /dev/null || true; echo ERROR: No disk specified!; tput sgr0 2> /dev/null || true
+	@tput setaf 1 2> /dev/null || true; echo "ERROR          No disk specified!"; tput sgr0 2> /dev/null || true
 else
-copy: clean build/kernel7.img
-	sudo mount $(DISK) /mnt/sd0
-	sudo cp build/kernel7.img /mnt/sd0
-	sudo umount /mnt/sd0
+copy: clean $(IMAGE)
+	@echo "MOUNT          $(DISK) <==> $(MOUNT_POINT)"
+	@sudo mount $(DISK) $(MOUNT_POINT)
+	@echo "IMAGE   CP     $(IMAGE) -> $(DISK)"
+	@sudo cp $(IMAGE) $(MOUNT_POINT)
+	@echo "UMOUNT         $(DISK)"
+	@sudo umount $(MOUNT_POINT)
 endif
