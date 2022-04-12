@@ -26,7 +26,7 @@ REM Assemble Assembly Kernel Source Files
 for /f %%i in ('forfiles /S /M *.S /P kernel\ /C "cmd /C echo @relpath"') do (
     set src=kernel\%%~i
     set obj=!src!
-    set obj=!obj:.S=.So!
+    set obj=!obj:.S=.ao!
     set obj=obj\!obj!
     @set kobj=!kobj! !obj!
     @echo KERNEL  AS  !src! -- !obj!
