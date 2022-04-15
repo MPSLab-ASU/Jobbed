@@ -6,6 +6,8 @@
  - Ensure you have the `gcc-arm-none-eabi` cross compiler installed `# apt install gcc-arm-none-eabi`.
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
  - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
+ - On WSL you may also need to run `# apt install build-essential` to get `make`
+ - For faster building, it is recommended to run `make clean;make -f Unix.mk -j4`, where 4 can be adjusted to the amount of parallel jobs that the system can perform
 
 ### Building MacOS
  - Clone the repository
