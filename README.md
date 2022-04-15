@@ -15,6 +15,12 @@
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
  - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
+### Building MacOS with Cross Compiler from ARM's website
+ - Clone the repository
+ - Ensure you have the `gcc-arm-embedded` installed from the website, 10-3 2021 July
+ - From the root of the directory, i.e. in `Jobbed`, execute `make -f Mac.mk`
+ - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
+
 ### Building (Google Colab)
  - `!git clone https://github.com/TerminalCursor/Jobbed.git`
  - `!apt install gcc-arm-none-eabi`
