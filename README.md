@@ -9,7 +9,7 @@
  - On WSL you may also need to run `# apt install build-essential git` to get `make` and `git`
  - For faster building, it is recommended to run `make clean;make -f Unix.mk -j4`, where 4 can be adjusted to the amount of parallel jobs that the system can perform
 
-### Building MacOS
+### Building MacOS with Cross Compiler from Homebrew
  - Clone the repository
  - Ensure you have the `gcc-arm-embedded` formulae installed `$ brew install gcc-arm-embedded`.
  - From the root of the directory, i.e. in `Jobbed`, execute `make -f Unix.mk`
