@@ -14,8 +14,8 @@
 
 ### Building on MacOS
  - Clone the repository
- - From the root of the directory, i.e. in `Jobbed`, execute `make -f Mac.mk init` to install the toolchain
- - Then execute `make -f Mac.mk` to build the Raspberry Pi Image
+ - From the root of the directory, i.e. in `Jobbed`, execute `make -f Mac.mk init default` to install the toolchain and build the image
+ - Further builds can be achieved by executing `make -f Mac.mk`
  - The built image is found in `build/kernel7.img` and can be copied to the root of the Raspberry Pi SD card's first parition
 
 ### Building (Google Colab)
