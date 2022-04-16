@@ -3,6 +3,7 @@ obj/
 toolchain/
 mk.old
 Makefile
+.DS_Store
 *.log
 *.swp
 *.hda
